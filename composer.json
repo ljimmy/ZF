@@ -1,0 +1,28 @@
+{
+    "name": "ljimmy/sf",
+    "type": "project",
+    "license": "MIT",
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    },
+    "require": {
+        "php": "^7.1",
+        "ext-swoole": "^2.0.12",
+        "monolog/monolog": " 2.0.x-dev",
+        "psr/container": "^1.0",
+        "psr/http-message": "^1.0",
+        "psr/simple-cache": "^1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "App",
+            "SF\\": "src"
+        },
+        "files": [
+            "src/Support/helpers.php"
+        ]
+    }
+}

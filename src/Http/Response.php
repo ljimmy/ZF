@@ -1,0 +1,284 @@
+<?php
+
+namespace SF\Http;
+
+use SF\Support\Str;
+use SF\Support\Json;
+use Psr\Http\Message\ResponseInterface;
+use Swoole\Http\Response as SwooleHttpResponse;
+
+class Response extends Message implements ResponseInterface
+{
+
+    /**
+     *
+     * @var int
+     */
+    public $gzip = 1;
+
+    /**
+     *
+     * @var array
+     */
+    private static $httpStatuses = [
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+        102 => 'Processing',
+        118 => 'Connection timed out',
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+        207 => 'Multi-Status',
+        208 => 'Already Reported',
+        210 => 'Content Different',
+        226 => 'IM Used',
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        306 => 'Reserved',
+        307 => 'Temporary Redirect',
+        308 => 'Permanent Redirect',
+        310 => 'Too many Redirect',
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Time-out',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested range unsatisfiable',
+        417 => 'Expectation failed',
+        418 => 'I\'m a teapot',
+        421 => 'Misdirected Request',
+        422 => 'Unprocessable entity',
+        423 => 'Locked',
+        424 => 'Method failure',
+        425 => 'Unordered Collection',
+        426 => 'Upgrade Required',
+        428 => 'Precondition Required',
+        429 => 'Too Many Requests',
+        431 => 'Request Header Fields Too Large',
+        449 => 'Retry With',
+        450 => 'Blocked by Windows Parental Controls',
+        451 => 'Unavailable For Legal Reasons',
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway or Proxy Error',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Time-out',
+        505 => 'HTTP Version not supported',
+        507 => 'Insufficient storage',
+        508 => 'Loop Detected',
+        509 => 'Bandwidth Limit Exceeded',
+        510 => 'Not Extended',
+        511 => 'Network Authentication Required',
+    ];
+
+    /**
+     *
+     * @var int
+     */
+    private $statusCode = 200;
+
+    /**
+     *
+     * @var string
+     */
+    private $charset = 'utf-8';
+
+    /**
+     *
+     * @var string
+     */
+    private $reasonPhrase = '';
+
+    /**
+     *
+     * @var \Swoole\Http\Response
+     */
+    private $swooleHttpResponse;
+
+    public function __construct(SwooleHttpResponse $response)
+    {
+        $this->swooleHttpResponse = $response;
+    }
+
+    /**
+     * Gets the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @return int Status code.
+     */
+    public function getStatusCode()
+    {
+        return $this->statusCode;
+    }
+
+    /**
+     * Return an instance with the specified status code and, optionally, reason phrase.
+     *
+     * If no reason phrase is specified, implementations MAY choose to default
+     * to the RFC 7231 or IANA recommended reason phrase for the response's
+     * status code.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * updated status and reason phrase.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * @param int $code The 3-digit integer result code to set.
+     * @param string $reasonPhrase The reason phrase to use with the
+     *     provided status code; if none is provided, implementations MAY
+     *     use the defaults as suggested in the HTTP specification.
+     * @return static
+     * @throws \InvalidArgumentException For invalid status code arguments.
+     */
+    public function withStatus($code, $reasonPhrase = '')
+    {
+        $this->statusCode = $code;
+        if ($reasonPhrase === '') {
+            $reasonPhrase = self::$httpStatuses[$code] ?? '';
+        }
+        $this->reasonPhrase = $reasonPhrase;
+
+        return $this;
+    }
+
+    /**
+     * Gets the response reason phrase associated with the status code.
+     *
+     * Because a reason phrase is not a required element in a response
+     * status line, the reason phrase value MAY be null. Implementations MAY
+     * choose to return the default RFC 7231 recommended reason phrase (or those
+     * listed in the IANA HTTP Status Code Registry) for the response's
+     * status code.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * @return string Reason phrase; must return an empty string if none present.
+     */
+    public function getReasonPhrase()
+    {
+        return $this->reasonPhrase;
+    }
+
+    public function withCharset(string $charset)
+    {
+        $this->charset = $charset;
+
+        return $this;
+    }
+
+    public function getCharset()
+    {
+        return $this->charset;
+    }
+
+    public function withContent(string $content)
+    {
+        $this->withBody(new Stream($content));
+
+        return $this;
+    }
+
+    public function redirect(string $url, int $status = 302)
+    {
+        return $this->withAddedHeader('Location', $url)->withStatus($status);
+    }
+
+    public function setRawCookie(string $name, string $value = '', int $expires = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
+    {
+        $this->swooleHttpResponse->rawcookie($name, $value, $expires, $path, $domain, $secure, $httponly);
+        return $this;
+    }
+
+    public function setCookie(string $name, string $value = '', int $expires = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
+    {
+        $this->swooleHttpResponse->cookie($name, $value, $expires, $path, $domain, $secure, $httponly);
+        return $this;
+    }
+
+    public function json($data)
+    {
+        return $this->withoutHeader('Content-Type')
+                        ->withAddedHeader('Content-Type', 'application/json')
+                        ->withContent(Json::enCode($data));
+    }
+
+    public function html(string $data)
+    {
+        return $this->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/html')->withContent($data);
+    }
+
+    public function raw(string $data)
+    {
+        return $this->withoutHeader('Content-Type')->withAddedHeader('Content-Type', 'text/plain')->withContent($data);
+    }
+
+    public function auto($data, array $accepts = [])
+    {
+        if (is_array($data)) {
+            if (count($data) == 2 && isset($data[0]) && isset($data[1]) && is_int($data[1])) {
+                $this->withStatus($data[1], $data[0]);
+                $data = $data[0];
+            }
+        }
+
+        if (is_array($data)) {
+            return $this->json($data);
+        } else if (!$this->hasHeader('Content-Type')) {
+            foreach ($accepts as $accept) {
+                if (Str::contains($accept, 'text/html')) {
+                    return $this->html((string) $data);
+                } else if (Str::contains($accept, 'application/json')) {
+                    return $this->json($data);
+                }
+            }
+            return $this->raw((string) $data);
+        } else {
+            return $this->withContent((string) $data);
+        }
+    }
+
+    public function send()
+    {
+        if ($this->charset) {
+            $this->withAddedHeader('Content-Type', sprintf('charset=%s', $this->charset));
+        }
+
+        foreach ($this->getHeaders() as $key => $value) {
+            $this->swooleHttpResponse->header($key, implode(';', $value));
+        }
+
+        $this->gzip && $this->swooleHttpResponse->gzip($this->gzip);
+        $this->swooleHttpResponse->status($this->statusCode);
+
+        if ($this->statusCode === 200 || $this->statusCode === 204) {
+            $this->swooleHttpResponse->end($this->getBody()->getContents());
+        } else {
+            $this->swooleHttpResponse->end($this->reasonPhrase);
+        }
+
+        return $this;
+    }
+
+}
