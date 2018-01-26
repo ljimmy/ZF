@@ -9,13 +9,12 @@ class CoroutineFactory
 {
     public static function create(callable $callback)
     {
-        $std              = new \stdClass();
+        $std = new \stdClass();
         $coroutineContext = new CoroutineContext(CoroutineContext::getTop());
 
-        $closure = \Closure::bind(function () use ($callback, $coroutineContext) {
-                    $this->result = PHP::call($callback, [$coroutineContext]);
-                }, $std);
-
+        $closure = function () use ($callback, $coroutineContext, $std) {
+            $std->result = PHP::call($callback, [$coroutineContext]);
+        };
         Coroutine::create($closure);
 
         $coroutineContext->destroy();

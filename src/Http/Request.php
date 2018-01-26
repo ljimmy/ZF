@@ -75,7 +75,7 @@ class Request extends Message implements RequestInterface
             $this->headers[str_replace(' ', '-', ucwords(str_replace('-', ' ', $name)))][] = $value;
         }
 
-        foreach ($request->files as $name => $file) {
+        foreach ( (array) $request->files as $name => $file) {
             $this->files[$name] = new UploadedFile($file);
         }
 
