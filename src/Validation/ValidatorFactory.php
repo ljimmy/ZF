@@ -18,7 +18,7 @@ class ValidatorFactory
         'url'     => Url::class,
     ];
 
-    public static function make(string $type, array $rules)
+    public static function create(string $type, array $rules): ValidatorInterface
     {
         $validator = self::Validator[$type] ?? null;
 
