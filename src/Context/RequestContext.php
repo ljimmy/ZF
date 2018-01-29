@@ -4,23 +4,20 @@ namespace SF\Context;
 
 use SF\Http\Request;
 use SF\Http\Response;
-use SF\Context\CoroutineContext;
 
-class RequestContext
+class RequestContext implements InterfaceContext
 {
-
-    /**
-     *
-     * @var int
-     */
-    public $id;
 
     /**
      *
      * @var array
      */
     private static $map;
-
+    /**
+     *
+     * @var int
+     */
+    public $id;
     /**
      *
      * @var Request
@@ -34,18 +31,26 @@ class RequestContext
     private $response;
 
     /**
-     *
      * @var CoroutineContext
      */
     private $coroutineContext;
 
     public function __construct(Request $request, Response $response, CoroutineContext $coroutineContext)
     {
-        $id               = $coroutineContext->getid();
-        $this->id         = $id;
-        $this->request    = $request;
-        $this->response   = $response;
-        self::$map[$id] = $this;
+        $this->id               = $coroutineContext->getId();
+        $this->request          = $request;
+        $this->response         = $response;
+        $this->coroutineContext = $coroutineContext;
+    }
+
+    public static function get(int $id)
+    {
+        return self::$map[$id] ?? null;
+    }
+
+    public function enter()
+    {
+        self::$map[$this->id] = $this;
     }
 
     /**
@@ -66,18 +71,10 @@ class RequestContext
         return $this->response;
     }
 
-    public static function get(int $id)
+    public function exitContext()
     {
-        return self::$map[$id] ?? null;
-    }
+        $this->coroutineContext->exitContext();
 
-    public function getCoroutineContext()
-    {
-        return $this->coroutineContext;
-    }
-
-    public function destroy()
-    {
         $this->request          = null;
         $this->response         = null;
         $this->id               = null;

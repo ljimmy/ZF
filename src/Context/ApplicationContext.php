@@ -5,11 +5,14 @@ namespace SF\Context;
 use SF\Server\AbstractServer;
 use SF\Cache\CacheInterface;
 use SF\Cache\CacheServiceProvider;
+use SF\Log\LoggerFactory;
+use Psr\Log\LoggerInterface;
 
-class ApplicationContext
+class ApplicationContext implements  InterfaceContext
 {
 
     const WORKER = 1;
+
     const TASK   = 1;
 
     /**
@@ -29,27 +32,28 @@ class ApplicationContext
      * @var CacheInterface
      */
     private $cache;
+    /**
+     * @var LoggerInterface;
+     */
     private $logger;
+    /**
+     * @var self
+     */
     private static $context;
-
-    public static function create()
-    {
-
-    }
 
     public function __construct(AbstractServer $application)
     {
-        $server            = $application->getServer();
         $this->application = $application;
-        $this->type        = $server->taskworker ? self::TASK : self::WORKER;
-        $this->init();
-        static::$context   = $this;
     }
 
-    public function init()
+    public function enter()
     {
-        $this->setProcessTitle();
+        $server            = $this->application->getServer();
+        $this->type        = $server->taskworker ? self::TASK : self::WORKER;
         $this->application->context = $this;
+
+        $this->setProcessTitle();
+        self::$context   = $this;
     }
 
     public function setProcessTitle()
@@ -90,7 +94,7 @@ class ApplicationContext
      *
      * @return CacheInterface
      */
-    public function getCache()
+    public function getCache(): CacheInterface
     {
         if ($this->cache === null) {
             $this->cache = $this->getContainer()->get(CacheServiceProvider::class)->getCache();
@@ -98,8 +102,12 @@ class ApplicationContext
         return $this->cache;
     }
 
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
+        if ($this->logger === null) {
+            $this->logger = $this->getContainer()->get(LoggerFactory::class)->getLogger();
+        }
+
         return $this->logger;
     }
 
@@ -109,15 +117,15 @@ class ApplicationContext
      */
     public static function getContext()
     {
-        return static::$context;
+        return self::$context;
     }
 
-    public function destroy()
+    public function exitContext()
     {
         $this->application = null;
         $this->cache       = null;
         $this->logger      = null;
-        static::$context   = null;
+        self::$context   = null;
     }
 
 }

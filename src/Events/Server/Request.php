@@ -43,6 +43,7 @@ class Request implements EventInterface
         //初始化请求上下文
         $requestContext = new RequestContext(new HttpRequest($request), new HttpResponse($response), /* 启用协程 */ new CoroutineContext());
         try {
+            $requestContext->enter();
             $this->run($requestContext->getRequest(), $requestContext->getResponse());
         } catch (\Exception $e) {
             throw $e;

@@ -24,6 +24,7 @@ class WorkerStart implements EventInterface
      */
     public function callback($server = null, int $workerId = 0)
     {
+        (new ApplicationContext())->enter();
         new ApplicationContext($this->application);
     }
 

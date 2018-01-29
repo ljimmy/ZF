@@ -4,7 +4,7 @@ namespace SF\Context;
 
 use SF\Coroutine\Coroutine;
 
-class CoroutineContext
+class CoroutineContext implements InterfaceContext
 {
 
     /**
@@ -21,12 +21,16 @@ class CoroutineContext
 
     public function __construct(int $top = Coroutine::ID)
     {
-        $this->id     = Coroutine::getuid();
+        $this->id = Coroutine::getuid();
 
         self::$list[$this->id] = $top;
     }
 
-    public function getid()
+    public function enter()
+    {
+    }
+
+    public function getId()
     {
         return $this->id;
     }
@@ -41,11 +45,10 @@ class CoroutineContext
 
     }
 
-    public function destroy()
+    public function exitContext()
     {
-        unset(self::$stack[$this->id]);
+        unset(self::$list[$this->id]);
         $this->id = null;
-        $this->top = null;
     }
 
 }
