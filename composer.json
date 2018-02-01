@@ -24,5 +24,8 @@
         "files": [
             "src/Support/helpers.php"
         ]
+    },
+    "require-dev": {
+        "eaglewu/swoole-ide-helper": "dev-master"
     }
 }
