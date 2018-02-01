@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class BufferEmpty implements EventInterface
+class BufferEmpty extends AbstractServerEvent
 {
 
     public function callback($server = null, int $fd = 0)

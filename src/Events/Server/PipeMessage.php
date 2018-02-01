@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class PipeMessage implements EventInterface
+class PipeMessage extends AbstractServerEvent
 {
 
     const EVENT_NAME = 'PipeMessage';

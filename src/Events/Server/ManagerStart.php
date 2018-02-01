@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class ManagerStart implements EventInterface
+class ManagerStart extends AbstractServerEvent
 {
 
     public function callback($server = null)

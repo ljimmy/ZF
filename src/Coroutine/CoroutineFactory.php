@@ -10,15 +10,14 @@ class CoroutineFactory
     public static function create(callable $callback)
     {
         $std = new \stdClass();
-        $coroutineContext = new CoroutineContext(CoroutineContext::getTop());
+        $coroutineId = CoroutineContext::getTop();
 
-        $closure = function () use ($callback, $coroutineContext, $std) {
+        $closure = function () use ($callback, $coroutineId, $std) {
+            $coroutineContext = new CoroutineContext($coroutineId);
             $std->result = PHP::call($callback, [$coroutineContext]);
+            $coroutineContext->exitContext();
         };
         Coroutine::create($closure);
-
-        $coroutineContext->destroy();
-        unset($coroutineContext);
         return $std->result;
     }
 

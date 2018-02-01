@@ -2,12 +2,8 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class WorkerStop implements EventInterface
+class WorkerStop extends AbstractServerEvent
 {
-
-    const EVENT_NAME = 'WorkerStop';
 
     public function callback($server = null, int $workerId = 0)
     {

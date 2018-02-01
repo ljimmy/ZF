@@ -26,6 +26,33 @@ return [
         'port' => 9000
     ],
     'components' => [
+        'eventManager' => [
+            'class' => \SF\Events\EventManager::class,
+            'events' => [
+                \SF\Events\Server\BufferEmpty::class,
+                \SF\Events\Server\BufferFull::class,
+                \SF\Events\Server\Close::class,
+                \SF\Events\Server\Connect::class,
+                \SF\Events\Server\Finish::class,
+                \SF\Events\Server\ManagerStart::class,
+                \SF\Events\Server\ManagerStop::class,
+                \SF\Events\Server\Packet::class,
+                \SF\Events\Server\PipeMessage::class,
+                \SF\Events\Server\Receive::class,
+                \SF\Events\Server\Shutdown::class,
+                \SF\Events\Server\Start::class,
+                \SF\Events\Server\Task::class,
+                \SF\Events\Server\WorkerError::class,
+                \SF\Events\Server\WorkerStart::class,
+                \SF\Events\Server\WorkerStop::class,
+                //http
+                \SF\Events\Server\Http\Request::class,
+                //WebSocket
+//                \SF\Events\Server\Http\WebSocket\HandShake::class,
+                \SF\Events\Server\Http\WebSocket\Message::class,
+//                \SF\Events\Server\Http\WebSocket\Open::class
+            ],
+        ],
         'router'   => [
             'class' => \SF\Http\Routing\Router::class,
             'rules' => include_once ('config/routes.php'),

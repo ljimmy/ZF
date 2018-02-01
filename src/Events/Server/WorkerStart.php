@@ -2,12 +2,10 @@
 
 namespace SF\Events\Server;
 
-
-use SF\Events\EventInterface;
 use SF\Context\ApplicationContext;
 use SF\Server\AbstractServer;
 
-class WorkerStart implements EventInterface
+class WorkerStart extends AbstractServerEvent
 {
     private $application;
 
@@ -24,7 +22,7 @@ class WorkerStart implements EventInterface
      */
     public function callback($server = null, int $workerId = 0)
     {
-        new ApplicationContext($this->application);
+        (new ApplicationContext($this->application))->enter();
     }
 
     public function on($server)
