@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Packet implements EventInterface
+class Packet extends AbstractServerEvent
 {
 
     public function callback($server = null, string $data = '', array $client_info = [])

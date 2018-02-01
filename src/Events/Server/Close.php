@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Close implements EventInterface
+class Close extends AbstractServerEvent
 {
 
     public function callback($server = null, int $fd = 0, int $reactorId = 0)

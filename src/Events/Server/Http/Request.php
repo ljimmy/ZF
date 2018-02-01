@@ -1,8 +1,8 @@
 <?php
 
-namespace SF\Events\Server;
+namespace SF\Events\Server\Http;
 
-use SF\Events\EventInterface;
+use SF\Events\Server\AbstractServerEvent;
 use SF\Server\AbstractServer;
 use SF\Context\RequestContext;
 use SF\Context\CoroutineContext;
@@ -10,7 +10,7 @@ use SF\Http\Request as HttpRequest;
 use SF\Http\Response as HttpResponse;
 use SF\Http\Exceptions\HttpException;
 
-class Request implements EventInterface
+class Request extends AbstractServerEvent
 {
 
     /**
@@ -31,11 +31,16 @@ class Request implements EventInterface
      */
     private $route;
 
-    public function __construct(AbstractServer $application = null)
+    public function __construct(AbstractServer $application)
     {
         $this->application = $application;
         $this->route       = $application->getRoute();
         $this->dispatcher  = $application->getDispatcher();
+    }
+
+    public function on($server)
+    {
+        $server->on('Request', [$this, 'callback']);
     }
 
     public function callback($request = null, $response = null)
@@ -67,11 +72,6 @@ class Request implements EventInterface
         } else {
             $response->auto($result, $request->getHeader('Accept'))->send();
         }
-    }
-
-    public function on($server)
-    {
-        $server->on('Request', [$this, 'callback']);
     }
 
 }

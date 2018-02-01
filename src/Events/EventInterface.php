@@ -4,7 +4,7 @@ namespace SF\Events;
 
 interface EventInterface
 {
-    public function on($target);
+    public function getType();
 
-    public function callback();
+    public function handle();
 }

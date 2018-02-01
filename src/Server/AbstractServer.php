@@ -2,10 +2,11 @@
 
 namespace SF\Server;
 
-use Swoole\Server;
 use SF\Base\Config;
 use SF\Di\Container;
 use SF\Events\EventManager;
+use SF\Events\EventTypes;
+use Swoole\Server;
 
 abstract class AbstractServer
 {
@@ -20,7 +21,9 @@ abstract class AbstractServer
      *
      * @var Config
      */
-    protected $config = [];
+    protected $config;
+
+
     protected $server;
 
     /**
@@ -31,54 +34,26 @@ abstract class AbstractServer
 
     public function __construct(array $config = [])
     {
-        $this->config = new Config($config);
+        $this->config    = new Config($config);
         $this->container = new Container();
+        $this->container->set(self::class, $this);
+
         $this->registerComponents($this->config->getComponents());
+    }
+
+
+    protected function registerComponents(array $components)
+    {
+        $this->container->setDefinitions($components);
+        foreach ($components as $alias => $component) {
+            $this->container->get($component['class'] ?? $alias);
+        }
     }
 
     public function bootstrap(Server $server)
     {
         $this->server = $server;
-    }
-
-    protected function initContainer(array $components)
-    {
-        $defaultComponents = $this->getComponents();
-
-        foreach ($components as $key => $value) {
-            $defaultComponents[$key] = $value;
-        }
-        $this->container = new Container($defaultComponents);
-    }
-
-    protected function registerComponents(array $components)
-    {
-        $defaultComponents = $this->getComponents();
-        foreach ($components as $alias => $component) {
-            $defaultComponents[$alias] = $component;
-        }
-        $this->container->setDefinitions($defaultComponents);
-        foreach ($defaultComponents as $alias => $component) {
-            $this->container->get($component['class'] ?? $alias);
-        }
-
-    }
-
-    public function registerEvents(array $events)
-    {
-        $eventManager = $this->container->get(EventManager::class);
-        foreach ($events as $event) {
-            $eventManager->attach(new $event($this), $this->getServer());
-        }
-    }
-
-    protected function getComponents()
-    {
-        return [
-            'EventManager' => [
-                'class' => EventManager::class,
-            ]
-        ];
+        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT, $server);
     }
 
     public function getContainer()

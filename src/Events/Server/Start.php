@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Start implements EventInterface
+class Start extends AbstractServerEvent
 {
 
     public function on($server)

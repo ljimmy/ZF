@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Finish implements EventInterface
+class Finish extends AbstractServerEvent
 {
 
     public function callback($server = null, int $task_id = 0, string $data = '')

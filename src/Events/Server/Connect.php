@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Connect implements EventInterface
+class Connect extends AbstractServerEvent
 {
 
     public function callback($server = null, int $fd = 0, int $reactorId = 0)

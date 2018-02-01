@@ -2,9 +2,7 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
-
-class Shutdown implements EventInterface
+class Shutdown extends AbstractServerEvent
 {
 
     public function callback($server = null)
