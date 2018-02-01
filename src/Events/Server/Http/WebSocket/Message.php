@@ -8,7 +8,7 @@ class Message extends AbstractServerEvent
 {
     public function on($server)
     {
-        $server->on('Message', [$this, 'callback']);
+        $server->on('message', [$this, 'callback']);
     }
 
     /**

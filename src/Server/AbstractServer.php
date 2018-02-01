@@ -66,6 +66,11 @@ abstract class AbstractServer
         return $this->server;
     }
 
+    public function getConfig(): Config
+    {
+        return $this->config;
+    }
+
     abstract public function start();
 
     abstract public function stop();

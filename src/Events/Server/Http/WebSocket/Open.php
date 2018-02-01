@@ -9,7 +9,7 @@ class Open extends AbstractServerEvent
 
     public function on($server)
     {
-        $server->on('Open', [$this, 'callback']);
+        $server->on('open', [$this, 'callback']);
     }
 
     /**

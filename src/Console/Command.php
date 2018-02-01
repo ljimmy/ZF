@@ -3,6 +3,7 @@
 namespace SF\Console;
 
 use SF\Http\HttpServer;
+use SF\Http\WebSocket;
 
 class Command
 {
@@ -10,7 +11,8 @@ class Command
     protected $opts = [];
 
     const SERVER_MODE = [
-        'http' => HttpServer::class
+        'http' => HttpServer::class,
+        'webSocket' => WebSocket::class
     ];
 
     public function __construct()
@@ -53,15 +55,22 @@ class Command
 
         switch (strtolower($this->opts[1])) {
             case 'start':
+                $this->writeln('Starting...');
                 $app->start();
                 break;
             case 'stop':
+                $this->writeln('Stopping...');
                 $app->stop();
                 break;
             case 'reload':
+                $this->writeln('Reloading...');
                 $app->reload();
                 break;
             case 'restart':
+                $this->writeln('Stopping...');
+                $app->stop();
+                $this->writeln('Starting...');
+                $app->start();
                 break;
             default:
                 break;

@@ -7,7 +7,7 @@ use SF\Http\Middlewares\MiddlewareInterface;
 class Middleware
 {
 
-    public $middlewares;
+    public $middlewares = [];
 
     public function init()
     {

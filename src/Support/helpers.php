@@ -4,6 +4,9 @@ if (!function_exists('setProcessTitle')) {
 
     function setProcessTitle(string $title)
     {
+        if (\SF\Support\PHP::isMacOs()) {
+            return true;
+        }
         if (empty($title)) {
             return false;
         }
