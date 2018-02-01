@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'pid'    => '.pid',
     'server'     => [
 //设置程序进入后台作为守护进程运行
         'daemonize'                => 0,
@@ -49,7 +50,7 @@ return [
                 \SF\Events\Server\Http\Request::class,
                 //WebSocket
 //                \SF\Events\Server\Http\WebSocket\HandShake::class,
-                \SF\Events\Server\Http\WebSocket\Message::class,
+//                \SF\Events\Server\Http\WebSocket\Message::class,
 //                \SF\Events\Server\Http\WebSocket\Open::class
             ],
         ],
