@@ -2,7 +2,15 @@ Usage: php server [options] [--] [args...]
 
 -s http 启动http服务器
 -c <file> 配置文件
+-p pid 主进程id
+
+
+--pidfile=<file> pid文件
 
 example:
 
-启动： php server -shttp -c config.php start
+启动： php server -s http -c config.php start
+
+重载：php server [-p pid] reload
+
+关闭：php server [-p pid] stop

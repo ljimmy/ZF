@@ -4,7 +4,7 @@ if (!function_exists('setProcessTitle')) {
 
     function setProcessTitle(string $title)
     {
-        if (\SF\Support\PHP::isMacOs()) {
+        if (\SF\Support\PHP::isMacOS()) {
             return true;
         }
         if (empty($title)) {
@@ -19,4 +19,21 @@ if (!function_exists('setProcessTitle')) {
         return true;
     }
 
+}
+
+
+if (!function_exists('save_pid')) {
+    function save_pid($master_pid, $manager_pid, string $file = '.pid')
+    {
+        swoole_async_writefile(\SF\Support\PHP::getBasePath() . $file, $master_pid.','.$manager_pid);
+    }
+}
+
+if (!function_exists('get_pid')) {
+    function get_pid(callable $callback, string $file = '.pid')
+    {
+        swoole_async_readfile(\SF\Support\PHP::getBasePath() . $file, function($filename, $content) use ($callback){
+            return \SF\Support\PHP::call($callback, explode(',', $content));
+        });
+    }
 }

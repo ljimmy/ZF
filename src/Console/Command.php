@@ -8,89 +8,129 @@ use SF\Http\WebSocket;
 class Command
 {
 
-    protected $opts = [];
-
-    const SERVER_MODE = [
+    const SERVER = [
         'http' => HttpServer::class,
         'webSocket' => WebSocket::class
     ];
 
-    public function __construct()
-    {
-        $this->opts = ParseCommand::get();
-    }
+    /**
+     * @var ParseCommand
+     */
+	protected $opt;
 
-    public static function run()
+	protected static $self;
+
+	public function __construct()
+	{
+	    self::$self = $this;
+
+		$this->opt = new ParseCommand();
+	}
+
+	public static function run()
     {
         return (new static())->bootstrap();
     }
 
-    protected function bootstrap()
+    public function bootstrap()
     {
-        $config = $this->getOpt('c');
-
-        if ($config) {
-            if (!is_file($config)) {
-                $this->writeln('配置文件不存在!');
-                return;
-            }
-            $config = include_once ($config);
-        } else {
-            $config = [];
-        }
-
-        $server = $this->getOpt('s');
-
-        if (empty($server)) {
-            $this->writeln('请选择服务模式,如：php server.php -shttp');
-            return;
-        }
-        $mode = static::SERVER_MODE[strtolower($server)] ?? null;
-
-        if (!$mode) {
-            $this->writeln('未支持的服务模式');
-            return;
-        }
-        $app = new $mode($config);
-
-        switch (strtolower($this->opts[1])) {
+        switch ($this->opt->get(1)) {
             case 'start':
-                $this->writeln('Starting...');
-                $app->start();
-                break;
-            case 'stop':
-                $this->writeln('Stopping...');
-                $app->stop();
+                $this->start();
                 break;
             case 'reload':
-                $this->writeln('Reloading...');
-                $app->reload();
+                $this->reload();
                 break;
-            case 'restart':
-                $this->writeln('Stopping...');
-                $app->stop();
-                $this->writeln('Starting...');
-                $app->start();
+            case 'stop':
+                $this->stop();
                 break;
             default:
-                break;
+                $this->writeln('command not found');
         }
-        return;
     }
 
-    public function getOpt($name, $default = null)
+    private function getConfig()
     {
-        return $this->opts[$name] ?? $default;
+        $c = $this->opt->get('c');
+
+        if ($c === null) {
+            return [];
+        }
+        $config = include_once ($c);
+
+        return $config;
     }
 
-    public function getOpts()
+    public function getPid()
     {
-        return $this->opts;
+        $pid = (int) $this->opt->get('p', 0);
+
+        if ($pid) {
+            return $pid;
+        }
+        $pidFile = $this->getPidFile();
+        if (is_file($pidFile)) {
+            $pid = explode(',', file_get_contents($pidFile))[0];
+        }
+
+        return $pid;
+    }
+
+    public function getPidFile()
+    {
+        return $this->opt->get('pidfile', '.pid');
+    }
+
+    public function start()
+    {
+        $server = self::SERVER[$this->opt->get('s', '')] ?? null;
+
+        if ($server === null) {
+            $this->writeln('Unsupported Service');
+        } else {
+            $this->writeln('Starting...');
+            (new $server($this->getConfig()))->start();
+        }
+
+    }
+
+    public function reload()
+    {
+        $pid = (int) $this->opt->get('p', 0);
+
+        $this->writeln('Reloading...');
+        if ($pid) {
+            posix_kill($pid, SIGUSR1);
+            $this->writeln('Done');
+        } else {
+            get_pid(function($master_pid, $manager_pid) {
+                posix_kill($master_pid, SIGUSR1);
+                $this->writeln('Done');
+            });
+        }
+    }
+
+    public function stop()
+    {
+        $pid = (int) $this->opt->get('p', 0);
+        if (empty($pid)) {
+            get_pid(function($master_pid, $manager_pid){
+                $this->writeln('Stopping...');
+                posix_kill($master_pid, SIGTERM);
+                $this->writeln('stopped');
+            });
+        } else {
+            $this->writeln('Stopping...');
+            posix_kill($pid, SIGTERM);
+            $this->writeln('stopped');
+        }
+
     }
 
     public function writeln(string $message)
     {
         echo $message . "\n";
     }
+
 
 }

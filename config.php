@@ -1,7 +1,6 @@
 <?php
 
 return [
-    'pid'    => '.pid',
     'server'     => [
 //设置程序进入后台作为守护进程运行
         'daemonize'                => 0,
@@ -21,6 +20,12 @@ return [
         'enable_reuse_port'        => 1,
         //设置心跳检测间隔
         'heartbeat_check_interval' => 60,
+        //
+        'user'                     => 'xfb_user',
+        //用户组
+        'group'                   => 'staff',
+        //日志
+        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log'
     ],
     'http'       => [
         'host' => '127.0.0.1',
@@ -28,7 +33,7 @@ return [
     ],
     'components' => [
         'eventManager' => [
-            'class' => \SF\Events\EventManager::class,
+            'class'  => \SF\Events\EventManager::class,
             'events' => [
                 \SF\Events\Server\BufferEmpty::class,
                 \SF\Events\Server\BufferFull::class,
