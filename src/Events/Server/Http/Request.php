@@ -53,7 +53,7 @@ class Request extends AbstractServerEvent
         } catch (\Exception $e) {
             throw $e;
         } finally {
-            $requestContext->destroy();
+            $requestContext->exitContext();
             unset($requestContext);
         }
     }

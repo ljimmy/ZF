@@ -7,6 +7,7 @@ class Shutdown extends AbstractServerEvent
 
     public function callback($server = null)
     {
+        echo "Server has stopped working.\n";
 
     }
 

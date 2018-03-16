@@ -27,6 +27,11 @@ class Command
 		$this->opt = new ParseCommand();
 	}
 
+	public static function getSelf()
+    {
+        return self::$self;
+    }
+
 	public static function run()
     {
         return (new static())->bootstrap();
@@ -61,24 +66,15 @@ class Command
         return $config;
     }
 
-    public function getPid()
-    {
-        $pid = (int) $this->opt->get('p', 0);
-
-        if ($pid) {
-            return $pid;
-        }
-        $pidFile = $this->getPidFile();
-        if (is_file($pidFile)) {
-            $pid = explode(',', file_get_contents($pidFile))[0];
-        }
-
-        return $pid;
-    }
-
     public function getPidFile()
     {
-        return $this->opt->get('pidfile', '.pid');
+        $file = $this->opt->get('pidfile');
+
+        if ($file === null) {
+            return \SF\Support\PHP::getBasePath(). DIRECTORY_SEPARATOR . '.pid';
+        } else {
+            return $file;
+        }
     }
 
     public function start()
@@ -100,11 +96,11 @@ class Command
 
         $this->writeln('Reloading...');
         if ($pid) {
-            posix_kill($pid, SIGUSR1);
+            posix_kill($pid, $this->opt->get('t') === 'task' ? SIGUSR2: SIGUSR1);
             $this->writeln('Done');
         } else {
             get_pid(function($master_pid, $manager_pid) {
-                posix_kill($master_pid, SIGUSR1);
+                posix_kill($master_pid, $this->opt->get('t') === 'task' ? SIGUSR2: SIGUSR1);
                 $this->writeln('Done');
             });
         }
@@ -117,12 +113,12 @@ class Command
             get_pid(function($master_pid, $manager_pid){
                 $this->writeln('Stopping...');
                 posix_kill($master_pid, SIGTERM);
-                $this->writeln('stopped');
+                $this->writeln('Stopped');
             });
         } else {
             $this->writeln('Stopping...');
             posix_kill($pid, SIGTERM);
-            $this->writeln('stopped');
+            $this->writeln('Stopped');
         }
 
     }
