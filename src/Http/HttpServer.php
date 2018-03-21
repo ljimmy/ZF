@@ -68,7 +68,8 @@ class HttpServer extends AbstractServer
     {
         $server = new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
         $server->set($this->config->getServer());
-        $this->bootstrap($server);
+        $this->server = $server;
+        $this->triggerEvent();
         $server->start();
     }
 
@@ -79,7 +80,8 @@ class HttpServer extends AbstractServer
 
     public function reload()
     {
-        ;
+        $this->init();
+        $this->server->reload();
     }
 
 }

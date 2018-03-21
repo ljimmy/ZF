@@ -11,6 +11,10 @@ example:
 
 启动： php server -s http -c config.php start
 
-重载：php server [-p pid] [-t task] reload
-
 关闭：php server [-p pid] stop
+
+重载：php server [-p pid] reload 重新加载所有文件
+
+php server [-p pid] [-t task] reload 只重启task进程
+
+注意：server运行期间，无法重新加载回调事件文件

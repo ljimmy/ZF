@@ -2,11 +2,17 @@
 
 namespace SF\Events\Server;
 
+use SF\Process\Process;
 use SF\Server\AbstractServer;
-use SF\Support\PHP;
 
 class Start extends AbstractServerEvent
 {
+    private $server;
+
+    public function __construct(AbstractServer $server)
+    {
+        $this->server = $server;
+    }
 
     public function on($server)
     {
@@ -21,5 +27,14 @@ class Start extends AbstractServerEvent
     {
         save_pid($server->master_pid, $server->manager_pid);
         setProcessTitle('SF Master Process');
+        $this->registerReload();
     }
+
+    public function registerReload()
+    {
+        Process::signal(SIGUSR1, function() {
+            $this->server->reload();
+        });
+    }
+
 }

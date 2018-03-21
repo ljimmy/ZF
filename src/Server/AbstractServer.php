@@ -35,10 +35,16 @@ abstract class AbstractServer
     public function __construct(array $config = [])
     {
         $this->config    = new Config($config);
+        $this->init();
+    }
+
+    public function init()
+    {
         $this->container = new Container();
         $this->container->set(self::class, $this);
 
         $this->registerComponents($this->config->getComponents());
+
     }
 
 
@@ -50,10 +56,9 @@ abstract class AbstractServer
         }
     }
 
-    public function bootstrap(Server $server)
+    public function triggerEvent()
     {
-        $this->server = $server;
-        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT, $server);
+        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT, $this->server);
     }
 
     public function getContainer()

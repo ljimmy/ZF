@@ -3,12 +3,12 @@
 namespace SF\Events\Server\Http;
 
 use SF\Events\Server\AbstractServerEvent;
-use SF\Server\AbstractServer;
 use SF\Context\RequestContext;
 use SF\Context\CoroutineContext;
 use SF\Http\Request as HttpRequest;
 use SF\Http\Response as HttpResponse;
 use SF\Http\Exceptions\HttpException;
+use SF\Server\AbstractServer;
 
 class Request extends AbstractServerEvent
 {
@@ -19,23 +19,9 @@ class Request extends AbstractServerEvent
      */
     private $application;
 
-    /**
-     *
-     * @var \SF\Http\Dispatcher
-     */
-    private $dispatcher;
-
-    /**
-     *
-     * @var \SF\Http\RouteInterface
-     */
-    private $route;
-
     public function __construct(AbstractServer $application)
     {
         $this->application = $application;
-        $this->route       = $application->getRoute();
-        $this->dispatcher  = $application->getDispatcher();
     }
 
     public function on($server)
@@ -62,7 +48,7 @@ class Request extends AbstractServerEvent
     {
         $result = null;
         try {
-            $result = $this->dispatcher->dispatch($request, $this->route);
+            $result = $this->application->getDispatcher()->dispatch($request, $this->application->getRoute());
         } catch (HttpException $http) {
             $response->withStatus($http->statusCode, $http->getMessage());
         }

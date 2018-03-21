@@ -4,6 +4,7 @@ namespace SF\Console;
 
 use SF\Http\HttpServer;
 use SF\Http\WebSocket;
+use SF\Process\Process;
 
 class Command
 {
@@ -48,6 +49,9 @@ class Command
                 break;
             case 'stop':
                 $this->stop();
+                break;
+            case 'test':
+                $this->test();
                 break;
             default:
                 $this->writeln('command not found');
@@ -127,6 +131,5 @@ class Command
     {
         echo $message . "\n";
     }
-
 
 }
