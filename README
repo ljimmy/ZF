@@ -17,4 +17,4 @@ example:
 
 php server [-p pid] [-t task] reload 只重启task进程
 
-注意：server运行期间，无法重新加载回调事件文件
+注意：server运行期间，无法重新加载配置文件和服务器回调事件
