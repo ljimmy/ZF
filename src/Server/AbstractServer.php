@@ -10,6 +10,30 @@ use Swoole\Server;
 
 abstract class AbstractServer
 {
+    /**
+     * @var string 监听的ip地址
+     */
+    public $host     = '0.0.0.0';
+
+    /**
+     * @var int 端口
+     */
+    public $port     = 9000;
+
+    /**
+     * @var bool 启用ssl
+     */
+    public $ssl      = false;
+
+    /**
+     * @var int 运行的模式
+     */
+    public $mode     = SWOOLE_PROCESS;
+
+    /**
+     * @var int Socket的类型
+     */
+    public $sockType = SWOOLE_SOCK_TCP;
 
     /**
      *
@@ -35,6 +59,25 @@ abstract class AbstractServer
     public function __construct(array $config = [])
     {
         $this->config    = new Config($config);
+
+        $http = $this->config->getHttp();
+
+        if (isset($http['host'])) {
+            $this->host = $http['host'];
+        }
+        if (isset($http['port'])) {
+            $this->port = $http['port'];
+        }
+        if (isset($http['ssl'])) {
+            $this->ssl = $http['ssl'];
+        }
+        if (isset($http['mode'])) {
+            $this->mode = $http['mode'];
+        }
+        if (isset($http['sockType'])) {
+            $this->sockType = $http['sockType'];
+        }
+
         $this->init();
     }
 
