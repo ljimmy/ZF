@@ -5,13 +5,15 @@ namespace SF\Console;
 use SF\Http\HttpServer;
 use SF\Http\WebSocket;
 use SF\Process\Process;
+use SF\Server\Server;
 
 class Command
 {
 
     const SERVER = [
         'http' => HttpServer::class,
-        'webSocket' => WebSocket::class
+        'webSocket' => WebSocket::class,
+        'tcp' => Server::class
     ];
 
     /**

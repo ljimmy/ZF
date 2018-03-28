@@ -99,9 +99,9 @@ abstract class AbstractServer
         }
     }
 
-    public function triggerEvent()
+    public function triggerEvent($eventType)
     {
-        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT, $this->server);
+        $this->container->get(EventManager::class)->trigger($eventType, $this->server);
     }
 
     public function getContainer()
@@ -119,7 +119,17 @@ abstract class AbstractServer
         return $this->config;
     }
 
-    abstract public function start();
+    abstract protected function createServer();
+
+    public function start()
+    {
+        $this->server = $this->createServer();
+
+        $this->server->set($this->config->getServer());
+        $this->triggerEvent(EventTypes::SERVER_INIT);
+        $this->triggerEvent(EventTypes::BEFORE_START);
+        $this->start();
+    }
 
     abstract public function stop();
 

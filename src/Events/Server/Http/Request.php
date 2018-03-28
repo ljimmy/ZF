@@ -2,6 +2,7 @@
 
 namespace SF\Events\Server\Http;
 
+use SF\Events\EventTypes;
 use SF\Events\Server\AbstractServerEvent;
 use SF\Context\RequestContext;
 use SF\Context\CoroutineContext;
@@ -35,7 +36,9 @@ class Request extends AbstractServerEvent
         $requestContext = new RequestContext(new HttpRequest($request), new HttpResponse($response), /* 启用协程 */ new CoroutineContext());
         try {
             $requestContext->enter();
+            $this->application->triggerEvent(EventTypes::BEFORE_REQUEST);
             $this->run($requestContext->getRequest(), $requestContext->getResponse());
+            $this->application->triggerEvent(EventTypes::AFTER_REQUEST);
         } catch (\Exception $e) {
             throw $e;
         } finally {

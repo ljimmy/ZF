@@ -34,13 +34,9 @@ class HttpServer extends AbstractServer
         return $this->getContainer()->get(Middleware::class);
     }
 
-    public function start()
+    protected function createServer()
     {
-        $server = new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
-        $server->set($this->config->getServer());
-        $this->server = $server;
-        $this->triggerEvent();
-        $server->start();
+        return new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
     }
 
     public function stop()

@@ -1,9 +1,6 @@
 <?php
 
-namespace SF\Protocol\Middlewares;
-
-use SF\Protocol\Message\ReceiveInterface;
-use SF\Protocol\Message\ReplyInterface;
+namespace SF\Protocol;
 
 interface MiddlewareInterface
 {
