@@ -51,6 +51,12 @@ return [
                 \SF\Events\Server\WorkerError::class,
                 \SF\Events\Server\WorkerStart::class,
                 \SF\Events\Server\WorkerStop::class,
+                //http
+                \SF\Events\Server\Http\Request::class,//支持http
+                //WebSocket
+                \SF\Events\Server\Http\WebSocket\HandShake::class,
+                \SF\Events\Server\Http\WebSocket\Message::class,
+                \SF\Events\Server\Http\WebSocket\Open::class
             ],
         ],
         'router'   => [
@@ -83,10 +89,6 @@ return [
                 'port'  => 6379,
                 'maxConnections' => 30
             ]
-        ],
-        'protocol' => [
-            'class'  => \SF\Protocol\ProtocolServiceProvider::class,
-            'handle' => \SF\Protocol\Rpc\Protocol::class,
         ]
     ]
 ];

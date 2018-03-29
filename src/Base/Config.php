@@ -26,14 +26,14 @@ class Config implements \ArrayAccess
         return $data;
     }
 
-    public function getServer()
+    public function getApplication()
     {
-        return $this->config['server'] ?? [];
+        return $this->config['application'] ?? [];
     }
 
-    public function getHttp()
+    public function getServer()
     {
-        return $this->config['http'] ?? [];
+        return $this->config['setting'] ?? [];
     }
 
     public function getComponents()

@@ -9,7 +9,7 @@ use SF\Context\CoroutineContext;
 use SF\Http\Request as HttpRequest;
 use SF\Http\Response as HttpResponse;
 use SF\Http\Exceptions\HttpException;
-use SF\Server\AbstractServer;
+use SF\Server\Application;
 
 class Request extends AbstractServerEvent
 {
@@ -20,7 +20,7 @@ class Request extends AbstractServerEvent
      */
     private $application;
 
-    public function __construct(AbstractServer $application)
+    public function __construct(Application $application)
     {
         $this->application = $application;
     }

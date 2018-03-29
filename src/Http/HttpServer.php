@@ -3,9 +3,9 @@
 namespace SF\Http;
 
 use Swoole\Http\Server;
-use SF\Server\AbstractServer;
+use SF\Server\Application;
 
-class HttpServer extends AbstractServer
+class HttpServer extends Application
 {
     /**
      *
@@ -36,18 +36,7 @@ class HttpServer extends AbstractServer
 
     protected function createServer()
     {
-        return new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
-    }
-
-    public function stop()
-    {
-        
-    }
-
-    public function reload()
-    {
-        $this->init();
-        $this->server->reload();
+        return new Server($this->host, $this->port, $this->mode, $this->ssl ? SWOOLE_SOCK_TCP | SWOOLE_SSL : SWOOLE_SOCK_TCP);
     }
 
 }

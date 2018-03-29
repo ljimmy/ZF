@@ -3,14 +3,14 @@
 namespace SF\Events\Server;
 
 use SF\Context\ApplicationContext;
-use SF\Server\AbstractServer;
+use SF\Server\Application;
 
 class WorkerStart extends AbstractServerEvent
 {
     private $application;
 
 
-    public function __construct(AbstractServer $application)
+    public function __construct(Application $application)
     {
         $this->application = $application;
     }

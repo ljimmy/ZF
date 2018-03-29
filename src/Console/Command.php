@@ -2,19 +2,20 @@
 
 namespace SF\Console;
 
+use Dotenv\Dotenv;
 use SF\Http\HttpServer;
 use SF\Http\WebSocket;
-use SF\Process\Process;
-use SF\Server\Server;
+use SF\Server\Application;
 
 class Command
 {
 
     const SERVER = [
         'http' => HttpServer::class,
-        'webSocket' => WebSocket::class,
-        'tcp' => Server::class
+        'webSocket' => WebSocket::class
     ];
+
+    const DEFAULT_SERVER = Application::class;
 
     /**
      * @var ParseCommand
@@ -28,6 +29,7 @@ class Command
 	    self::$self = $this;
 
 		$this->opt = new ParseCommand();
+        (new Dotenv(ROOT_DIR))->load();
 	}
 
 	public static function getSelf()
@@ -64,7 +66,9 @@ class Command
     {
         $c = $this->opt->get('c');
 
-        if ($c === null) {
+        $c = $c === null ? getenv('config') : $c;
+
+        if (empty($c)) {
             return [];
         }
         $config = include_once ($c);
@@ -85,7 +89,7 @@ class Command
 
     public function start()
     {
-        $server = self::SERVER[$this->opt->get('s', '')] ?? null;
+        $server = self::SERVER[$this->opt->get('s', '')] ?? self::DEFAULT_SERVER;
 
         if ($server === null) {
             $this->writeln('Unsupported Service');

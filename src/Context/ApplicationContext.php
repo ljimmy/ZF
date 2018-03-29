@@ -2,7 +2,7 @@
 
 namespace SF\Context;
 
-use SF\Server\AbstractServer;
+use SF\Server\Application;
 use SF\Cache\CacheInterface;
 use SF\Cache\CacheServiceProvider;
 use SF\Log\LoggerFactory;
@@ -23,7 +23,7 @@ class ApplicationContext implements  InterfaceContext
 
     /**
      *
-     * @var AbstractServer
+     * @var Application
      */
     private $application;
 
@@ -41,7 +41,7 @@ class ApplicationContext implements  InterfaceContext
      */
     private static $context;
 
-    public function __construct(AbstractServer $application)
+    public function __construct(Application $application)
     {
         $this->application = $application;
     }

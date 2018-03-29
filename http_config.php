@@ -51,6 +51,8 @@ return [
                 \SF\Events\Server\WorkerError::class,
                 \SF\Events\Server\WorkerStart::class,
                 \SF\Events\Server\WorkerStop::class,
+                //http
+                \SF\Events\Server\Http\Request::class,
             ],
         ],
         'router'   => [
@@ -83,10 +85,6 @@ return [
                 'port'  => 6379,
                 'maxConnections' => 30
             ]
-        ],
-        'protocol' => [
-            'class'  => \SF\Protocol\ProtocolServiceProvider::class,
-            'handle' => \SF\Protocol\Rpc\Protocol::class,
         ]
     ]
 ];

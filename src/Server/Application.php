@@ -2,13 +2,13 @@
 
 namespace SF\Server;
 
+use Swoole\Server;
 use SF\Base\Config;
 use SF\Di\Container;
 use SF\Events\EventManager;
 use SF\Events\EventTypes;
-use Swoole\Server;
 
-abstract class AbstractServer
+class Application implements ServerInterface
 {
     /**
      * @var string 监听的ip地址
@@ -60,22 +60,22 @@ abstract class AbstractServer
     {
         $this->config    = new Config($config);
 
-        $http = $this->config->getHttp();
+        $app = $this->config->getApplication();
 
-        if (isset($http['host'])) {
-            $this->host = $http['host'];
+        if (isset($app['host'])) {
+            $this->host = $app['host'];
         }
-        if (isset($http['port'])) {
-            $this->port = $http['port'];
+        if (isset($app['port'])) {
+            $this->port = $app['port'];
         }
-        if (isset($http['ssl'])) {
-            $this->ssl = $http['ssl'];
+        if (isset($app['ssl'])) {
+            $this->ssl = $app['ssl'];
         }
-        if (isset($http['mode'])) {
-            $this->mode = $http['mode'];
+        if (isset($app['mode'])) {
+            $this->mode = $app['mode'];
         }
-        if (isset($http['sockType'])) {
-            $this->sockType = $http['sockType'];
+        if (isset($app['sockType'])) {
+            $this->sockType = $app['sockType'];
         }
 
         $this->init();
@@ -119,7 +119,10 @@ abstract class AbstractServer
         return $this->config;
     }
 
-    abstract protected function createServer();
+    protected function createServer()
+    {
+        return new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
+    }
 
     public function start()
     {
@@ -128,10 +131,19 @@ abstract class AbstractServer
         $this->server->set($this->config->getServer());
         $this->triggerEvent(EventTypes::SERVER_INIT);
         $this->triggerEvent(EventTypes::BEFORE_START);
-        $this->start();
+        $this->server->start();
     }
 
-    abstract public function stop();
+    public function stop()
+    {
+        $this->server->shutdown();
+    }
 
-    abstract public function reload();
+    public function reload()
+    {
+        $this->init();
+        $this->server->reload();
+    }
+
+
 }

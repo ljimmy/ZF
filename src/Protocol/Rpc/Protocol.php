@@ -3,20 +3,16 @@
 namespace SF\Protocol\Rpc;
 
 
-use SF\Exceptions\UserException;
 use SF\Packer\Json;
 use SF\Packer\PackerInterface;
 use SF\Protocol\ProtocolInterface;
 use SF\Protocol\ReceiveInterface;
 use SF\Protocol\ReplyInterface;
+use SF\Exceptions\UserException;
 
 class Protocol implements ProtocolInterface
 {
-    public $type = self::TCP;
-
-    public $version = '2.0';
-
-    public $ssl = false;
+    public $version = '1.0';
 
     public $packer;
 
@@ -36,16 +32,6 @@ class Protocol implements ProtocolInterface
     public function getVersion(): string
     {
         return $this->version;
-    }
-
-    public function getType(): int
-    {
-        return self::TCP;
-    }
-
-    public function isSSL(): bool
-    {
-        return $this->ssl;
     }
 
     public function receive(string $data): ReceiveInterface

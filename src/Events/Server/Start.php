@@ -3,15 +3,15 @@
 namespace SF\Events\Server;
 
 use SF\Process\Process;
-use SF\Server\AbstractServer;
+use SF\Server\Application;
 
 class Start extends AbstractServerEvent
 {
-    private $server;
+    private $application;
 
-    public function __construct(AbstractServer $server)
+    public function __construct(Application $application)
     {
-        $this->server = $server;
+        $this->application = $application;
     }
 
     public function on($server)
@@ -33,7 +33,7 @@ class Start extends AbstractServerEvent
     public function registerReload()
     {
         Process::signal(SIGUSR1, function() {
-            $this->server->reload();
+            $this->application->reload();
         });
     }
 

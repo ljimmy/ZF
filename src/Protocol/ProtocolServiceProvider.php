@@ -4,35 +4,24 @@ namespace SF\Protocol;
 
 use SF\Di\Container;
 use SF\Exceptions\UserException;
+use SF\Protocol\Rpc\Protocol;
 
 class ProtocolServiceProvider
 {
     /**
      * @var ProtocolInterface
      */
-    public $protocol;
-
-    /**
-     * @var Container
-     */
-    private $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
+    public $handle;
 
     public function init()
     {
-        if ($this->protocol === null) {
+        if ($this->handle === null) {
             throw new UserException('do not set protocol.');
         }
 
-        $protocol = $this->container->get($this->protocol);
+        $this->handle = new $this->handle();
 
-        if ($protocol instanceof ProtocolInterface) {
-            $this->protocol = $protocol;
-        } else {
+        if (!$this->handle instanceof ProtocolInterface) {
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');
         }
 
@@ -40,6 +29,6 @@ class ProtocolServiceProvider
 
     public function getProtocol(): ProtocolInterface
     {
-        return $this->protocol;
+        return $this->handle;
     }
 }
