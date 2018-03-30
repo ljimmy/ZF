@@ -44,5 +44,10 @@ class Protocol implements ProtocolInterface
 
     }
 
+    public function handle(string $data): ReplyInterface
+    {
+
+    }
+
 
 }

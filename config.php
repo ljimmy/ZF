@@ -29,7 +29,13 @@ return [
         //用户组
         'group'                   => 'staff',
         //日志
-        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log'
+        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
+
+        //tcp
+        //固定长度
+        'open_length_check' => true,
+        'package_length_type' => 'N',
+        ''
     ],
     'components' => [
         'eventManager' => [

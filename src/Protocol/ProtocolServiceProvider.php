@@ -13,6 +13,8 @@ class ProtocolServiceProvider
      */
     public $handle;
 
+    public $middleware = [];
+
     public function init()
     {
         if ($this->handle === null) {
@@ -25,10 +27,16 @@ class ProtocolServiceProvider
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');
         }
 
+        $this->middleware = new Middleware($this->middleware);
     }
 
     public function getProtocol(): ProtocolInterface
     {
         return $this->handle;
+    }
+
+    public function getMiddleware(): Middleware
+    {
+        return $this->middleware;
     }
 }
