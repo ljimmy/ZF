@@ -15,13 +15,22 @@ class ProtocolServiceProvider
 
     public $middleware = [];
 
+    /**
+     * @var Container
+     */
+    private $container;
+
+    public function __construct(Container $container)
+    {
+        $this->container = $container;
+    }
+
     public function init()
     {
         if ($this->handle === null) {
             throw new UserException('do not set protocol.');
         }
-
-        $this->handle = new $this->handle();
+        $this->handle = $this->container->setDefinition($this->handle, null, true);
 
         if (!$this->handle instanceof ProtocolInterface) {
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');

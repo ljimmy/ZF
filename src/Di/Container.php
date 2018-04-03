@@ -49,7 +49,7 @@ class Container implements ContainerInterface
         return $this;
     }
 
-    public function setDefinition($definition, $alias = null)
+    public function setDefinition($definition, $alias = null, bool $returnInstance = false)
     {
         if (is_array($definition)) {
             $class = $definition['class'];
@@ -65,7 +65,11 @@ class Container implements ContainerInterface
             $this->alias[$alias] = $class;
         }
 
-        return $this;
+        if ($returnInstance) {
+            return $this->get($class);
+        } else {
+            return $this;
+        }
     }
 
     public function set($class, $object, $alia = null)

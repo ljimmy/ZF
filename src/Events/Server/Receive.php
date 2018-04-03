@@ -27,8 +27,11 @@ class Receive extends AbstractServerEvent
      */
     public function callback($server = null, int $fd = 0, int $reactor_id = 0, string $data = '')
     {
+
+
         $reply = $this->protocolServiceProvider->getMiddleware()->process(
-            $this->protocolServiceProvider->getProtocol()->handle($data)
+            $this->protocolServiceProvider->getProtocol()->getReceiver()->receive($data),
+            null
         );
 
         $server->send($fd, $reply->pack());

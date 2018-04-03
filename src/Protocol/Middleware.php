@@ -24,16 +24,16 @@ class Middleware
         $this->middlewares = $middlewares;
     }
 
-    public function process(ReceiveInterface $receive, Action $action): ReplyInterface
+    public function process(Message $message, Action $action): ReplierInterface
     {
         $result = array_reduce(array_merge($this->middlewares, array_values($action->getMiddlewares())), function($stack, MiddlewareInterface $middleware) {
-            return function($receive) use ($middleware, $stack) {
-                return $middleware->handle($receive, $stack);
+            return function($message) use ($middleware, $stack) {
+                return $middleware->handle($message, $stack);
             };
         }, function() use ($action) {
             return $action->run();
         });
-        return $result($receive);
+        return $result($message);
     }
 
 }

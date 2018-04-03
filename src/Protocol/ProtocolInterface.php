@@ -4,7 +4,11 @@ namespace SF\Protocol;
 
 interface ProtocolInterface
 {
+    const PACKER = 'Protocol_Packer';
+
     public function getVersion(): string;
 
-    public function handle(string $data): ReplyInterface;
+    public function getReceiver(): ReceiverInterface;
+
+    public function getReplier(): ReplierInterface;
 }

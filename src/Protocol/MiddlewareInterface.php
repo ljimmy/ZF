@@ -4,5 +4,5 @@ namespace SF\Protocol;
 
 interface MiddlewareInterface
 {
-    public function handle(ReceiveInterface $receive, \Closure $next): ReplyInterface;
+    public function handle(Message $message, \Closure $next): ReplierInterface;
 }
