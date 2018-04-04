@@ -5,13 +5,7 @@ namespace SF\Protocol;
 
 abstract class Message
 {
-    public function getHeader()
-    {
+    public abstract function getHeader();
 
-    }
-
-    public function getBody()
-    {
-
-    }
+    public abstract function getBody();
 }

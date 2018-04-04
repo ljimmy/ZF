@@ -11,4 +11,6 @@ interface ProtocolInterface
     public function getReceiver(): ReceiverInterface;
 
     public function getReplier(): ReplierInterface;
+
+    public function getVerifier(): VerifierInterface;
 }

@@ -2,9 +2,7 @@
 
 namespace SF\Protocol\Rpc;
 
-use SF\Protocol\MessageInterface;
-
-class Message implements MessageInterface
+class Message extends \SF\Protocol\Message
 {
     const CALL = 0;
 
@@ -27,14 +25,14 @@ class Message implements MessageInterface
         return str_pad($str, $length, 0, STR_PAD_LEFT);
     }
 
-    public function receive(): MessageInterface
+    public function getHeader()
     {
-        // TODO: Implement receive() method.
+
     }
 
-    public function reply(): string
+    public function getBody()
     {
-        // TODO: Implement reply() method.
+
     }
 
 

@@ -1,9 +1,17 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: xfb_user
+ * Date: 2018/4/4
+ * Time: 下午5:41
+ */
 
-namespace SF\Protocol\Rpc\Structure;
+namespace SF\Protocol\Rpc\Exceptions;
 
 
-class Accepted
+use Throwable;
+
+class AcceptException extends RpcException
 {
     /**
      * RPC executed successfully
@@ -36,18 +44,14 @@ class Accepted
     const SYSTEM_ERR = 5;
 
     /**
-     * AuthenticationFlavor Number
      * @var int
      */
-    public $verf;
-
     public $status;
 
-    public $data;
-
-    public function success(string $data)
+    public function __construct(int $status, string $message = "", int $code = 0, Throwable $previous = null)
     {
-        $this->data = $data;
+        $this->status = $status;
+        parent::__construct($message, $code, $previous);
     }
 
 }

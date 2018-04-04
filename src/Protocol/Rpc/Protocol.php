@@ -9,9 +9,12 @@ use SF\Packer\PackerInterface;
 use SF\Protocol\ProtocolInterface;
 use SF\Protocol\ReceiverInterface;
 use SF\Protocol\ReplierInterface;
+use SF\Protocol\VerifierInterface;
 
 class Protocol implements ProtocolInterface
 {
+    const RPC_VERSION = 2;
+
     public $version = '1.0';
 
     /**
@@ -33,6 +36,11 @@ class Protocol implements ProtocolInterface
      * @var PackerInterface
      */
     public $packer = Json::class;
+
+    /**
+     * @var VerifierInterface
+     */
+    public $verifier = Verifier::class;
 
     /**
      * @var Container
@@ -77,6 +85,11 @@ class Protocol implements ProtocolInterface
     public function getReplier(): ReplierInterface
     {
         return $this->replier;
+    }
+
+    public function getVerifier(): VerifierInterface
+    {
+        return $this->verifier;
     }
 
 

@@ -1,11 +1,13 @@
 <?php
 
-namespace SF\Protocol\Rpc\Structure;
+namespace SF\Protocol\Rpc;
 
 
-class AuthenticationFlavor
+use SF\Protocol\Rpc\Exceptions\Denied\AuthException;
+use SF\Protocol\VerifierInterface;
+
+class Verifier implements VerifierInterface
 {
-
 
     /**
      * authentication flavor numbers
@@ -24,4 +26,25 @@ class AuthenticationFlavor
     const AUTH_RSA   = 5;/* RSA authentication */
 
     const RPCSEC_GSS = 6;/* GSS-based RPC security for auth,integrity and privacy, RPC 5403 */
+
+
+
+    public $flavor = self::AUTH_NONE;
+
+
+    public function validate(string $credential)
+    {
+        switch ($this->flavor) {
+            case self::AUTH_NONE:
+                break;
+
+
+            default:
+                throw new AuthException(AuthException::AUTH_BADVERF);
+
+        }
+        return true;
+    }
+
+
 }
