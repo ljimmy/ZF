@@ -4,14 +4,12 @@ namespace SF\Protocol\Rpc;
 
 use SF\Protocol\ProtocolServiceProvider;
 use SF\Protocol\ReceiverInterface;
+use SF\Protocol\Rpc\Exceptions\Accept\ProgMisMatchException;
+use SF\Protocol\Rpc\Exceptions\AcceptException;
 use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
 
-class Receiver implements ReceiverInterface
+class Receiver extends Message implements ReceiverInterface
 {
-    /**
-     * @var int
-     */
-    public $xid;
     /**
      * RPC 协议号
      * must be equal to two (2)
@@ -24,7 +22,7 @@ class Receiver implements ReceiverInterface
      * 远程程序号
      * @var int
      */
-    public $prog = 100017;/* remote execution */
+    public $prog = 100017; /* remote execution */
 
     /**
      * 程序版本号
@@ -39,93 +37,51 @@ class Receiver implements ReceiverInterface
     public $proc;
 
     /**
-     * 认证信息 credential
-     * @var int
+     * @var \SF\Protocol\AuthenticatorInterface
      */
-    public $cred;
-
-
-    /**
-     * 凭证 verifier
-     * @var int
-     */
-    public $verf;
-
-    /**
-     * @var Protocol
-     */
-    public $protocol;
+    public $authenticator;
 
     public function __construct(ProtocolServiceProvider $provider)
     {
-        $this->protocol = $provider->getProtocol();
+        $this->authenticator = $provider->getProtocol()->getAuthenticator();
     }
 
 
     /**
      * @param string $data
      *
-     * 0         10            11         17         21         23         25          89
-     * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-     * xid = <10>|rpcvers = <1>|prog = <6>|vers = <4>|proc = <2>|verf = <2>|cred = <64>|
-     * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     * 0         64            65         71         75         77         79          479
+     * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+     * xid = <64>|rpcvers = <1>|prog = <6>|vers = <4>|proc = <2>|flavor = <2>|cred = <400>
+     * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
      *
+     * @throws
      * @return \SF\Protocol\Message
      */
     public function receive(string $data): \SF\Protocol\Message
     {
-        try {
-            $this->getId($data);
-            $this->getRpcvers($data);
-            $this->getProg($data);
-            $this->getVers($data);
-            $this->getProc($data);
-            $this->getVerf($data);
+        $this->header = substr($data, 0, 479);
+        $this->body   = substr($data, 479);
 
-        } catch (AuthException $authException) {
+        $this->xid     = substr($data, 0, 64);
 
-            return;
-        }
-
-        return $this;
-    }
-
-    private function getId(string $data)
-    {
-        return substr($data, 0, 10);
-    }
-
-
-    private function getRpcvers(string $data)
-    {
-        $this->rpcvers = (int) substr($data, 10, 1);
-
+        $this->rpcvers = (int)substr($data, 64, 1);
         if ($this->rpcvers != 2) {
             throw new RpcMisMatchException(2, 2);
         }
+
+        $prog    = (int) substr($data, 65, 6);
+
+        if ($prog != $this->prog) {
+            throw new AcceptException(AcceptException::PROG_UNAVAIL);
+        }
+
+        $this->vers    = substr($data, 71, 4);
+
+        $this->proc    = substr($data, 75, 2);
+
+        $this->authenticator->validate(substr($data, 77, 2), (string)substr($data, 79, 400));
+
+        return $this;
     }
-
-    private function getProg(string $data)
-    {
-        $this->prog = substr($data, 11, 6);
-    }
-
-    private function getVers(string $data)
-    {
-        $this->vers = substr($data, 17, 4);
-    }
-
-    private function getProc(string $data)
-    {
-        $this->proc = substr($data, 21, 2);
-    }
-
-    private function getVerf(string $data)
-    {
-        $this->verf = substr($data, 23, 2);
-        
-        $this->protocol->getVerifier()->validate($this->verf);
-    }
-
-
 }

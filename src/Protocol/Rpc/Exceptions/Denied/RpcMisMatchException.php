@@ -14,6 +14,7 @@ class RpcMisMatchException extends DeniedException
 
     public function __construct(int $low, int $high, string $message = "", int $code = 0, Throwable $previous = null)
     {
+
         $this->low  = $low;
         $this->high = $high;
         parent::__construct($message, $code, $previous);

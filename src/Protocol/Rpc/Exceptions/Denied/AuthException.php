@@ -13,15 +13,15 @@ class AuthException extends DeniedException
     /*
      * failed at remote end
      */
-    const AUTH_BADCRED = 1;  /* bad credential (seal broken)   */
+    const AUTH_BADCRED = 1;  /* 坏的凭证（坏的签名   */
 
-    const AUTH_REJECTEDCRED = 2;  /* client must begin new session  */
+    const AUTH_REJECTEDCRED = 2;  /* 客户端必须开始新的会话 */
 
-    const AUTH_BADVERF = 3;  /* bad verifier (seal broken)     */
+    const AUTH_BADVERF = 3;  /* 错误校验（签名破坏）  */
 
-    const AUTH_REJECTEDVERF = 4;  /* verifier expired or replayed   */
+    const AUTH_REJECTEDVERF = 4;  /* 验证过期或失效  */
 
-    const AUTH_TOOWEAK = 5;  /* rejected for security reasons  */
+    const AUTH_TOOWEAK = 5;  /* 安全原因拒绝  */
     /*
      * failed locally
      */

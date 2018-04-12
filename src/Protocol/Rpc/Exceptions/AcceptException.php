@@ -14,31 +14,32 @@ use Throwable;
 class AcceptException extends RpcException
 {
     /**
-     * RPC executed successfully
+     * RPC 成功执行
      */
     const SUCCESS = 0;
 
     /**
-     * remote hasn't exported program
+     * 远程没有导出程序
      */
     const PROG_UNAVAIL = 1;
 
     /**
-     * remote can't support version
+     * 不支持的版本
      */
     const PROG_MISMATCH = 2;
 
     /**
-     * program can't support procedure
+     * 不支持的远程过程
      */
     const PROC_UNAVAIL = 3;
 
     /**
-     * procedure can't decode params
+     * 过程不能解析参数
      */
     const GARBAGE_ARGS = 4;
 
     /**
+     * 系统错误
      * e.g. memory allocation failure
      */
     const SYSTEM_ERR = 5;

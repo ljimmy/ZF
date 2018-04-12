@@ -3,10 +3,11 @@
 namespace SF\Protocol\Rpc;
 
 
+use SF\Protocol\AuthenticatorInterface;
+use SF\Protocol\ReceiverInterface;
 use SF\Protocol\Rpc\Exceptions\Denied\AuthException;
-use SF\Protocol\VerifierInterface;
 
-class Verifier implements VerifierInterface
+class Authenticator implements AuthenticatorInterface
 {
 
     /**
@@ -28,21 +29,43 @@ class Verifier implements VerifierInterface
     const RPCSEC_GSS = 6;/* GSS-based RPC security for auth,integrity and privacy, RPC 5403 */
 
 
-    public function validate(int $verifier, string $credential)
+    public $flavor;
+
+
+
+
+
+    public function __construct(int $flavor)
     {
-        switch ($verifier) {
+        $this->flavor = $flavor;
+    }
+
+    public function validate(int $flavor, string $credentials)
+    {
+        $this->flavor = $flavor;
+
+        switch ($this->flavor) {
             case self::AUTH_NONE:
                 break;
+
             default:
                 throw new AuthException(AuthException::AUTH_BADVERF);
-
         }
+
         return true;
     }
 
-    public function generateCredit()
+    public function generate(ReceiverInterface $receiver): string
     {
-        // TODO: Implement generateCredit() method.
+        $credential = '';
+
+        switch ($this->flavor){
+            case self::AUTH_NONE:
+                break;
+
+        }
+
+        return $credential;
     }
 
 

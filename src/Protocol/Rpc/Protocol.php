@@ -6,10 +6,10 @@ use SF\Di\Container;
 use SF\Exceptions\UserException;
 use SF\Packer\Json;
 use SF\Packer\PackerInterface;
+use SF\Protocol\AuthenticatorInterface;
 use SF\Protocol\ProtocolInterface;
 use SF\Protocol\ReceiverInterface;
 use SF\Protocol\ReplierInterface;
-use SF\Protocol\VerifierInterface;
 
 class Protocol implements ProtocolInterface
 {
@@ -38,9 +38,9 @@ class Protocol implements ProtocolInterface
     public $packer = Json::class;
 
     /**
-     * @var VerifierInterface
+     * @var AuthenticatorInterface
      */
-    public $verifier = Verifier::class;
+    public $authenticator = Authenticator::class;
 
     /**
      * @var Container
@@ -62,14 +62,6 @@ class Protocol implements ProtocolInterface
             throw new UserException('packer must implement the interface SF\Packer\PackerInterface');
         }
 
-        if ($this->receiver) {
-            $this->receiver = $this->container->setDefinition($this->receiver, null, true);
-        }
-
-        if ($this->replier) {
-            $this->replier = $this->container->setDefinition($this->replier, null, true);
-        }
-
     }
 
     public function getVersion(): string
@@ -77,19 +69,19 @@ class Protocol implements ProtocolInterface
         return $this->version;
     }
 
-    public function getReceiver(): ReceiverInterface
+    public function handle(string $data): ReceiverInterface
     {
-        return $this->receiver;
+        return $this->container->get($this->receiver)->receive($data);
     }
 
     public function getReplier(): ReplierInterface
     {
-        return $this->replier;
+        return $this->container->get($this->replier);
     }
 
-    public function getVerifier(): VerifierInterface
+    public function getAuthenticator(): AuthenticatorInterface
     {
-        return $this->verifier;
+        return $this->container->get($this->authenticator);
     }
 
 

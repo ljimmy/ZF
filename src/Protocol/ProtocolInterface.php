@@ -8,9 +8,9 @@ interface ProtocolInterface
 
     public function getVersion(): string;
 
-    public function getReceiver(): ReceiverInterface;
+    public function handle(string $data):ReceiverInterface;
 
     public function getReplier(): ReplierInterface;
 
-    public function getVerifier(): VerifierInterface;
+    public function getAuthenticator(): AuthenticatorInterface;
 }

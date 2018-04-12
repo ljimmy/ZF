@@ -2,22 +2,18 @@
 
 namespace SF\Protocol\Rpc;
 
+use SF\Protocol\VerifierInterface;
+
 class Message extends \SF\Protocol\Message
 {
-    const CALL = 0;
+    public $header;
 
-    const REPLY = 1;
+    public $body;
 
     /**
-     * @var int
+     * @var int 消息识别号
      */
     public $xid;
-
-    /**
-     *
-     * @var int CALL|REPLY
-     */
-    public $type;
 
 
     public function fill(string $str, $length)
@@ -27,12 +23,12 @@ class Message extends \SF\Protocol\Message
 
     public function getHeader()
     {
-
+        return $this->header;
     }
 
     public function getBody()
     {
-
+        return $this->body;
     }
 
 
