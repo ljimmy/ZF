@@ -2,6 +2,7 @@
 
 namespace SF\Http;
 
+use Psr\Http\Message\StreamInterface;
 use SF\Support\Json;
 use Swoole\Http\Request as SwooleHttpRequest;
 use Psr\Http\Message\UriInterface;
@@ -12,7 +13,7 @@ class Request extends Message implements RequestInterface
 
     /**
      *
-     * @var Swoole\Http\Request
+     * @var \Swoole\Http\Request
      */
     private $swooleHttpRequest;
 
@@ -263,7 +264,7 @@ class Request extends Message implements RequestInterface
     public function getBody(): StreamInterface
     {
         if ($this->stream === null) {
-            $this->stream = new Stream($this->requestTarget->rawContent());
+            $this->stream = new Stream($this->swooleHttpRequest->rawContent());
         }
         return $this->stream;
     }

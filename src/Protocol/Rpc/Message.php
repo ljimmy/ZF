@@ -2,33 +2,29 @@
 
 namespace SF\Protocol\Rpc;
 
-use SF\Protocol\VerifierInterface;
+use SF\Protocol\ProtocolServiceProvider;
 
 class Message extends \SF\Protocol\Message
 {
-    public $header;
-
-    public $body;
+    /**
+     * @var \SF\Contracts\Protocol\Protocol
+     */
+    public $protocol;
 
     /**
-     * @var int 消息识别号
+     * @var \SF\Contracts\Protocol\Authenticator
      */
-    public $xid;
+    public $authenticator;
 
+    /**
+     * @var string
+     */
+    public $body;
 
-    public function fill(string $str, $length)
+    public function __construct(ProtocolServiceProvider $provider)
     {
-        return str_pad($str, $length, 0, STR_PAD_LEFT);
-    }
-
-    public function getHeader()
-    {
-        return $this->header;
-    }
-
-    public function getBody()
-    {
-        return $this->body;
+        $this->protocol      = $provider->getProtocol();
+        $this->authenticator = $this->protocol->getAuthenticator();
     }
 
 

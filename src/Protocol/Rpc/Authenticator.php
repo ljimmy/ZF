@@ -5,6 +5,7 @@ namespace SF\Protocol\Rpc;
 
 use SF\Protocol\AuthenticatorInterface;
 use SF\Protocol\ReceiverInterface;
+use SF\Protocol\ReplierInterface;
 use SF\Protocol\Rpc\Exceptions\Denied\AuthException;
 
 class Authenticator implements AuthenticatorInterface
@@ -55,7 +56,7 @@ class Authenticator implements AuthenticatorInterface
         return true;
     }
 
-    public function generate(ReceiverInterface $receiver): string
+    public function generate(ReplierInterface $replier): string
     {
         $credential = '';
 

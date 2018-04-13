@@ -1,9 +1,9 @@
 <?php
 
-namespace SF\Packer;
+namespace SF\Contracts\Packer;
 
 
-interface PackerInterface
+interface Packer
 {
     /**
      * @param $data

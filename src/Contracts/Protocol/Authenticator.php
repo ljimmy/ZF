@@ -1,9 +1,9 @@
 <?php
 
-namespace SF\Protocol;
+namespace SF\Contracts\Protocol;
 
 
-interface AuthenticatorInterface
+interface Authenticator
 {
     /**
      * @param int $flavor 验证
@@ -14,8 +14,8 @@ interface AuthenticatorInterface
 
     /**
      * 生成凭证
-     * @param ReceiverInterface $receiver
+     * @param Replier $replier
      * @return string
      */
-    public function generate(ReceiverInterface $receiver): string;
+    public function generate(Replier $replier): string;
 }

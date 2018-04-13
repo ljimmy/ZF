@@ -2,9 +2,10 @@
 
 namespace SF\Packer;
 
+use SF\Contracts\Packer\Packer;
 use SF\Support\Json as JsonSupport;
 
-class Json implements PackerInterface
+class Json implements Packer
 {
     public function pack($data)
     {

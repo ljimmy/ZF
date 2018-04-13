@@ -3,13 +3,13 @@
 namespace SF\Protocol;
 
 use SF\Di\Container;
+use SF\Contracts\Protocol\Protocol;
 use SF\Exceptions\UserException;
-use SF\Protocol\Rpc\Protocol;
 
 class ProtocolServiceProvider
 {
     /**
-     * @var ProtocolInterface
+     * @var Protocol
      */
     public $handle;
 
@@ -32,14 +32,14 @@ class ProtocolServiceProvider
         }
         $this->handle = $this->container->setDefinition($this->handle, null, true);
 
-        if (!$this->handle instanceof ProtocolInterface) {
+        if (!$this->handle instanceof Protocol) {
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');
         }
 
         $this->middleware = new Middleware($this->middleware);
     }
 
-    public function getProtocol(): ProtocolInterface
+    public function getProtocol(): Protocol
     {
         return $this->handle;
     }

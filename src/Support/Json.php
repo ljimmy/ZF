@@ -7,7 +7,9 @@ class Json
 
     /**
      * 编码json
-     * @param mixed $data
+     * @param $data
+     * @param int $options
+     * @param int $depth
      * @return string
      */
     public static function enCode($data,int $options = JSON_UNESCAPED_UNICODE, int $depth = 512)

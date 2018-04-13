@@ -2,14 +2,14 @@
 
 namespace SF\Protocol\Rpc;
 
+use SF\Contracts\Packer\Packer;
+use SF\Contracts\Protocol\Authenticator as AuthenticatorInterface;
+use SF\Contracts\Protocol\Protocol as ProtocolInterface;
+use SF\Contracts\Protocol\Receiver as ReceiverInterface;
+use SF\Contracts\Protocol\Replier as ReplierInterface;
 use SF\Di\Container;
 use SF\Exceptions\UserException;
 use SF\Packer\Json;
-use SF\Packer\PackerInterface;
-use SF\Protocol\AuthenticatorInterface;
-use SF\Protocol\ProtocolInterface;
-use SF\Protocol\ReceiverInterface;
-use SF\Protocol\ReplierInterface;
 
 class Protocol implements ProtocolInterface
 {
@@ -33,12 +33,12 @@ class Protocol implements ProtocolInterface
     public $message = Message::class;
 
     /**
-     * @var PackerInterface
+     * @var Packer
      */
     public $packer = Json::class;
 
     /**
-     * @var AuthenticatorInterface
+     * @var \SF\Contracts\Protocol\Authenticator
      */
     public $authenticator = Authenticator::class;
 
@@ -58,8 +58,8 @@ class Protocol implements ProtocolInterface
             $this->packer = $this->container->setDefinition($this->packer, self::PACKER, true);
         }
 
-        if (!$this->packer instanceof PackerInterface) {
-            throw new UserException('packer must implement the interface SF\Packer\PackerInterface');
+        if (!$this->packer instanceof Packer) {
+            throw new UserException('packer must implement the interface SF\Contracts\Packer\Packer');
         }
 
     }

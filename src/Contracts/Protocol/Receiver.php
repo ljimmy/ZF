@@ -1,8 +1,10 @@
 <?php
 
-namespace SF\Protocol;
+namespace SF\Contracts\Protocol;
 
-interface ReceiverInterface
+
+interface Receiver
 {
     public function receive(string $data): Message;
+
 }
