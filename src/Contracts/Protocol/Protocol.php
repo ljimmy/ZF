@@ -3,13 +3,9 @@
 namespace SF\Contracts\Protocol;
 
 
-interface Protocol
+interface Protocol extends Authenticator
 {
-    public function getVersion(): string;
+    public function receive(string $data): Message;
 
-    public function handle(string $data): Receiver;
-
-    public function getReplier(): Replier;
-
-    public function getAuthenticator(): Authenticator;
+    public function reply(Message $message): string;
 }

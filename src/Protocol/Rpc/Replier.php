@@ -3,24 +3,21 @@
 namespace SF\Protocol\Rpc;
 
 
-use SF\Protocol\ReplierInterface;
-use SF\Protocol\Rpc\Message;
+use SF\Contracts\Protocol\Message as MessageInterface;
 
-abstract class Replier extends Message implements ReplierInterface
+class Replier extends Message implements ReplierInterface
 {
-    const ACCEPTED = 0;
 
-    const DENIED = 1;
+    public function reply(MessageInterface $message):string
+    {
+        $stream = $message->getStream();
+        $header = $message->getHeader();
 
-    /**
-     * @var int
-     */
-    public $type = self::REPLY;
+        $header->length = $stream->getSize();
 
-    /**
-     * @var int
-     */
-    public $status;
+
+         return pack('JNnnJ',$header['id'],$header['length'], $header['version'],$header['flavor'],$header['credential']) . $stream->getContents();
+    }
 
 
 }

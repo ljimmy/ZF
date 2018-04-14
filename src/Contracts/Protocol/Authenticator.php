@@ -6,16 +6,15 @@ namespace SF\Contracts\Protocol;
 interface Authenticator
 {
     /**
-     * @param int $flavor 验证
-     * @param string $credentials 凭证
+     * @param Message $message
      * @return mixed
      */
-    public function validate(int $flavor, string $credentials);
+    public function validate(Message $message);
 
     /**
-     * 生成凭证
-     * @param Replier $replier
+     * 生成校验码
+     * @param Message $message
      * @return string
      */
-    public function generate(Replier $replier): string;
+    public function generate(Message $message): string;
 }

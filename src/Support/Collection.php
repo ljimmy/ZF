@@ -10,6 +10,16 @@ class Collection implements \ArrayAccess, \Countable, \JsonSerializable, Arrayab
 {
     protected $items = [];
 
+    public function get($key)
+    {
+        return $this->offsetGet($key);
+    }
+
+    public function set($key, $value)
+    {
+        return $this->offsetSet($key, $value);
+    }
+
     public function count()
     {
         return count($this->items);

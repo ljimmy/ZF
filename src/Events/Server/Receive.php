@@ -29,12 +29,12 @@ class Receive extends AbstractServerEvent
     {
 
 
-        $reply = $this->protocolServiceProvider->getMiddleware()->process(
-            $this->protocolServiceProvider->getProtocol()->getReceiver()->receive($data),
+        $message = $this->protocolServiceProvider->getMiddleware()->process(
+            $this->protocolServiceProvider->getProtocol()->receive($data),
             null
         );
 
-        $server->send($fd, $reply->pack());
+        $server->send($fd, $this->protocolServiceProvider->getProtocol()->reply($message));
     }
 
     public function on($server)

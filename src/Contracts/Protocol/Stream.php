@@ -12,4 +12,8 @@ interface Stream
     public function write(string $contents);
 
     public function eof(): bool;
+
+    public function getSize(): int;
+
+    public function getContents(): string;
 }

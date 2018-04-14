@@ -12,7 +12,7 @@ class RpcMisMatchException extends DeniedException
 
     public $high;
 
-    public function __construct(int $low, int $high, string $message = "", int $code = 0, Throwable $previous = null)
+    public function __construct(int $low = null, int $high = null, string $message = "", int $code = 0, Throwable $previous = null)
     {
 
         $this->low  = $low;

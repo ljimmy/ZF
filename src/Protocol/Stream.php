@@ -25,8 +25,14 @@ class Stream implements StreamInterface
 
     public function __toString()
     {
+        return $this->getContents();
+    }
+
+    public function getContents(): string
+    {
         return $this->contents;
     }
+
 
     public function read(int $length): string
     {
@@ -47,6 +53,11 @@ class Stream implements StreamInterface
     public function eof(): bool
     {
         return $this->position >= strlen($this->contents);
+    }
+
+    public function getSize(): int
+    {
+        return strlen($this->contents);
     }
 
 

@@ -11,20 +11,9 @@ class Message extends \SF\Protocol\Message
      */
     public $protocol;
 
-    /**
-     * @var \SF\Contracts\Protocol\Authenticator
-     */
-    public $authenticator;
-
-    /**
-     * @var string
-     */
-    public $body;
-
     public function __construct(ProtocolServiceProvider $provider)
     {
-        $this->protocol      = $provider->getProtocol();
-        $this->authenticator = $this->protocol->getAuthenticator();
+        $this->protocol = $provider->getProtocol();
     }
 
 

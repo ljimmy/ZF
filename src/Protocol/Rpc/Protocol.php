@@ -2,20 +2,27 @@
 
 namespace SF\Protocol\Rpc;
 
-use SF\Contracts\Packer\Packer;
-use SF\Contracts\Protocol\Authenticator as AuthenticatorInterface;
+use SF\Contracts\Protocol\Message;
 use SF\Contracts\Protocol\Protocol as ProtocolInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
 use SF\Contracts\Protocol\Replier as ReplierInterface;
-use SF\Di\Container;
-use SF\Exceptions\UserException;
-use SF\Packer\Json;
+use SF\Contracts\Protocol\Authenticator as AuthenticatorInterface;
+use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
+use SF\Protocol\Rpc\Exceptions\RpcException;
 
 class Protocol implements ProtocolInterface
 {
-    const RPC_VERSION = 2;
+    /**
+     * low version
+     * @var int
+     */
+    public $low;
 
-    public $version = '1.0';
+    /**
+     * high version
+     * @var int
+     */
+    public $high;
 
     /**
      * @var ReceiverInterface
@@ -28,60 +35,61 @@ class Protocol implements ProtocolInterface
     public $replier = Replier::class;
 
     /**
-     * @var Message
-     */
-    public $message = Message::class;
-
-    /**
-     * @var Packer
-     */
-    public $packer = Json::class;
-
-    /**
-     * @var \SF\Contracts\Protocol\Authenticator
+     * @var Authenticator
      */
     public $authenticator = Authenticator::class;
 
-    /**
-     * @var Container
-     */
-    private $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     public function init()
     {
-        if ($this->packer) {
-            $this->packer = $this->container->setDefinition($this->packer, self::PACKER, true);
+        $this->receiver = new $this->receiver;
+        $this->replier = new $this->replier;
+        $this->authenticator = new $this->authenticator;
+
+        if (! $this->receiver instanceof ReceiverInterface) {
+            throw new RpcException('Receiver must implement the interface SF\Contracts\Protocol\Receiver');
         }
 
-        if (!$this->packer instanceof Packer) {
-            throw new UserException('packer must implement the interface SF\Contracts\Packer\Packer');
+        if (! $this->replier instanceof ReplierInterface) {
+            throw new RpcException('Replier must implement the interface SF\Contracts\Protocol\Replier');
+        }
+
+        if (!$this->authenticator instanceof AuthenticatorInterface) {
+            throw new RpcException('Authenticator must implement the interface SF\Contracts\Protocol\Authenticator');
         }
 
     }
 
-    public function getVersion(): string
+    public function receive(string $data): Message
     {
-        return $this->version;
+        $message =  $this->receiver->unpack($data);
+        $this->validate($message);
+
+        return $message;
     }
 
-    public function handle(string $data): ReceiverInterface
+    public function reply(Message $message): string
     {
-        return $this->container->get($this->receiver)->receive($data);
+        return $this->replier->pack($message);
     }
 
-    public function getReplier(): ReplierInterface
+    public function validate(Message $message)
     {
-        return $this->container->get($this->replier);
+        $version = $message->getHeader()->get('version');
+        if ($this->low !== null && $version < $this->low) {
+            throw new RpcMisMatchException($this->low, $this->high);
+        }
+
+        if ($this->high !== null && $version > $this->high) {
+            throw new RpcMisMatchException($this->low, $this->high);
+        }
+
+        return $this->authenticator->validate($message);
     }
 
-    public function getAuthenticator(): AuthenticatorInterface
+    public function generate(Message $message): string
     {
-        return $this->container->get($this->authenticator);
+        return $this->authenticator->generate($message);
     }
 
 
