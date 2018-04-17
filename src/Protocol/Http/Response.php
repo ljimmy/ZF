@@ -1,11 +1,11 @@
 <?php
 
-namespace SF\Http;
+namespace SF\Protocol\Http;
 
 use SF\Support\Str;
 use SF\Support\Json;
 use Psr\Http\Message\ResponseInterface;
-use Swoole\Http\Response as SwooleHttpResponse;
+
 
 class Response extends Message implements ResponseInterface
 {
@@ -109,17 +109,6 @@ class Response extends Message implements ResponseInterface
     private $reasonPhrase = '';
 
     /**
-     *
-     * @var \Swoole\Http\Response
-     */
-    private $swooleHttpResponse;
-
-    public function __construct(SwooleHttpResponse $response)
-    {
-        $this->swooleHttpResponse = $response;
-    }
-
-    /**
      * Gets the response status code.
      *
      * The status code is a 3-digit integer result code of the server's attempt
@@ -205,23 +194,11 @@ class Response extends Message implements ResponseInterface
         return $this->withAddedHeader('Location', $url)->withStatus($status);
     }
 
-    public function setRawCookie(string $name, string $value = '', int $expires = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
-    {
-        $this->swooleHttpResponse->rawcookie($name, $value, $expires, $path, $domain, $secure, $httponly);
-        return $this;
-    }
-
-    public function setCookie(string $name, string $value = '', int $expires = 0, string $path = '/', string $domain = '', bool $secure = false, bool $httponly = false)
-    {
-        $this->swooleHttpResponse->cookie($name, $value, $expires, $path, $domain, $secure, $httponly);
-        return $this;
-    }
-
     public function json($data)
     {
         return $this->withoutHeader('Content-Type')
-                        ->withAddedHeader('Content-Type', 'application/json')
-                        ->withContent(Json::enCode($data));
+            ->withAddedHeader('Content-Type', 'application/json')
+            ->withContent(Json::enCode($data));
     }
 
     public function html(string $data)
@@ -257,28 +234,6 @@ class Response extends Message implements ResponseInterface
         } else {
             return $this->withContent((string) $data);
         }
-    }
-
-    public function send()
-    {
-        if ($this->charset) {
-            $this->withAddedHeader('Content-Type', sprintf('charset=%s', $this->charset));
-        }
-
-        foreach ($this->getHeaders() as $key => $value) {
-            $this->swooleHttpResponse->header($key, implode(';', $value));
-        }
-
-        $this->gzip && $this->swooleHttpResponse->gzip($this->gzip);
-        $this->swooleHttpResponse->status($this->statusCode);
-
-        if ($this->statusCode === 200 || $this->statusCode === 204) {
-            $this->swooleHttpResponse->end($this->getBody()->getContents());
-        } else {
-            $this->swooleHttpResponse->end($this->reasonPhrase);
-        }
-
-        return $this;
     }
 
 }

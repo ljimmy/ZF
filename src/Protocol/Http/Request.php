@@ -1,86 +1,110 @@
 <?php
 
-namespace SF\Http;
+namespace SF\Protocol\Http;
 
 use Psr\Http\Message\StreamInterface;
-use SF\Support\Json;
-use Swoole\Http\Request as SwooleHttpRequest;
 use Psr\Http\Message\UriInterface;
-use Psr\Http\Message\RequestInterface;
+use SF\Contracts\Protocol\Http\Request as RequestInterface;
+use SF\Support\Json;
 
 class Request extends Message implements RequestInterface
 {
 
     /**
-     *
-     * @var \Swoole\Http\Request
+     * @var array
      */
-    private $swooleHttpRequest;
+    public $get = [];
 
+    /**
+     * @var array
+     */
+    public $post = [];
+
+    /**
+     * @var string
+     */
+    public $rawContent = '';
     /**
      *
      * @var array
      */
     private $server = [];
-
     /**
      *
      * @var string
      */
     private $requestTarget;
-
     /**
      *
      * @var string
      */
     private $method;
-
     /**
      *
      * @var UriInterface
      */
     private $uri;
-
     /**
      *
      * @var array
      */
-    private $cookies;
-
+    private $cookies = [];
     /**
      *
      * @var array
      */
-    private $queryParams;
-
+    private $queryParams = [];
     /**
      *
      * @var array
      */
-    private $bodyParams;
-
+    private $bodyParams = [];
     /**
      *
      * @var array
      */
     private $files = [];
 
-    public function __construct(SwooleHttpRequest $request)
+    public function setHeaders(array $headers)
     {
-
-        foreach ($request->server as $name => $value) {
-            $this->server[strtolower($name)] = $value;
+        foreach ($headers as $name => $value) {
+            $this->withAddedHeader(str_replace(' ', '-', ucwords(str_replace('-', ' ', $name))), $value);
         }
 
-        foreach ($request->header as $name => $value) {
-            $this->headers[str_replace(' ', '-', ucwords(str_replace('-', ' ', $name)))][] = $value;
-        }
+        return $this;
+    }
 
-        foreach ( (array) $request->files as $name => $file) {
+    public function setUploadedFile(array $files)
+    {
+        foreach ($files as $name => $file) {
             $this->files[$name] = new UploadedFile($file);
         }
 
-        $this->swooleHttpRequest = $request;
+        return $this;
+    }
+
+    public function getProtocolVersion()
+    {
+        if ($this->protocolVersion === null) {
+            $protocol              = $this->getServer('server_protocol');
+            $this->protocolVersion = $protocol ? str_replace('HTTP/', '', $protocol) : '1.1';
+        }
+
+        return $this->protocolVersion;
+    }
+
+    public function getServer($name)
+    {
+        return $this->server[strtolower($name)] ?? null;
+    }
+
+    public function setServer(array $server)
+    {
+        foreach ($server as $name => $value) {
+            $this->server[strtolower($name)] = $value;
+        }
+
+        return $this;
     }
 
     /**
@@ -117,6 +141,29 @@ class Request extends Message implements RequestInterface
     }
 
     /**
+     * Retrieves the URI instance.
+     *
+     * This method MUST return a UriInterface instance.
+     *
+     * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     * @return UriInterface Returns a UriInterface instance
+     *     representing the URI of the request.
+     */
+    public function getUri(): UriInterface
+    {
+        if ($this->uri === null) {
+            $host      = explode(':', $this->getHeader('host'));
+            $this->uri = (new Uri())
+                ->withHost($host[0])
+                ->withPort($host[1] ?? null)
+                ->withPath($this->getServer('request_uri'))
+                ->withQuery($this->getServer('query_string'));
+        }
+
+        return $this->uri;
+    }
+
+    /**
      * Return an instance with the specific request-target.
      *
      * If the request needs a non-origin-form request-target — e.g., for
@@ -141,26 +188,6 @@ class Request extends Message implements RequestInterface
     }
 
     /**
-     * Retrieves the HTTP method of the request.
-     *
-     * @return string Returns the request method.
-     */
-    public function getMethod()
-    {
-        if ($this->method === null) {
-            if (isset($this->server['http_x_http_method_override'])) {
-                $this->method = strtoupper($this->server['http_x_http_method_override']);
-            } else if (isset($this->server['request_method'])) {
-                $this->method = strtoupper($this->server['request_method']);
-            } else {
-                $this->method = 'GET';
-            }
-        }
-
-        return $this->method;
-    }
-
-    /**
      * Return an instance with the provided HTTP method.
      *
      * While HTTP method names are typically all uppercase characters, HTTP
@@ -180,29 +207,6 @@ class Request extends Message implements RequestInterface
         $this->method = strtoupper($method);
 
         return $this;
-    }
-
-    /**
-     * Retrieves the URI instance.
-     *
-     * This method MUST return a UriInterface instance.
-     *
-     * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return UriInterface Returns a UriInterface instance
-     *     representing the URI of the request.
-     */
-    public function getUri(): UriInterface
-    {
-        if ($this->uri === null) {
-            $host      = explode(':', $this->getHeader('host'));
-            $this->uri = (new Uri())
-                    ->withHost($host[0])
-                    ->withPort($host[1] ?? null)
-                    ->withPath($this->getServer('request_uri'))
-                    ->withQuery($this->getServer('query_string'));
-        }
-
-        return $this->uri;
     }
 
     /**
@@ -251,39 +255,24 @@ class Request extends Message implements RequestInterface
         return $this->server;
     }
 
-    public function getServer($name)
-    {
-        return $this->server[strtolower($name)] ?? null;
-    }
-
-    /**
-     * Gets the body of the message.
-     *
-     * @return StreamInterface Returns the body as a stream.
-     */
-    public function getBody(): StreamInterface
-    {
-        if ($this->stream === null) {
-            $this->stream = new Stream($this->swooleHttpRequest->rawContent());
-        }
-        return $this->stream;
-    }
-
-    public function getCookies()
-    {
-        if ($this->cookies === null) {
-            foreach ($this->swooleHttpRequest->cookie as $name => $value) {
-                $this->cookies[$name] = new Cookie($name, $value);
-            }
-        }
-
-        return $this->cookies;
-    }
-
     public function getCookie(string $name): Cookie
     {
         $cookies = $this->getCookies();
         return $cookies[$name] ?? null;
+    }
+
+    public function getCookies()
+    {
+        return $this->cookies;
+    }
+
+    public function setCookies(array $cookies)
+    {
+        foreach ($cookies as $name => $value) {
+            $this->cookies[$name] = new Cookie($name, $value);
+        }
+
+        return $this;
     }
 
     public function hasCookie(string $name)
@@ -306,18 +295,15 @@ class Request extends Message implements RequestInterface
         return $this;
     }
 
-    public function getQueryParams()
-    {
-        if ($this->queryParams === null) {
-            $this->queryParams = (array) $this->swooleHttpRequest->get;
-        }
-        return $this->queryParams;
-    }
-
     public function getQueryParam(string $name)
     {
         $queryParams = $this->getQueryParams();
         return $queryParams[$name] ?? null;
+    }
+
+    public function getQueryParams()
+    {
+        return $this->queryParams;
     }
 
     public function hasQueryParams(string $name): bool
@@ -326,29 +312,78 @@ class Request extends Message implements RequestInterface
         return isset($queryParams[$name]);
     }
 
+    public function getBodyParam(string $name)
+    {
+        $bodyParams = $this->getBodyParams();
+
+        return $bodyParams[$name] ?? null;
+    }
+
     public function getBodyParams(): array
     {
         if ($this->bodyParams === null) {
             $contentType = $this->getHeader('Content-Type');
             if ($contentType && in_array('application/json', $contentType)) {
                 $this->bodyParams = Json::deCode($this->getBody()->getContents(), true);
-            } else if ($this->getIsPost()) {
-                $this->bodyParams = (array) $this->swooleHttpRequest->post;
-            } else if ($this->getIsPut()) {
-                mb_parse_str($this->getBody()->getContents(), $this->bodyParams);
             } else {
-                $this->bodyParams = [];
+                if ($this->getIsPost()) {
+                    $this->bodyParams = (array)$this->post;
+                } else {
+                    if ($this->getIsPut()) {
+                        mb_parse_str($this->getBody()->getContents(), $this->bodyParams);
+                    } else {
+                        $this->bodyParams = [];
+                    }
+                }
             }
         }
 
         return $this->getBodyParams();
     }
 
-    public function getBodyParam(string $name)
+    /**
+     * Gets the body of the message.
+     *
+     * @return StreamInterface Returns the body as a stream.
+     */
+    public function getBody(): StreamInterface
     {
-        $bodyParams = $this->getBodyParams();
+        if ($this->stream === null) {
+            $this->stream = new Stream($this->rawContent);
+        }
+        return $this->stream;
+    }
 
-        return $bodyParams[$name] ?? null;
+    public function getIsPost()
+    {
+        return 'POST' === $this->getMethod();
+    }
+
+    /**
+     * Retrieves the HTTP method of the request.
+     *
+     * @return string Returns the request method.
+     */
+    public function getMethod()
+    {
+        if ($this->method === null) {
+            if (isset($this->server['http_x_http_method_override'])) {
+                $this->method = strtoupper($this->server['http_x_http_method_override']);
+            } else {
+                if (isset($this->server['request_method'])) {
+                    $this->method = strtoupper($this->server['request_method']);
+                } else {
+                    $this->method = 'GET';
+                }
+            }
+        }
+
+        return $this->method;
+    }
+
+    public function getIsPut()
+    {
+        return 'PUT' === $this->getMethod();
     }
 
     public function hasBodyParam($name): bool
@@ -359,11 +394,22 @@ class Request extends Message implements RequestInterface
 
     public function getIp()
     {
-        $ip = $this->swooleHttpRequest->header['x-forwarded-for'] ??
-                $this->swooleHttpRequest->header['http_x_forwarded_for'] ??
-                $this->swooleHttpRequest->header['http_forwarded'] ??
-                $this->swooleHttpRequest->header['http_forwarded_for'] ??
-                '';
+        $ip = '';
+        if ($this->hasHeader('x-forwarded-for')) {
+            $ip = $this->getHeaderLine('x-forwarded-for');
+        } else {
+            if ($this->hasHeader('http_x_forwarded_for')) {
+                $ip = $this->getHeaderLine('http_x_forwarded_for');
+            } else {
+                if ($this->hasHeader('http_forwarded')) {
+                    $ip = $this->getHeaderLine('http_forwarded');
+                } else {
+                    if ($this->hasHeader('http_forwarded_for')) {
+                        $ip = $this->getHeaderLine('http_forwarded_for');
+                    }
+                }
+            }
+        }
 
         if ($ip) {
             $ip = explode(',', $ip);
@@ -371,12 +417,17 @@ class Request extends Message implements RequestInterface
             return $ip;
         }
 
-        $ip = $this->swooleHttpRequest->header['http_client_ip'] ??
-                $this->swooleHttpRequest->header['x-real-ip'] ??
-                $this->swooleHttpRequest->header['remote_addr'] ??
-                $this->swooleHttpRequest->server['remote_addr'] ??
-                '';
-
+        if ($this->hasHeader('http_client_ip')) {
+            $ip = $this->getHeaderLine('http_client_ip');
+        } else {
+            if ($this->hasHeader('x-real-ip')) {
+                $ip = $this->getHeaderLine('x-real-ip');
+            } else {
+                if ($this->hasHeader('remote_addr')) {
+                    $ip = $this->getHeaderLine('remote_addr');
+                }
+            }
+        }
         return $ip;
     }
 
@@ -393,16 +444,6 @@ class Request extends Message implements RequestInterface
     public function getIsHead()
     {
         return 'HEAD' === $this->getMethod();
-    }
-
-    public function getIsPost()
-    {
-        return 'POST' === $this->getMethod();
-    }
-
-    public function getIsPut()
-    {
-        return 'PUT' === $this->getMethod();
     }
 
     public function getIsDelete()
@@ -433,5 +474,4 @@ class Request extends Message implements RequestInterface
     {
         return $this->files[$name] ?? null;
     }
-
 }

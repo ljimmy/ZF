@@ -2,6 +2,7 @@
 
 namespace SF\Http\Routing;
 
+use SF\Contracts\Http\Middleware;
 use SF\Http\Action;
 
 class Route
@@ -39,7 +40,7 @@ class Route
 
     /**
      *
-     * @var \SF\Http\Middlewares\MiddlewareInterface[]
+     * @var Middleware
      */
     private $middlewares;
 

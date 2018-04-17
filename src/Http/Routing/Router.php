@@ -2,21 +2,14 @@
 
 namespace SF\Http\Routing;
 
-use SF\Di\Container;
+use SF\Contracts\Http\Router as RouterInterface;
 use SF\Http\Action;
-use SF\Http\Request;
-use SF\Http\RouterInterface;
-use SF\Http\Exceptions\NotFoundHttpException;
 use SF\Http\Exceptions\MethodNotAllowedHttpException;
+use SF\Http\Exceptions\NotFoundHttpException;
+use SF\Http\Request;
 
 class Router implements RouterInterface
 {
-
-    /**
-     *
-     * @var RouteTable
-     */
-    private $routeTable;
 
     /**
      *
@@ -65,6 +58,11 @@ class Router implements RouterInterface
      * @var array
      */
     public $rules;
+    /**
+     *
+     * @var RouteTable
+     */
+    private $routeTable;
 
     public function __construct()
     {
@@ -73,8 +71,8 @@ class Router implements RouterInterface
 
     public function init()
     {
-        foreach ((array) $this->rules as $rule) {
-            $this->routeTable->add((array) $rule);
+        foreach ((array)$this->rules as $rule) {
+            $this->routeTable->add((array)$rule);
         }
     }
 

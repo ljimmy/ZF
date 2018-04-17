@@ -2,6 +2,7 @@
 
 namespace SF\Events;
 
+use SF\Contracts\Event\Event;
 use SF\Di\Container;
 
 
@@ -42,7 +43,7 @@ class EventManager
         return $this;
     }
 
-    public function off($type, EventInterface $event = null)
+    public function off($type, Event $event = null)
     {
         if (!isset($this->eventsList[$type])) {
             return $this;
@@ -63,7 +64,7 @@ class EventManager
         return $this;
     }
 
-    public function triggerEvent(EventInterface $event, ...$args)
+    public function triggerEvent(Event $event, ...$args)
     {
         $event->handle(...$args);
     }

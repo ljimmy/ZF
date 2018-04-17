@@ -6,11 +6,11 @@ use SF\Support\Collection;
 
 interface Message
 {
-    public function getHeader(): Collection;
-
-    public function withHeader(Collection $header);
-
-    public function getStream(): Stream;
-
-    public function withStream(Stream $stream);
+//    public function getHeader(): Collection;
+//
+//    public function withHeader(Collection $header);
+//
+//    public function getBody(): Stream;
+//
+//    public function withBody(Stream $stream);
 }

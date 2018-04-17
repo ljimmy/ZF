@@ -2,14 +2,9 @@
 
 namespace SF\Protocol;
 
+use SF\Contracts\Protocol\Action;
 use SF\Contracts\Protocol\Middleware as MiddlewareInterface;
-use SF\Contracts\Protocol\Replier;
 
-/**
- * Class Middleware
- * @package SF\Protocol
- * @deprecated
- */
 class Middleware
 {
     private $list = [];
@@ -32,16 +27,17 @@ class Middleware
         }
     }
 
-    public function process(Message $message, Action $action): Replier
+    public function process(Message $message, Action $action)
     {
-        $result = array_reduce(array_merge($this->list, array_values($action->getMiddlewares())), function($stack, MiddlewareInterface $middleware) {
-            return function($message) use ($middleware, $stack) {
-                return $middleware->handle($message, $stack);
-            };
-        }, function() use ($action) {
-            return $action->run();
-        });
-        return $result($message);
+        $stack = array_reduce(array_merge($this->list, array_values($action->getMiddleware())),
+            function ($stack, MiddlewareInterface $middleware) {
+                return function ($message) use ($middleware, $stack) {
+                    return $middleware->handle($message, $stack);
+                };
+            }, function ($message) use ($action) {
+                return $action->run($message);
+            });
+        return $stack($message);
     }
 
 }

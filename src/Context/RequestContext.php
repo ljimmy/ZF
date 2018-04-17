@@ -2,8 +2,8 @@
 
 namespace SF\Context;
 
-use SF\Http\Request;
-use SF\Http\Response;
+use SF\Contracts\Protocol\Http\Request;
+use SF\Contracts\Protocol\Http\Response;
 
 class RequestContext implements InterfaceContext
 {
@@ -53,20 +53,12 @@ class RequestContext implements InterfaceContext
         self::$map[$this->id] = $this;
     }
 
-    /**
-     *
-     * @return \SF\Http\Request
-     */
-    public function getRequest()
+    public function getRequest(): Request
     {
         return $this->request;
     }
 
-    /**
-     *
-     * @return \SF\Http\Response
-     */
-    public function getResponse()
+    public function getResponse(): Response
     {
         return $this->response;
     }

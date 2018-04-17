@@ -3,7 +3,7 @@
 namespace SF\Http;
 
 use SF\Support\PHP;
-use SF\Http\Middlewares\MiddlewareInterface;
+use SF\Contracts\Http\Middleware as MiddlewareInterface;
 
 class Action
 {
@@ -28,7 +28,7 @@ class Action
 
     /**
      *
-     * @var Middlewares\MiddlewareInterface[]
+     * @var MiddlewareInterface[]
      */
     private $middlewares = [];
 

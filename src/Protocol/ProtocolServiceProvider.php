@@ -28,24 +28,17 @@ class ProtocolServiceProvider
     public function init()
     {
         if ($this->handle === null) {
-            throw new UserException('do not set protocol.');
+            throw new UserException('Service do not set protocol.');
         }
-        $this->handle = $this->container->setDefinition($this->handle, null, true);
+        $this->handle = $this->container->create($this->handle);
 
         if (!$this->handle instanceof Protocol) {
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');
         }
-
-        $this->middleware = new Middleware($this->middleware);
     }
 
     public function getProtocol(): Protocol
     {
         return $this->handle;
-    }
-
-    public function getMiddleware(): Middleware
-    {
-        return $this->middleware;
     }
 }

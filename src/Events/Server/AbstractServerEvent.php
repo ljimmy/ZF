@@ -2,10 +2,10 @@
 
 namespace SF\Events\Server;
 
-use SF\Events\EventInterface;
+use SF\Contracts\Event\Event;
 use SF\Events\EventTypes;
 
-abstract class AbstractServerEvent implements EventInterface
+abstract class AbstractServerEvent implements Event
 {
     public function getType()
     {

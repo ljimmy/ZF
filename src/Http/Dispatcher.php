@@ -2,6 +2,8 @@
 
 namespace SF\Http;
 
+use SF\Contracts\Http\Router;
+
 class Dispatcher
 {
 
@@ -17,7 +19,7 @@ class Dispatcher
         $this->middleware = $middleware;
     }
 
-    public function dispatch(Request $request, RouterInterface $route)
+    public function dispatch(Request $request, Router $route)
     {
         return $this->middleware->process($request, $route->handleHttpRequest($request));
     }

@@ -49,7 +49,7 @@ class Container implements ContainerInterface
         return $this;
     }
 
-    public function setDefinition($definition, $alias = null, bool $returnInstance = false)
+    public function setDefinition($definition, $alias = null)
     {
         if (is_array($definition)) {
             $class = $definition['class'];
@@ -65,11 +65,7 @@ class Container implements ContainerInterface
             $this->alias[$alias] = $class;
         }
 
-        if ($returnInstance) {
-            return $this->get($class);
-        } else {
-            return $this;
-        }
+        return $this;
     }
 
     public function set($class, $object, $alia = null)
@@ -94,6 +90,22 @@ class Container implements ContainerInterface
         } else {
             return $this->build($class, $params);
         }
+    }
+
+    public function create($object, array $params = [])
+    {
+        if (is_array($object)) {
+            $class = $object['class'];
+            unset($object['class']);
+        } else if (is_string($object)) {
+            $class      = $object;
+            $object = [];
+        } else {
+            return null;
+        }
+
+        return $this->build($class,$params, $object);
+
     }
 
     /**

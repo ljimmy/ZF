@@ -20,6 +20,8 @@ use SF\Support\Collection;
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  * |       Authentication credential       |      //Authentication flavor Number see SF\Protocol\Rpc\Authenticator
  * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+ * |module
+ * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
  *
  *
  * @property int id 消息id

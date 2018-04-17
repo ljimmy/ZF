@@ -2,7 +2,7 @@
 
 namespace SF\Http;
 
-use SF\Http\Middlewares\MiddlewareInterface;
+use SF\Contracts\Http\Middleware as MiddlewareInterface;
 
 class Middleware
 {
