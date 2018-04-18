@@ -13,7 +13,6 @@ interface Response extends ResponseInterface, Message
 
     public function getCharset();
 
-
     public function withContent(string $content);
 
     public function redirect(string $url, int $status = 302);

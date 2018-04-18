@@ -1,16 +1,10 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: xfb_user
- * Date: 2018/4/17
- * Time: 下午4:06
- */
 
 namespace SF\Protocol\Http;
 
-
 use Psr\Http\Message\MessageInterface;
 use Psr\Http\Message\StreamInterface;
+use SF\Http\Stream;
 
 class Message implements MessageInterface, \SF\Contracts\Protocol\Message
 {
@@ -29,7 +23,7 @@ class Message implements MessageInterface, \SF\Contracts\Protocol\Message
 
     /**
      *
-     * @var Stream
+     * @var StreamInterface
      */
     protected $stream;
 
@@ -258,5 +252,42 @@ class Message implements MessageInterface, \SF\Contracts\Protocol\Message
 
         return $this;
     }
+
+    public function getPackageHeader(): array
+    {
+        return $this->getHeaders();
+    }
+
+    public function hasPackageHeader(string $name): bool
+    {
+        return $this->hasHeader($name);
+    }
+
+    public function withPackageHeader(array $header)
+    {
+        $this->headers = $header;
+    }
+
+    public function withAddPackageHeader(string $name, $value)
+    {
+        return $this->withAddedHeader($name, $value);
+    }
+
+    public function withOutPackageHeader(string $name)
+    {
+        return $this->withoutHeader($name);
+    }
+
+
+    public function getPackageBody()
+    {
+        return $this->getBody()->getContents();
+    }
+
+    public function withPackageBody(string $body)
+    {
+        return $this->withBody(new Stream($body));
+    }
+
 
 }

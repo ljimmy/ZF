@@ -1,16 +1,21 @@
 <?php
 
-namespace SF\Http\Routing;
+namespace SF\Http;
 
-use SF\Contracts\Http\Router as RouterInterface;
-use SF\Http\Action;
+
+use SF\Contracts\IoC\Object;
+use SF\Contracts\Protocol\Action;
+use SF\Contracts\Protocol\Message;
+use SF\Contracts\Protocol\Router as RouterInterface;
+use SF\Exceptions\UserException;
 use SF\Http\Exceptions\MethodNotAllowedHttpException;
 use SF\Http\Exceptions\NotFoundHttpException;
-use SF\Http\Request;
+use SF\Protocol\Http\Request;
+use SF\Routing\RouteTable;
 
-class Router implements RouterInterface
+
+class Router implements RouterInterface, Object
 {
-
     /**
      *
      * ```php
@@ -28,21 +33,21 @@ class Router implements RouterInterface
      *         'pattern' => '/\/a\/b\/(\d+)\/c\/(\w+)',
      *         'methods' => ['GET'],
      *         'regex' => true,
-     *         'middlewares' => [],
+     *         'middleware' => [],
      *         'handler' => function($param_1, $param_2){}
      *     ],
      *     [
      *         'pattern' => '/\/a/b\/(\d+)',
      *         'methods' => [],//禁止访问
      *         'regex' => true,
-     *         'middlewares' => [],
+     *         'middleware' => [],
      *         'handler' => function($param_1){},
      *         'group' =>
      *         [
      *             [
      *                 'pattern' => '/c/d',
      *                 'methods' => ['GET'],
-     *                 'middlewares' => [],
+     *                 'middleware' => [],
      *                 'handler' => function($param_1){}
      *             ],
      *             [
@@ -57,42 +62,45 @@ class Router implements RouterInterface
      *
      * @var array
      */
-    public $rules;
+    public $rules = [];
     /**
      *
      * @var RouteTable
      */
     private $routeTable;
 
-    public function __construct()
-    {
-        $this->routeTable = new RouteTable();
-    }
-
     public function init()
     {
-        foreach ((array)$this->rules as $rule) {
-            $this->routeTable->add((array)$rule);
+        $this->routeTable = new RouteTable();
+
+        foreach ($this->rules as $rule) {
+            $this->routeTable->add( (array) $rule);
         }
+
     }
 
-    public function handleHttpRequest(Request $request): Action
+    public function handle(Message $message): Action
     {
-        $path = $request->getServer('path_info');
+        if (!$message instanceof Request) {
+            throw new UserException('Message must instanceof Request');
+        }
+
+        $path = $message->getServer('path_info');
         if ($path[-1] !== '/') {
             $path .= '/';
         }
-        $action = $this->routeTable->find(rawurldecode($path));
+        $action = $this->routeTable->find(rawurldecode($path), new \SF\Protocol\Action());
 
-        if ($action->getHandler() === null) {
+        if (!$action->isSetHandler()) {
             throw new NotFoundHttpException();
         }
 
-        if ($action->getMethods() !== null && !in_array($request->getMethod(), $action->getMethods())) {
+        if ($action->getMethods() !== null && !in_array($message->getMethod(), $action->getMethods())) {
             throw new MethodNotAllowedHttpException();
         }
 
         return $action;
     }
+
 
 }

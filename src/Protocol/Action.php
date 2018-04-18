@@ -1,13 +1,13 @@
 <?php
 
-namespace SF\Http;
+namespace SF\Protocol;
 
+use SF\Contracts\Protocol\Action as ActionInterface;
+use SF\Contracts\Protocol\Middleware as MiddlewareInterface;
 use SF\Support\PHP;
-use SF\Contracts\Http\Middleware as MiddlewareInterface;
 
-class Action
+class Action implements ActionInterface
 {
-
     /**
      *
      * @var array
@@ -30,56 +30,42 @@ class Action
      *
      * @var MiddlewareInterface[]
      */
-    private $middlewares = [];
-
-    public function setMethods(array $methods = null)
-    {
-        $this->methods = $methods;
-
-        return $this;
-    }
+    private $middleware = [];
 
     public function getMethods()
     {
         return $this->methods;
     }
 
+    public function setMethods($methods)
+    {
+        $this->methods = $methods;
+    }
+
     public function setHandler(\Closure $handler = null)
     {
         $this->handler = $handler;
-
-        return $this;
     }
 
-    public function getHandler()
+    public function isSetHandler(): bool
     {
-        return $this->handler;
+        return null !== $this->handler;
     }
 
     public function addParams(array $params = [])
     {
         $this->params = array_merge($this->params, $params);
-
-        return $this;
-    }
-
-    public function getMiddlewares()
-    {
-        return $this->middlewares;
     }
 
     public function addMiddleware(MiddlewareInterface $middleware)
     {
-        $this->middlewares[] = $middleware;
-
-        return $this;
+        $this->middleware[] = $middleware;
     }
 
-    public function addMiddlewares(array $middlewares)
-    {
-        $this->middlewares = array_merge($this->middlewares, $middlewares);
 
-        return $this;
+    public function getMiddleware(): array
+    {
+        return $this->middleware;
     }
 
     public function run()
@@ -87,7 +73,9 @@ class Action
         if ($this->handler === null) {
             return null;
         }
+
         return PHP::call($this->handler, $this->params);
     }
+
 
 }

@@ -5,6 +5,8 @@ namespace SF\Protocol\Http;
 use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use SF\Contracts\Protocol\Http\Request as RequestInterface;
+use SF\Http\Cookie;
+use SF\Http\UploadedFile;
 use SF\Support\Json;
 
 class Request extends Message implements RequestInterface
@@ -46,7 +48,7 @@ class Request extends Message implements RequestInterface
     private $uri;
     /**
      *
-     * @var array
+     * @var Cookie[]
      */
     private $cookies = [];
     /**
@@ -61,7 +63,7 @@ class Request extends Message implements RequestInterface
     private $bodyParams = [];
     /**
      *
-     * @var array
+     * @var UploadedFile[]
      */
     private $files = [];
 

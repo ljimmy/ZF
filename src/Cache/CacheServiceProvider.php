@@ -2,9 +2,10 @@
 
 namespace SF\Cache;
 
-use SF\Di\Container;
+use SF\Contracts\IoC\Object;
+use SF\IoC\Container;
 
-class CacheServiceProvider
+class CacheServiceProvider implements Object
 {
 
     const CACHE_DRIVER = 'cache_driver';

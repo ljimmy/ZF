@@ -1,6 +1,6 @@
 <?php
 
-namespace SF\Di\Exceptions;
+namespace SF\IoC\Exceptions;
 
 use SF\Exceptions\UserException;
 use Psr\Container\NotFoundExceptionInterface;

@@ -2,9 +2,10 @@
 
 namespace SF\Context;
 
+use SF\Contracts\Context\Context;
 use SF\Coroutine\Coroutine;
 
-class CoroutineContext implements InterfaceContext
+class CoroutineContext implements Context
 {
 
     /**

@@ -3,7 +3,7 @@
 namespace SF\Events\Server;
 
 
-use SF\Di\Container;
+use SF\IoC\Container;
 use SF\Protocol\ProtocolServiceProvider;
 use Swoole\Server;
 

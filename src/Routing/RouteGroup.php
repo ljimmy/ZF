@@ -1,10 +1,10 @@
 <?php
 
-namespace SF\Http\Routing;
+namespace SF\Routing;
+
 
 class RouteGroup
 {
-
     /**
      *
      * @var Route[]
@@ -32,5 +32,4 @@ class RouteGroup
         }
         return false;
     }
-
 }

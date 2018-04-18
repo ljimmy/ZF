@@ -29,7 +29,13 @@ return [
         //用户组
         'group'                   => 'staff',
         //日志
-        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log'
+        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
+
+        //tcp
+        //固定长度
+        'open_length_check' => true,
+        'package_length_type' => 'N',
+        ''
     ],
     'components' => [
         'eventManager' => [
@@ -37,8 +43,8 @@ return [
             'events' => [
                 \SF\Events\Server\BufferEmpty::class,
                 \SF\Events\Server\BufferFull::class,
-                \SF\Events\Server\Close::class,//dispatch_mode==1/3 忽略
-                \SF\Events\Server\Connect::class,//dispatch_mode==1/3 忽略
+                \SF\Events\Server\Close::class,//dispatch_mode==1/3 被忽略
+                \SF\Events\Server\Connect::class,//dispatch_mode==1/3 被忽略
                 \SF\Events\Server\Finish::class,
                 \SF\Events\Server\ManagerStart::class,
                 \SF\Events\Server\ManagerStop::class,
@@ -52,12 +58,8 @@ return [
                 \SF\Events\Server\WorkerStart::class,
                 \SF\Events\Server\WorkerStop::class,
                 //http
-                \SF\Events\Server\Http\Request::class,
+                \SF\Events\Server\Http\Request::class
             ],
-        ],
-        'router'   => [
-            'class' => \SF\Http\Routing\Router::class,
-            'rules' => include_once ('config/routes.php'),
         ],
         'database' => [
             'class'     => SF\Databases\DatabaseServiceProvider::class,
@@ -85,6 +87,14 @@ return [
                 'port'  => 6379,
                 'maxConnections' => 30
             ]
+        ],
+        'protocol' => [
+            'class'  => \SF\Protocol\ProtocolServiceProvider::class,
+            'protocol' => \SF\Protocol\Http\Protocol::class,
+        ],
+        'router'   => [
+            'class' => \SF\Http\Router::class,
+            'rules' => include_once ('config/routes.php'),
         ]
     ]
 ];

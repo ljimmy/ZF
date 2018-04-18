@@ -3,10 +3,11 @@
 namespace SF\Events;
 
 use SF\Contracts\Event\Event;
-use SF\Di\Container;
+use SF\Contracts\IoC\Object;
+use SF\IoC\Container;
 
 
-class EventManager
+class EventManager implements Object
 {
     public $events = [];
 
@@ -32,7 +33,7 @@ class EventManager
         }
     }
 
-    public function on(EventInterface $event)
+    public function on(Event $event)
     {
         if (isset($this->eventsList[$event->getType()])) {
             $this->eventsList[$event->getType()][] = $event;

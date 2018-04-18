@@ -2,11 +2,12 @@
 
 namespace SF\Databases;
 
-use SF\Di\Container;
+use SF\Contracts\IoC\Object;
+use SF\IoC\Container;
 use SF\Pool\PoolInterface;
 use SF\Exceptions\UserException;
 
-class DatabaseServiceProvider
+class DatabaseServiceProvider implements Object
 {
 
     const DATABASE_CONNECTOR = 'database_connector';

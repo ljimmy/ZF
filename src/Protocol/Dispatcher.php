@@ -5,7 +5,6 @@ namespace SF\Protocol;
 use SF\Contracts\Protocol\Dispatcher as DispatcherInterface;
 use SF\Contracts\Protocol\Message;
 use SF\Contracts\Protocol\Router;
-use SF\Di\Container;
 
 class Dispatcher implements DispatcherInterface
 {

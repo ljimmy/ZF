@@ -4,7 +4,7 @@ namespace SF\Server;
 
 use Swoole\Server;
 use SF\Base\Config;
-use SF\Di\Container;
+use SF\IoC\Container;
 use SF\Events\EventManager;
 use SF\Events\EventTypes;
 
@@ -99,11 +99,6 @@ class Application implements ServerInterface
         }
     }
 
-    public function triggerEvent($eventType)
-    {
-        $this->container->get(EventManager::class)->trigger($eventType, $this->server);
-    }
-
     public function getContainer()
     {
         return $this->container;
@@ -129,8 +124,8 @@ class Application implements ServerInterface
         $this->server = $this->createServer();
 
         $this->server->set($this->config->getServer());
-        $this->triggerEvent(EventTypes::SERVER_INIT);
-        $this->triggerEvent(EventTypes::BEFORE_START);
+        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT, $this->server);
+        $this->container->get(EventManager::class)->trigger(EventTypes::BEFORE_START, $this->server);
         $this->server->start();
     }
 

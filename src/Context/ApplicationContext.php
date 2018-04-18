@@ -2,13 +2,14 @@
 
 namespace SF\Context;
 
+use SF\Contracts\Context\Context;
 use SF\Server\Application;
 use SF\Cache\CacheInterface;
 use SF\Cache\CacheServiceProvider;
 use SF\Log\LoggerFactory;
 use Psr\Log\LoggerInterface;
 
-class ApplicationContext implements  InterfaceContext
+class ApplicationContext implements  Context
 {
 
     const WORKER = 1;
@@ -76,7 +77,7 @@ class ApplicationContext implements  InterfaceContext
     }
 
     /**
-     * @return \SF\Di\Container
+     * @return \SF\IoC\Container
      */
     public function getContainer()
     {

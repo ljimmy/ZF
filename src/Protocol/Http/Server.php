@@ -3,34 +3,37 @@
 namespace SF\Protocol\Http;
 
 
+use SF\Context\CoroutineContext;
 use SF\Context\RequestContext;
+use SF\Contracts\IoC\Object;
 use SF\Contracts\Protocol\Dispatcher;
-use SF\Contracts\Protocol\Protocol;
 use SF\Contracts\Protocol\Receiver;
 use SF\Contracts\Protocol\Replier;
-use SF\Contracts\Protocol\Router;
-use SF\Di\Container;
+use SF\Contracts\Protocol\Router as RouterInterface;
+use SF\Contracts\Protocol\Server as ServerInterface;
 use SF\Events\EventManager;
 use SF\Events\EventTypes;
 use SF\Http\Exceptions\HttpException;
+use SF\Http\Router;
+use SF\IoC\Container;
 use SF\Protocol\Middleware;
 
-class Server implements Protocol
+class Server implements ServerInterface, Object
 {
     /**
-     * @var Router
+     * @var RouterInterface
      */
-    public $router;
+    public $router = Router::class;
 
     /**
      * @var Dispatcher
      */
-    public $dispatcher;
+    public $dispatcher = \SF\Protocol\Dispatcher::class;
 
     /**
      * @var Middleware
      */
-    public $middleware;
+    public $middleware = Middleware::class;
 
     /**
      * @var Container
@@ -44,31 +47,38 @@ class Server implements Protocol
 
     public function __construct(Container $container)
     {
-        $this->container    = $container;
-        $this->eventManager = $container->get(EventManager::class);
+        $this->container = $container;
     }
 
     public function init()
     {
-        $this->router     = $this->container->create($this->router);
-        $this->dispatcher = $this->container->create($this->dispatcher);
+        $this->eventManager = $this->container->get(EventManager::class);
+        $this->router       = $this->container->get(Router::class);
+        $this->dispatcher   = $this->container->make($this->dispatcher);
 
         $this->middleware = new Middleware((array)$this->middleware);
     }
 
+    public function getName()
+    {
+        return self::NAME;
+    }
+
+
     public function handle(Receiver $receiver, Replier $replier): string
     {
-        $requestContent = new RequestContext($receiver->unpack(), new Response());
+        $requestContent = new RequestContext($receiver->unpack(), new Response(), /* 开启协程 */ new CoroutineContext());
 
         try {
             $requestContent->enter();
             $this->eventManager->trigger(EventTypes::BEFORE_REQUEST);
 
             /** {{{
+             *
              * request start
+             *
              */
             $result = $this->getDispatcher()->dispatch($requestContent->getRequest(), $this->getRouter());
-
             if ($result && $result instanceof \SF\Contracts\Protocol\Http\Response) {
                 $replier->pack($result);
             } else {
@@ -86,8 +96,8 @@ class Server implements Protocol
         } finally {
             $requestContent->exitContext();
         }
-        unset($requestContent);
 
+        unset($requestContent);
         return '';
     }
 
@@ -96,7 +106,7 @@ class Server implements Protocol
         return $this->dispatcher;
     }
 
-    public function getRouter(): Router
+    public function getRouter(): RouterInterface
     {
         return $this->router;
     }

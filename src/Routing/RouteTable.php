@@ -1,8 +1,9 @@
 <?php
 
-namespace SF\Http\Routing;
+namespace SF\Routing;
 
-use SF\Http\Action;
+use SF\Contracts\Protocol\Action;
+
 
 class RouteTable
 {
@@ -33,7 +34,7 @@ class RouteTable
      *         'pattern' => '/\/a\/b\/(\d+)\/c\/(\w+)',
      *         'methods' => ['GET'],
      *         'regex' => true,
-     *         'middlewares' => [],
+     *         'middleware' => [],
      *         'handler' => function($param_1, $param_2){}
      *     ];
      * $rule =
@@ -41,14 +42,14 @@ class RouteTable
      *         'pattern' => '/\/a/b\/(\d+)',
      *         'methods' => [],//禁止访问
      *         'regex' => true,
-     *         'middlewares' => [],
+     *         'middleware' => [],
      *         'handler' => function($param_1){},
      *         'group' =>
      *         [
      *             [
      *                 'pattern' => '/c/d',
      *                 'methods' => ['GET'],
-     *                 'middlewares' => [],
+     *                 'middleware' => [],
      *                 'handler' => function($param_1){}
      *             ],
      *             [
@@ -65,7 +66,7 @@ class RouteTable
     {
         $route = $this->createRoute($rule);
         if (isset($rule['group'])) {
-            $route->setGroup($this->creteaRouteGroup((array) $rule['group']));
+            $route->setGroup($this->createRouteGroup((array)$rule['group']));
         }
 
         $this->map[] = $route;
@@ -74,20 +75,19 @@ class RouteTable
     }
 
     /**
-     *
      * @param array $rule
-     * @return \SF\Http\Routing\Route
+     * @return Route
      */
     private function createRoute(array $rule): Route
     {
         return (new Route($rule['pattern'] ?? ''))
-                        ->setIsRegex(boolval($rule['regex'] ?? false))
-                        ->setMethods($rule['methods'] ?? null)
-                        ->setHandler($rule['handler'] ?? null)
-                        ->setMiddlewares($rule['middlewares'] ?? []);
+            ->setIsRegex(isset($rule['regex']) && $rule['regex'] ? true : false)
+            ->setMethods($rule['methods'] ?? null)
+            ->setHandler($rule['handler'] ?? null)
+            ->setMiddleware($rule['middleware'] ?? []);
     }
 
-    private function creteaRouteGroup(array $group): RouteGroup
+    private function createRouteGroup(array $group): RouteGroup
     {
         $routeGroup = new RouteGroup;
         foreach ($group as $rule) {
@@ -97,14 +97,12 @@ class RouteTable
     }
 
     /**
-     *
      * @param string $path
+     * @param Action $action
      * @return Action
      */
-    public function find(string $path): Action
+    public function find(string $path, Action $action): Action
     {
-        $action = new Action();
-
         foreach ($this->map as $route) {
             if ($route->match($path, $action)) {
                 break;

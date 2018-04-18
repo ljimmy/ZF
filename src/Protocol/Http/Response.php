@@ -2,9 +2,10 @@
 
 namespace SF\Protocol\Http;
 
+use SF\Http\Stream;
 use SF\Support\Str;
 use SF\Support\Json;
-use Psr\Http\Message\ResponseInterface;
+use SF\Contracts\Protocol\Http\Response as ResponseInterface;
 
 
 class Response extends Message implements ResponseInterface

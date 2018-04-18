@@ -6,7 +6,6 @@ use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
 {
-
     /**
      *
      * @var string
@@ -29,6 +28,11 @@ class Stream implements StreamInterface
         return $this->getContents();
     }
 
+    public function getContents(): string
+    {
+        return $this->contents;
+    }
+
     public function close(): void
     {
 
@@ -42,11 +46,6 @@ class Stream implements StreamInterface
     public function eof(): bool
     {
 
-    }
-
-    public function getContents(): string
-    {
-        return $this->contents;
     }
 
     public function getMetadata($key = null)
@@ -101,5 +100,4 @@ class Stream implements StreamInterface
     {
 
     }
-
 }

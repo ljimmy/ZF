@@ -2,10 +2,11 @@
 
 namespace SF\Context;
 
+use SF\Contracts\Context\Context;
 use SF\Contracts\Protocol\Http\Request;
 use SF\Contracts\Protocol\Http\Response;
 
-class RequestContext implements InterfaceContext
+class RequestContext implements Context
 {
 
     /**

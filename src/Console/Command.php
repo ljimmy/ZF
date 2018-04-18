@@ -3,16 +3,15 @@
 namespace SF\Console;
 
 use Dotenv\Dotenv;
-use SF\Http\HttpServer;
-use SF\Http\WebSocket;
 use SF\Server\Application;
+use SF\Support\PHP;
 
 class Command
 {
 
     const SERVER = [
-        'http' => HttpServer::class,
-        'webSocket' => WebSocket::class
+        'http' => \SF\Http\Application::class,
+        'webSocket' => \SF\WebSocket\Application::class
     ];
 
     const DEFAULT_SERVER = Application::class;
@@ -81,7 +80,7 @@ class Command
         $file = $this->opt->get('pidfile');
 
         if ($file === null) {
-            return \SF\Support\PHP::getBasePath(). DIRECTORY_SEPARATOR . '.pid';
+            return PHP::getBasePath(). DIRECTORY_SEPARATOR . '.pid';
         } else {
             return $file;
         }

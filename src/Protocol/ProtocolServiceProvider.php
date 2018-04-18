@@ -2,16 +2,17 @@
 
 namespace SF\Protocol;
 
-use SF\Di\Container;
+use SF\Contracts\IoC\Object;
+use SF\IoC\Container;
 use SF\Contracts\Protocol\Protocol;
 use SF\Exceptions\UserException;
 
-class ProtocolServiceProvider
+class ProtocolServiceProvider implements Object
 {
     /**
      * @var Protocol
      */
-    public $handle;
+    public $protocol;
 
     public $middleware = [];
 
@@ -27,18 +28,18 @@ class ProtocolServiceProvider
 
     public function init()
     {
-        if ($this->handle === null) {
+        if ($this->protocol === null) {
             throw new UserException('Service do not set protocol.');
         }
-        $this->handle = $this->container->create($this->handle);
+        $this->protocol = $this->container->make($this->protocol);
 
-        if (!$this->handle instanceof Protocol) {
+        if (!$this->protocol instanceof Protocol) {
             throw new UserException('protocol must implement the interface SF\Protocol\ProtocolInterface');
         }
     }
 
     public function getProtocol(): Protocol
     {
-        return $this->handle;
+        return $this->protocol;
     }
 }

@@ -1,22 +1,26 @@
 <?php
 
-namespace SF\Di;
+namespace SF\IoC;
 
-use Psr\Container\ContainerInterface;
-use SF\Di\Exceptions\ContainerException;
+use SF\Contracts\IoC\Container as ContainerInterface;
+use SF\Contracts\IoC\Object;
+use SF\IoC\Exceptions\ContainerException;
 
 class Container implements ContainerInterface
 {
-
-    const METHOD = 'init';
-
     /**
      *
      * @var array
      */
-    private $alias       = [];
+    private $alias = [];
+    /**
+     * @var array
+     */
     private $definitions = [];
-    private $singleton   = [];
+    /**
+     * @var array
+     */
+    private $singleton = [];
 
     public function __construct()
     {
@@ -49,26 +53,33 @@ class Container implements ContainerInterface
         return $this;
     }
 
-    public function setDefinition($definition, $alias = null)
+    public function setDefinition($definition, string $alias = null)
     {
-        if (is_array($definition)) {
-            $class = $definition['class'];
-            unset($definition['class']);
-        } else if (is_string($definition)) {
-            $class      = $definition;
-            $definition = [];
+        if (is_string($definition)) {
+            $definition = [
+                'class' => $definition
+            ];
         } else {
-            throw new ContainerException('The definition is not valid.');
+            if (is_array($definition)) {
+                if (!isset($definition['class'])) {
+                    throw new ContainerException('The definition class do not set.');
+                }
+            } else {
+                throw new ContainerException('The definition is not valid.');
+            }
         }
+
+        $class                     = $definition['class'];
         $this->definitions[$class] = $definition;
-        if ($alias && is_string($alias)) {
+
+        if ($alias) {
             $this->alias[$alias] = $class;
         }
 
         return $this;
     }
 
-    public function set($class, $object, $alia = null)
+    public function set($class, $object, string $alia = null)
     {
         $this->singleton[$class] = $object;
         if ($alia) {
@@ -83,42 +94,40 @@ class Container implements ContainerInterface
 
         if (isset($this->singleton[$class])) {
             return $this->singleton[$class];
-        }
-
-        if (isset($this->definitions[$class])) {
-            return $this->singleton[$class] = $this->build($class, $params, $this->definitions[$class]);
         } else {
-            return $this->build($class, $params);
+            return $this->make($this->definitions[$class] ?? ['class' => $class], $params);
         }
-    }
-
-    public function create($object, array $params = [])
-    {
-        if (is_array($object)) {
-            $class = $object['class'];
-            unset($object['class']);
-        } else if (is_string($object)) {
-            $class      = $object;
-            $object = [];
-        } else {
-            return null;
-        }
-
-        return $this->build($class,$params, $object);
 
     }
 
-    /**
-     *
-     * @param string $class
-     * @param array $params
-     * @return object
-     * @throws ContainerException
-     */
-    protected function build(string $class, array $params = [], array $definition = [])
+    public function make($object, array $params = [])
     {
+        if (is_string($object)) {
+            $definition = [
+                'class' => $object
+            ];
+        } else {
+            if (is_array($object)) {
+                if (!isset($object['class'])) {
+                    throw new ContainerException('The definition class do not set.');
+                }
+                $definition = $object;
+            } else {
+                throw new ContainerException('The definition is not valid.');
+            }
+        }
+
+        return $this->create($definition, $params);
+
+    }
+
+
+    protected function create(array $definition, array $params = [])
+    {
+        $class = $definition['class'];
+        unset($definition['class']);
+
         $reflection = new \ReflectionClass($class);
-
         if (!$reflection->isInstantiable()) {
             throw new ContainerException('Can not instantiable');
         }
@@ -132,20 +141,27 @@ class Container implements ContainerInterface
             foreach ($constructor->getParameters() as $parameter) {
                 if (array_key_exists($parameter->name, $params)) {
                     $dependencies[] = $params[$parameter->name];
-                } else if ($parameter->isDefaultValueAvailable()) {
-                    $dependencies[] = $parameter->getDefaultValue();
                 } else {
-                    $c              = $parameter->getClass();
-                    $dependencies[] = $c === null ? null : $this->get($c->getName());
+                    if ($parameter->isDefaultValueAvailable()) {
+                        $dependencies[] = $parameter->getDefaultValue();
+                    } else {
+                        $c              = $parameter->getClass();
+                        $dependencies[] = $c === null ? null : $this->get($c->getName());
+                    }
                 }
             }
 
             $instance = $this->injectProperty($reflection->newInstanceArgs($dependencies), $definition);
         }
 
-        if ($reflection->hasMethod(self::METHOD)) {
-            $instance->{self::METHOD}();
+        if (isset($this->definitions[$class])) {
+            $this->singleton[$class] = $instance;
         }
+
+        if ($instance instanceof Object) {
+            $instance->init();
+        }
+
         return $instance;
     }
 
@@ -165,7 +181,6 @@ class Container implements ContainerInterface
 
     public function clear()
     {
-
         $this->alias       = [];
         $this->definitions = [];
         $this->singleton   = [];

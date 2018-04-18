@@ -3,6 +3,7 @@
 namespace SF\Protocol;
 
 use SF\Contracts\Protocol\Action;
+use SF\Contracts\Protocol\Message;
 use SF\Contracts\Protocol\Middleware as MiddlewareInterface;
 
 class Middleware

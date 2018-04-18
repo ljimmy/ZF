@@ -2,15 +2,20 @@
 
 namespace SF\Contracts\Protocol;
 
-use SF\Support\Collection;
 
 interface Message
 {
-//    public function getHeader(): Collection;
-//
-//    public function withHeader(Collection $header);
-//
-//    public function getBody(): Stream;
-//
-//    public function withBody(Stream $stream);
+    public function getPackageHeader(): array;
+
+    public function hasPackageHeader(string $name): bool;
+
+    public function withPackageHeader(array $header);
+
+    public function withAddPackageHeader(string $name, $value);
+
+    public function withOutPackageHeader(string $name);
+
+    public function getPackageBody();
+
+    public function withPackageBody(string $body);
 }

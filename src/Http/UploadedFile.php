@@ -2,6 +2,8 @@
 
 namespace SF\Http;
 
+
+use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UploadedFileInterface;
 use SF\Coroutine\Coroutine;
 

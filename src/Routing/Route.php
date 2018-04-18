@@ -1,13 +1,12 @@
 <?php
 
-namespace SF\Http\Routing;
+namespace SF\Routing;
 
-use SF\Contracts\Http\Middleware;
-use SF\Http\Action;
+use SF\Contracts\Protocol\Action;
+use SF\Contracts\Protocol\Middleware;
 
 class Route
 {
-
     /**
      * 请求方法
      * @var array
@@ -40,9 +39,9 @@ class Route
 
     /**
      *
-     * @var Middleware
+     * @var Middleware[]
      */
-    private $middlewares;
+    private $middleware = [];
 
     public function __construct(string $pattern)
     {
@@ -70,9 +69,9 @@ class Route
         return $this;
     }
 
-    public function setMiddlewares(array $middlewares = [])
+    public function setMiddleware(array $middleware = [])
     {
-        $this->middlewares = $middlewares;
+        $this->middleware = $middleware;
 
         return $this;
     }
@@ -103,7 +102,10 @@ class Route
         $action->setMethods($this->methods);
         $action->setHandler($this->handler);
         $action->addParams($matches);
-        $action->addMiddlewares($this->middlewares);
+        
+        foreach ($this->middleware as $middleware) {
+            $action->addMiddleware($middleware);
+        }
 
         if ($this->group === null || $path === '') {
             return true;
@@ -111,5 +113,4 @@ class Route
             return $this->group->match($path, $action);
         }
     }
-
 }

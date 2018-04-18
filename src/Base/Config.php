@@ -2,19 +2,19 @@
 
 namespace SF\Base;
 
-class Config implements \ArrayAccess
-{
+use SF\Support\Collection;
 
-    private $config;
+class Config extends Collection
+{
 
     public function __construct(array $config = [])
     {
-        $this->config = $config;
+        $this->items = $config;
     }
 
-    public function get(string $key, $default = null)
+    public function get($key, $default = null)
     {
-        $data = $this->config;
+        $data = $this->items;
         foreach (explode('.', $key) as $segment) {
             if (array_key_exists($segment, $data)) {
                 $data = $data[$segment];
@@ -28,39 +28,17 @@ class Config implements \ArrayAccess
 
     public function getApplication()
     {
-        return $this->config['application'] ?? [];
+        return $this->items['application'] ?? [];
     }
 
     public function getServer()
     {
-        return $this->config['setting'] ?? [];
+        return $this->items['setting'] ?? [];
     }
 
     public function getComponents()
     {
-        return $this->config['components'] ?? [];
-    }
-
-    public function offsetExists($offset): bool
-    {
-        return isset($this->config[$offset]);
-    }
-
-    public function offsetGet($offset)
-    {
-        return $this->config[$offset] ?? null;
-    }
-
-    public function offsetSet($offset, $value)
-    {
-        if (is_string($offset)) {
-            $this->config[$offset] = $value;
-        }
-    }
-
-    public function offsetUnset($offset)
-    {
-        unset($this->config[$offset]);
+        return $this->items['components'] ?? [];
     }
 
 }

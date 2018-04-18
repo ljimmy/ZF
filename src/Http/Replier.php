@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: xfb_user
- * Date: 2018/4/17
- * Time: 下午5:31
- */
 
 namespace SF\Http;
 
@@ -31,12 +25,13 @@ class Replier implements ReplierInterface
         if ($response === null) {
             $this->swooleHttpResponse->end();
         } else {
-            foreach ($response->getHeaders() as $key => $value) {
-                $this->swooleHttpResponse->header($key, implode(';', $value));
-            }
 
             if ($response->getCharset()) {
-                $this->swooleHttpResponse->header('Content-Type', sprintf('charset=%s', $response->getCharset()));
+                $response->withAddedHeader('Content-Type',sprintf('charset=%s', $response->getCharset()));
+            }
+
+            foreach ($response->getHeaders() as $key => $value) {
+                $this->swooleHttpResponse->header($key, implode(';', $value));
             }
 
             $this->swooleHttpResponse->gzip($response->gzip);

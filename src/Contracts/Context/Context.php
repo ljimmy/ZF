@@ -1,8 +1,9 @@
 <?php
-namespace SF\Context;
+
+namespace SF\Contracts\Context;
 
 
-interface InterfaceContext
+interface Context
 {
     public function enter();
 
