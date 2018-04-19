@@ -27,17 +27,17 @@ return [
         //
         'user'                     => 'xfb_user',
         //用户组
-        'group'                   => 'staff',
+        'group'                    => 'staff',
         //日志
-        'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
+        'log_file'                 => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
 
         //tcp
         //固定长度
-        'open_length_check' => true,
-        'package_length_type' => 'N',
+        'open_length_check'        => true,
+        'package_length_type'      => 'N',
         ''
     ],
-    'components' => [
+    'components'  => [
         'eventManager' => [
             'class'  => \SF\Events\EventManager::class,
             'events' => [
@@ -61,7 +61,7 @@ return [
                 \SF\Events\Server\Http\Request::class
             ],
         ],
-        'database' => [
+        'database'     => [
             'class'     => SF\Databases\DatabaseServiceProvider::class,
             'connector' => [
                 'class'    => SF\Databases\Mysql\Connector::class,
@@ -73,28 +73,36 @@ return [
                 'timeout'  => 60,
                 'charset'  => 'utf8'
             ],
-            'pool' => [
-                'class' => SF\Pool\DatabaseConnectPool::class,
+            'pool'      => [
+                'class'          => SF\Pool\DatabaseConnectPool::class,
                 'maxConnections' => 30
             ],
-            'tables' => include_once ('config/tables.php')
+            'tables'    => include_once('config/tables.php')
         ],
-        'cache' => [
-            'class' => \SF\Cache\CacheServiceProvider::class,
+        'cache'        => [
+            'class'  => \SF\Cache\CacheServiceProvider::class,
             'driver' => [
-                'class' => SF\Redis\RedisCache::class,
-                'host'  => '127.0.0.1',
-                'port'  => 6379,
+                'class'          => SF\Redis\RedisCache::class,
+                'host'           => '127.0.0.1',
+                'port'           => 6379,
                 'maxConnections' => 30
             ]
         ],
-        'protocol' => [
-            'class'  => \SF\Protocol\ProtocolServiceProvider::class,
-            'protocol' => \SF\Protocol\Http\Protocol::class,
+        'protocol'     => [
+            'class'     => \SF\Protocol\ProtocolServiceProvider::class,
+            'protocols' => [
+                'http' => [
+                    'class' => \SF\Protocol\Http\Protocol::class,
+                    'server' => [
+                        'class' => \SF\Protocol\Http\Server::class,
+                        'middleware' => [],
+                    ]
+                ]
+            ],
         ],
-        'router'   => [
+        'router'       => [
             'class' => \SF\Http\Router::class,
-            'rules' => include_once ('config/routes.php'),
+            'rules' => include_once('config/routes.php'),
         ]
     ]
 ];

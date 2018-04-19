@@ -94,7 +94,7 @@ return [
         ],
         'protocol' => [
             'class'  => \SF\Protocol\ProtocolServiceProvider::class,
-            'protocol' => \SF\Protocol\Http\Protocol::class,
+            'protocol' => \SF\Protocol\Http\AbstractProtocol::class,
         ],
         'router'   => [
             'class' => \SF\Http\Router::class,
