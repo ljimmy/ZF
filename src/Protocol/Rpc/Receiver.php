@@ -4,11 +4,10 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Message as MessageInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
-use SF\Protocol\Message;
-use SF\Protocol\Stream;
 
-class Receiver extends Message implements ReceiverInterface
+class Receiver implements ReceiverInterface
 {
+
     /**
      * @param string $data
      * pack
@@ -42,16 +41,21 @@ class Receiver extends Message implements ReceiverInterface
      *
      * @return MessageInterface
      */
-    public function unpack(string $data): MessageInterface
+    public function unpack(string $data = ''): MessageInterface
     {
-        $this->header = new Header(
+        $header = new Header(
             unpack(
                 'Jid/Nlength/nversion/nflavor/Jcredential',
                 substr($data, 0, Header::HEADER_LENGTH)
             )
         );
-        $this->stream = new Stream(substr($data, Header::HEADER_LENGTH));
-        return $this;
+
+        $body = substr($data, Header::HEADER_LENGTH);
+        $header->action = strstr($data, Header::DELIMITER, true);
+
+
+        return new Message($header, substr($body, strlen($header->action) . strlen(Header::DELIMITER)));
+
     }
 
 

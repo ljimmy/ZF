@@ -5,69 +5,21 @@ namespace SF\Protocol\Http;
 
 use SF\Context\CoroutineContext;
 use SF\Context\RequestContext;
-use SF\Contracts\IoC\Object;
-use SF\Contracts\Protocol\Dispatcher;
 use SF\Contracts\Protocol\Receiver;
 use SF\Contracts\Protocol\Replier;
-use SF\Contracts\Protocol\Router as RouterInterface;
-use SF\Contracts\Protocol\Server as ServerInterface;
-use SF\Events\EventManager;
 use SF\Events\EventTypes;
 use SF\Http\Exceptions\HttpException;
 use SF\Http\Router;
-use SF\IoC\Container;
-use SF\Protocol\Middleware;
+use SF\Protocol\AbstractServer;
 
-class Server implements ServerInterface, Object
+class Server extends AbstractServer
 {
-    /**
-     * @var RouterInterface
-     */
     public $router = Router::class;
-
-    /**
-     * @var Dispatcher
-     */
-    public $dispatcher = \SF\Protocol\Dispatcher::class;
-
-    /**
-     * @var Middleware
-     */
-    public $middleware = Middleware::class;
-
-    /**
-     * @var Container
-     */
-    protected $container;
-
-    /**
-     * @var EventManager;
-     */
-    protected $eventManager;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
-    public function init()
-    {
-        $this->eventManager = $this->container->get(EventManager::class);
-        $this->router       = $this->container->get(Router::class);
-        $this->dispatcher   = $this->container->make($this->dispatcher);
-
-        $this->middleware = new Middleware((array)$this->middleware);
-    }
-
-    public function getName()
-    {
-        return self::NAME;
-    }
-
 
     public function handle(Receiver $receiver, Replier $replier): string
     {
-        $requestContent = new RequestContext($receiver->unpack(), new Response(), /* 开启协程 */ new CoroutineContext());
+        $requestContent = new RequestContext($receiver->unpack(), new Response(), /* 开启协程 */
+            new CoroutineContext());
 
         try {
             $requestContent->enter();
@@ -98,22 +50,8 @@ class Server implements ServerInterface, Object
         }
 
         unset($requestContent);
+
         return '';
-    }
-
-    public function getDispatcher(): Dispatcher
-    {
-        return $this->dispatcher;
-    }
-
-    public function getRouter(): RouterInterface
-    {
-        return $this->router;
-    }
-
-    public function getMiddleware(): Middleware
-    {
-        return $this->middleware;
     }
 
 

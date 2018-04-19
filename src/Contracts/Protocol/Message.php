@@ -15,7 +15,7 @@ interface Message
 
     public function withOutPackageHeader(string $name);
 
-    public function getPackageBody();
+    public function getPackageBody(): string;
 
     public function withPackageBody(string $body);
 }

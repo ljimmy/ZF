@@ -279,7 +279,7 @@ class Message implements MessageInterface, \SF\Contracts\Protocol\Message
     }
 
 
-    public function getPackageBody()
+    public function getPackageBody(): string
     {
         return $this->getBody()->getContents();
     }

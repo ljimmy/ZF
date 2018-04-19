@@ -7,6 +7,7 @@ use SF\Events\Server\AbstractServerEvent;
 use SF\Http\Receiver;
 use SF\Http\Replier;
 use SF\IoC\Container;
+use SF\Protocol\Http\AbstractProtocol;
 use SF\Protocol\ProtocolServiceProvider;
 
 class Request extends AbstractServerEvent
@@ -33,7 +34,7 @@ class Request extends AbstractServerEvent
      */
     public function callback($request = null, $response = null)
     {
-        $this->provider->getProtocol()->getServer()->handle(new Receiver($request), new Replier($response));
+        $this->provider->getProtocol(AbstractProtocol::NAME)->getServer()->handle(new Receiver($request), new Replier($response));
     }
 
 }

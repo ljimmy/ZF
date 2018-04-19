@@ -23,7 +23,7 @@ class Response extends Message implements ResponseInterface
      */
     private static $httpStatuses = [
         100 => 'Continue',
-        101 => 'Switching Protocol',
+        101 => 'Switching AbstractProtocol',
         102 => 'Processing',
         118 => 'Connection timed out',
         200 => 'OK',

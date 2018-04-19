@@ -24,4 +24,24 @@ class EventTypes
      * 请求结束后
      */
     const AFTER_REQUEST = 'after_request';
+
+    /**
+     * 数据接收前
+     */
+    const BEFORE_RECEIVE = 'before_receive';
+
+    /**
+     * 数据接收后
+     */
+    const AFTER_RECEIVE = 'after_receive';
+
+    /**
+     * 回应前
+     */
+    const BEFORE_REPLY = 'before_reply';
+
+    /**
+     * 回应后
+     */
+    const AFTER_REPLY = 'after_reply';
 }

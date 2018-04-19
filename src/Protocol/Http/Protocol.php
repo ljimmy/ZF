@@ -2,55 +2,28 @@
 
 namespace SF\Protocol\Http;
 
-use SF\Contracts\IoC\Object;
-use SF\Contracts\Protocol\Client;
-use SF\Contracts\Protocol\Protocol as ProtocolInterface;
-use SF\Contracts\Protocol\Server;
-use SF\IoC\Container;
+use SF\Contracts\Protocol\Client as ClientInterface;
+use SF\Contracts\Protocol\Server as ServerInterface;
+use SF\Protocol\AbstractProtocol;
 
-class Protocol implements ProtocolInterface, Object
+class Protocol extends AbstractProtocol
 {
     const NAME = 'HTTP';
 
     /**
-     * @var Server
+     * @var ServerInterface
      */
-    public $server = \SF\Protocol\Http\Server::class;
+    public $server = Server::class;
 
     /**
-     * @var Client
+     * @var ClientInterface
      */
-    public $client = \SF\Protocol\Http\Client::class;
-
-    /**
-     * @var Container
-     */
-    protected $container;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
-
-    public function init()
-    {
-        $this->server = $this->container->make($this->server);
-    }
+    public $client = Client::class;
 
 
     public function getName()
     {
         return self::NAME;
-    }
-
-    public function getServer(): Server
-    {
-        return $this->server;
-    }
-
-    public function getClient(): Client
-    {
-        return $this->client;
     }
 
 
