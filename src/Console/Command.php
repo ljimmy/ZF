@@ -3,7 +3,7 @@
 namespace SF\Console;
 
 use Dotenv\Dotenv;
-use SF\Server\Application;
+use SF\Http\Application;
 use SF\Support\PHP;
 
 class Command
@@ -94,7 +94,12 @@ class Command
             $this->writeln('Unsupported Service');
         } else {
             $this->writeln('Starting...');
-            (new $server($this->getConfig()))->start();
+
+            $config = $this->getConfig();
+            $application = (new $server($config['application'] ?? []));
+            $application->registerComponents($config['components']);
+            $application->start();
+            $this->writeln('Server has stopped');
         }
 
     }

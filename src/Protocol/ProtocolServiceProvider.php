@@ -37,6 +37,11 @@ class ProtocolServiceProvider implements Object
         $this->protocols[strtolower($protocol->getName())] = $protocol;
     }
 
+    public function hasProtocol(string $name)
+    {
+        return isset($this->protocols[strtolower($name)]);
+    }
+
     public function getProtocol(string $name): ProtocolInterface
     {
         $name = strtolower($name);

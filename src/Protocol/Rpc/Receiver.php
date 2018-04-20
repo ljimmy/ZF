@@ -54,7 +54,7 @@ class Receiver implements ReceiverInterface
         $header->action = strstr($data, Header::DELIMITER, true);
 
 
-        return new Message($header, substr($body, strlen($header->action) . strlen(Header::DELIMITER)));
+        return new Message($header, substr($body, strlen($header->action . Header::DELIMITER)));
 
     }
 

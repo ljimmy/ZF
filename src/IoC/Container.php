@@ -2,7 +2,7 @@
 
 namespace SF\IoC;
 
-use SF\Contracts\IoC\Container as ContainerInterface;
+use Psr\Container\ContainerInterface;
 use SF\Contracts\IoC\Object;
 use SF\IoC\Exceptions\ContainerException;
 

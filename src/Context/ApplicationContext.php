@@ -2,32 +2,30 @@
 
 namespace SF\Context;
 
-use SF\Contracts\Context\Context;
-use SF\Server\Application;
+use Psr\Log\LoggerInterface;
 use SF\Cache\CacheInterface;
 use SF\Cache\CacheServiceProvider;
+use SF\Contracts\Context\Context;
+use SF\IoC\Container;
 use SF\Log\LoggerFactory;
-use Psr\Log\LoggerInterface;
+use Swoole\Server;
 
-class ApplicationContext implements  Context
+class ApplicationContext implements Context
 {
 
-    const WORKER = 1;
-
-    const TASK   = 1;
-
+    /**
+     * @var self
+     */
+    private static $context;
+    /**
+     * @var Server
+     */
+    private $server;
     /**
      *
-     * @var 应用类型
+     * @var Container
      */
-    private $type;
-
-    /**
-     *
-     * @var Application
-     */
-    private $application;
-
+    private $container;
     /**
      *
      * @var CacheInterface
@@ -37,59 +35,32 @@ class ApplicationContext implements  Context
      * @var LoggerInterface;
      */
     private $logger;
-    /**
-     * @var self
-     */
-    private static $context;
 
-    public function __construct(Application $application)
+    public function __construct(Container $container, Server $server)
     {
-        $this->application = $application;
+        $this->container = $container;
+        $this->server    = $server;
+    }
+
+    /**
+     *
+     * @return $this
+     */
+    public static function getContext()
+    {
+        return self::$context;
     }
 
     public function enter()
     {
-        $server            = $this->application->getServer();
-        $this->type        = $server->taskworker ? self::TASK : self::WORKER;
-        $this->application->context = $this;
-
-        $this->setProcessTitle();
-        self::$context   = $this;
+        self::$context = $this;
     }
 
-    public function setProcessTitle()
+    public function isTask(): bool
     {
-        $title = '';
-        switch ($this->type) {
-            case self::WORKER:
-                $title = 'SF Worker Process';
-                break;
-            case self::TASK:
-                $title = 'SF Task Process';
-                break;
-        }
-        setProcessTitle($title);
+        return $this->server->taskworker;
     }
 
-    public function getApplication()
-    {
-        return $this->application;
-    }
-
-    /**
-     * @return \SF\IoC\Container
-     */
-    public function getContainer()
-    {
-        return $this->application->getContainer();
-    }
-
-    public function setCache(CacheInterface $cache)
-    {
-        $this->cache = $cache;
-
-        return $this;
-    }
 
     /**
      *
@@ -103,6 +74,21 @@ class ApplicationContext implements  Context
         return $this->cache;
     }
 
+    public function setCache(CacheInterface $cache)
+    {
+        $this->cache = $cache;
+
+        return $this;
+    }
+
+    /**
+     * @return \SF\IoC\Container
+     */
+    public function getContainer()
+    {
+        return $this->container;
+    }
+
     public function getLogger(): LoggerInterface
     {
         if ($this->logger === null) {
@@ -112,21 +98,12 @@ class ApplicationContext implements  Context
         return $this->logger;
     }
 
-    /**
-     *
-     * @return $this
-     */
-    public static function getContext()
-    {
-        return self::$context;
-    }
-
     public function exitContext()
     {
-        $this->application = null;
-        $this->cache       = null;
-        $this->logger      = null;
-        self::$context   = null;
+        $this->server  = null;
+        $this->cache   = null;
+        $this->logger  = null;
+        self::$context = null;
     }
 
 }

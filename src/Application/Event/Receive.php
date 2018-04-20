@@ -1,10 +1,11 @@
 <?php
 
-namespace SF\Events\Server;
+namespace SF\Application\Event;
 
 
 use SF\IoC\Container;
 use SF\Protocol\ProtocolServiceProvider;
+use SF\Protocol\Rpc\Protocol;
 use Swoole\Server;
 
 class Receive extends AbstractServerEvent
@@ -16,7 +17,21 @@ class Receive extends AbstractServerEvent
 
     public function __construct(Container $container)
     {
-        $this->protocolServiceProvider = $container->get(ProtocolServiceProvider::class)->getProtocol();
+        $this->protocolServiceProvider = $container->get(ProtocolServiceProvider::class);
+    }
+
+    public function getName(): string
+    {
+        return 'Receive';
+    }
+
+    public function getCallback(): \Closure
+    {
+        return function (Server $server, $fd, $reactor_id, $data) {
+            echo $fd;
+            $server->send($fd, '123');
+            $server->close($fd);
+        };
     }
 
     /**
@@ -27,6 +42,13 @@ class Receive extends AbstractServerEvent
      */
     public function callback($server = null, int $fd = 0, int $reactor_id = 0, string $data = '')
     {
+        var_dump(1);
+
+        return 1;
+
+        if (!$this->protocolServiceProvider->hasProtocol(Protocol::NAME)) {
+            return null;
+        }
 
 
         $message = $this->protocolServiceProvider->getMiddleware()->process(

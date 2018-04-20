@@ -78,7 +78,7 @@ class Response extends Message implements ResponseInterface
         449 => 'Retry With',
         450 => 'Blocked by Windows Parental Controls',
         451 => 'Unavailable For Legal Reasons',
-        500 => 'Internal Server Error',
+        500 => 'Internal Event Error',
         501 => 'Not Implemented',
         502 => 'Bad Gateway or Proxy Error',
         503 => 'Service Unavailable',
