@@ -253,9 +253,14 @@ class Message implements MessageInterface, \SF\Contracts\Protocol\Message
         return $this;
     }
 
-    public function getPackageHeader(): array
+    public function getPackageHeaders(): array
     {
         return $this->getHeaders();
+    }
+
+    public function getPackageHeader(string $name)
+    {
+        return $this->getHeader($name);
     }
 
     public function hasPackageHeader(string $name): bool
@@ -279,12 +284,12 @@ class Message implements MessageInterface, \SF\Contracts\Protocol\Message
     }
 
 
-    public function getPackageBody(): string
+    public function getPackageBody()
     {
         return $this->getBody()->getContents();
     }
 
-    public function withPackageBody(string $body)
+    public function withPackageBody($body)
     {
         return $this->withBody(new Stream($body));
     }

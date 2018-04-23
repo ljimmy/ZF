@@ -35,10 +35,7 @@ class Authenticator implements AuthenticatorInterface
 
     public function validate(Message $message)
     {
-        $header = $message->getHeader();
-
-        $flavor = $header['flavor'];
-
+        $flavor = $message->getPackageHeader('flavor');
 
         if (!in_array($flavor, $this->allow)) {
             throw new AuthException(AuthException::AUTH_BADVERF);
@@ -58,9 +55,7 @@ class Authenticator implements AuthenticatorInterface
     {
         $credentials = '';
 
-        $header = $message->getHeader();
-
-        $flavor = $header['flavor'];
+        $flavor = $message->getPackageHeader('flavor');
         switch ($flavor) {
             case self::AUTH_NONE:
                 break;

@@ -2,30 +2,23 @@
 
 namespace SF\Protocol\Rpc;
 
+use SF\Contracts\Protocol\Replier as ReplierInterface;
 
-use SF\Contracts\Protocol\Message as MessageInterface;
-use SF\Protocol\Message;
-
-class Replier extends Message implements ReplierInterface
+class Replier implements ReplierInterface
 {
+    protected $protocol;
 
-    public function reply(MessageInterface $message): string
+    public function __construct(Protocol $protocol)
     {
-        $stream = $message->getStream();
-        $header = $message->getHeader();
+        $this->protocol = $protocol;
+    }
 
-        $header->length = $stream->getSize();
+    public function pack(Message $message = null): string
+    {
+        if ($message === null) {
+            return '';
+        }
 
-
-        return pack(
-                'JNnnJ',
-                $header['id'],
-                $header['length'],
-                $header['version'],
-                $header['flavor'],
-                $header['credential']
-            )
-            . $stream->getContents();
     }
 
 

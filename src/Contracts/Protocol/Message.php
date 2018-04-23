@@ -5,7 +5,9 @@ namespace SF\Contracts\Protocol;
 
 interface Message
 {
-    public function getPackageHeader(): array;
+    public function getPackageHeaders(): array;
+
+    public function getPackageHeader(string $name);
 
     public function hasPackageHeader(string $name): bool;
 
@@ -15,7 +17,7 @@ interface Message
 
     public function withOutPackageHeader(string $name);
 
-    public function getPackageBody(): string;
+    public function getPackageBody();
 
-    public function withPackageBody(string $body);
+    public function withPackageBody($body);
 }

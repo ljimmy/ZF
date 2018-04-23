@@ -49,10 +49,16 @@ class Message implements MessageInterface
     }
 
 
-    public function getPackageHeader(): array
+    public function getPackageHeaders(): array
     {
-        return $this->header;
+        return $this->header->toArray();
     }
+
+    public function getPackageHeader(string $name)
+    {
+        return $this->header->get($name);
+    }
+
 
     public function hasPackageHeader(string $name): bool
     {
@@ -74,12 +80,12 @@ class Message implements MessageInterface
         unset($this->header[$name]);
     }
 
-    public function getPackageBody(): string
+    public function getPackageBody()
     {
         return $this->body;
     }
 
-    public function withPackageBody(string $body)
+    public function withPackageBody($body)
     {
         $this->body = $body;
     }

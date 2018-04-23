@@ -4,9 +4,16 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Message as MessageInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
+use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
 
 class Receiver implements ReceiverInterface
 {
+
+    protected $protocol;
+    public function __construct(Protocol $protocol)
+    {
+        $this->protocol = $protocol;
+    }
 
     /**
      * @param string $data
@@ -54,7 +61,18 @@ class Receiver implements ReceiverInterface
         $header->action = strstr($data, Header::DELIMITER, true);
 
 
-        return new Message($header, substr($body, strlen($header->action . Header::DELIMITER)));
+        $message =  new Message($header, substr($body, strlen($header->action . Header::DELIMITER)));
+
+        $version = $message->getPackageHeader('version');
+        if ($version > $this->protocol->high || $version < $this->protocol->low) {
+            throw new RpcMisMatchException($this->protocol->low, $this->protocol->high);
+        }
+
+        $this->protocol->getAuthenticator()->validate($message);
+
+        $message->withPackageBody($this->protocol->getPacker()->unpack($message->getPackageBody()));
+
+        return $message;
 
     }
 
