@@ -12,7 +12,7 @@ return [
             //指定Reactor线程数
             'reactor_num'              => 8,
             // 指定启动的worker进程数
-            'worker_num'               => 4,
+            'worker_num'               => 1,
             //服务器开启的task进程数
             'task_worker_num'          => 2,
             //backlog队列长度
@@ -31,22 +31,22 @@ return [
             'log_file'                 => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
         ],
         'events' => [
-            \SF\Application\Event\BufferEmpty::class,
-            \SF\Application\Event\BufferFull::class,
-            \SF\Application\Event\Close::class,//dispatch_mode==1/3 被忽略
-            \SF\Application\Event\Connect::class,//dispatch_mode==1/3 被忽略
-            \SF\Application\Event\Finish::class,
-            \SF\Application\Event\ManagerStart::class,
-            \SF\Application\Event\ManagerStop::class,
-            \SF\Application\Event\Packet::class,
-            \SF\Application\Event\PipeMessage::class,
-            \SF\Application\Event\Shutdown::class,
-            \SF\Application\Event\Start::class,
-            \SF\Application\Event\Task::class,
-            \SF\Application\Event\WorkerError::class,
-            \SF\Application\Event\WorkerStart::class,
-            \SF\Application\Event\WorkerStop::class,
-            \SF\Application\Event\Http\Request::class
+            \SF\Event\Server\BufferEmpty::class,
+            \SF\Event\Server\BufferFull::class,
+            \SF\Event\Server\Close::class,//dispatch_mode==1/3 被忽略
+            \SF\Event\Server\Connect::class,//dispatch_mode==1/3 被忽略
+            \SF\Event\Server\Finish::class,
+            \SF\Event\Server\ManagerStart::class,
+            \SF\Event\Server\ManagerStop::class,
+            \SF\Event\Server\Packet::class,
+            \SF\Event\Server\PipeMessage::class,
+            \SF\Event\Server\Shutdown::class,
+            \SF\Event\Server\Start::class,
+            \SF\Event\Server\Task::class,
+            \SF\Event\Server\WorkerError::class,
+            \SF\Event\Server\WorkerStart::class,
+            \SF\Event\Server\WorkerStop::class,
+            \SF\Event\Server\Http\Request::class
         ],
 
         'multiport' => [
@@ -64,14 +64,14 @@ return [
 //                    'package_max_length'       => 102400,//最大数据包尺寸 100kb
                 ],
                 'events' => [
-                    \SF\Application\Event\Receive::class
+                    SF\Event\Server\Rpc\Receive::class
                 ]
             ]
         ]
     ],
     'components'  => [
         'eventManager' => [
-            'class'  => \SF\Events\EventManager::class,
+            'class'  => \SF\Event\EventManager::class,
             'events' => [
             ],
         ],
@@ -105,11 +105,18 @@ return [
         'protocol'     => [
             'class'     => \SF\Protocol\ProtocolServiceProvider::class,
             'protocols' => [
-                'rpc' => [
+                'http' => [
                     'class' => \SF\Protocol\Http\Protocol::class,
                     'server' => [
                         'class' => \SF\Protocol\Http\Server::class,
                         'middleware' => [],
+                    ]
+                ],
+                'rpc' => [
+                    'class' => SF\Protocol\Rpc\Protocol::class,
+                    'server' => [
+                        'class' => SF\Protocol\Rpc\Server::class,
+                        'middleware' => []
                     ]
                 ]
             ],
