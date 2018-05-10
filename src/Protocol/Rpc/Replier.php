@@ -6,20 +6,50 @@ use SF\Contracts\Protocol\Replier as ReplierInterface;
 
 class Replier implements ReplierInterface
 {
+
     protected $protocol;
 
-    public function __construct(Protocol $protocol)
+    protected $receiver;
+
+    public function __construct(Protocol $protocol, Receiver $receiver = null)
     {
         $this->protocol = $protocol;
+        $this->receiver  = $receiver;
     }
 
-    public function pack(Message $message = null): string
+    /**
+     *
+     * @param Message|string $message
+     * @return string
+     */
+    public function pack($message): string
     {
-        if ($message === null) {
-            return '';
+        $request = $this->receiver->getMessage();
+
+        if (! $message instanceof Message) {
+            $message = new Message(
+                            new Header(
+                                [
+                                    'id'      => $request->getPackageHeader('id'),
+                                    'length'  => $request->getPackageHeader('length'),
+                                    'version' => $request->getPackageHeader('version'),
+                                    'flavor'  => $request->getPackageHeader('flavor'),
+                                ]
+                            ),
+                            $message
+                        );
         }
 
-    }
 
+        return pack(
+                'JNnnJ',
+                $message->getPackageHeader('id'),
+                $message->getPackageHeader('length'),
+                $message->getPackageHeader('version'),
+                $message->getPackageHeader('flavor'),
+                $this->protocol->getAuthenticator()->generate($message)
+            ) .
+            $this->protocol->getPacker()->pack($message->getPackageBody());
+    }
 
 }

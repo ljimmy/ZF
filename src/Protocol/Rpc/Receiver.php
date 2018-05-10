@@ -4,14 +4,34 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Message as MessageInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
+use SF\Protocol\Rpc\Exceptions\DeniedException;
+use SF\Protocol\Rpc\Exceptions\Denied\MissingParameter;
 use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
 
 class Receiver implements ReceiverInterface
 {
 
+    /**
+     *
+     * @var Protocol
+     */
     protected $protocol;
-    public function __construct(Protocol $protocol)
+
+    /**
+     *
+     * @var string
+     */
+    protected $data;
+
+    /**
+     *
+     * @var Message
+     */
+    private $message;
+
+    public function __construct(Protocol $protocol, string $data)
     {
+        $this->data = $data;
         $this->protocol = $protocol;
     }
 
@@ -48,10 +68,16 @@ class Receiver implements ReceiverInterface
      *
      * @return MessageInterface
      */
-    public function unpack(string $data = ''): MessageInterface
+    public function unpack(): MessageInterface
     {
+        $data = $this->data;
+
+        if (strlen($data) < Header::HEADER_LENGTH) {
+            throw new DeniedException();
+        }
+
         $header = new Header(
-            unpack(
+            (array) unpack(
                 'Jid/Nlength/nversion/nflavor/Jcredential',
                 substr($data, 0, Header::HEADER_LENGTH)
             )
@@ -61,19 +87,33 @@ class Receiver implements ReceiverInterface
         $header->action = strstr($data, Header::DELIMITER, true);
 
 
-        $message =  new Message($header, substr($body, strlen($header->action . Header::DELIMITER)));
+        $this->message =  new Message($header, substr($body, strlen($header->action . Header::DELIMITER)));
 
-        $version = $message->getPackageHeader('version');
-        if ($version > $this->protocol->high || $version < $this->protocol->low) {
+        $version = $this->message->getPackageHeader('version');
+
+        if ($this->message->getPackageHeader('id') == '') {
+            throw new MissingParameter('id');
+        }
+
+        if (($this->protocol->high && $version > $this->protocol->high) || ($this->protocol->low && $version < $this->protocol->low)) {
             throw new RpcMisMatchException($this->protocol->low, $this->protocol->high);
         }
 
-        $this->protocol->getAuthenticator()->validate($message);
+        $this->protocol->getAuthenticator()->validate($this->message);
 
-        $message->withPackageBody($this->protocol->getPacker()->unpack($message->getPackageBody()));
+        $this->message->withPackageBody($this->protocol->getPacker()->unpack($this->message->getPackageBody()));
 
-        return $message;
+        return $this->message;
 
+    }
+
+    public function getMessage()
+    {
+        if ($this->message === null) {
+            $this->message = $this->unpack();
+        }
+
+        return $this->message;
     }
 
 

@@ -2,21 +2,25 @@
 
 namespace SF\Protocol\Rpc;
 
-
+use SF\Http\Router;
 use SF\Contracts\Protocol\Receiver;
 use SF\Contracts\Protocol\Replier;
-use SF\IoC\Container;
 use SF\Protocol\AbstractServer;
-use SF\Protocol\ProtocolServiceProvider;
+use SF\Protocol\Rpc\Exceptions\RpcException;
 
 class Server extends AbstractServer
 {
+
+    public $router = Router::class;
+
     public function handle(Receiver $receiver, Replier $replier): string
     {
-        $result = $this->getDispatcher()->dispatch($receiver->unpack(), $this->getRouter());
-
-        return $replier->pack($result);
+        try {
+            $result = $this->getDispatcher()->dispatch($receiver->unpack(), $this->getRouter());
+            return $replier->pack($result);
+        } catch (RpcException $e) {
+            return $e->toString();
+        }
     }
-
 
 }

@@ -60,7 +60,7 @@ class Authenticator implements AuthenticatorInterface
             case self::AUTH_NONE:
                 break;
             default:
-                throw new AuthException(AuthException::AUTH_BADVERF);
+                break;
         }
 
         return $credentials;

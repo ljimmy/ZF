@@ -3,12 +3,11 @@
 namespace SF\Context;
 
 use Psr\Log\LoggerInterface;
+use SF\Log\LoggerFactory;
+use SF\Server\Application;
 use SF\Cache\CacheInterface;
 use SF\Cache\CacheServiceProvider;
 use SF\Contracts\Context\Context;
-use SF\IoC\Container;
-use SF\Log\LoggerFactory;
-use Swoole\Server;
 
 class ApplicationContext implements Context
 {
@@ -17,30 +16,17 @@ class ApplicationContext implements Context
      * @var self
      */
     private static $context;
-    /**
-     * @var Server
-     */
-    private $server;
-    /**
-     *
-     * @var Container
-     */
-    private $container;
+
     /**
      *
      * @var CacheInterface
      */
     private $cache;
+
     /**
      * @var LoggerInterface;
      */
     private $logger;
-
-    public function __construct(Container $container, Server $server)
-    {
-        $this->container = $container;
-        $this->server    = $server;
-    }
 
     /**
      *
@@ -58,9 +44,8 @@ class ApplicationContext implements Context
 
     public function isTask(): bool
     {
-        return $this->server->taskworker;
+        return Application::getApp()->getServer()->taskworker;
     }
-
 
     /**
      *
@@ -81,14 +66,6 @@ class ApplicationContext implements Context
         return $this;
     }
 
-    /**
-     * @return \SF\IoC\Container
-     */
-    public function getContainer()
-    {
-        return $this->container;
-    }
-
     public function getLogger(): LoggerInterface
     {
         if ($this->logger === null) {
@@ -98,9 +75,16 @@ class ApplicationContext implements Context
         return $this->logger;
     }
 
+    /**
+     * @return \SF\IoC\Container
+     */
+    public function getContainer()
+    {
+        return Application::getApp()->getContainer();
+    }
+
     public function exitContext()
     {
-        $this->server  = null;
         $this->cache   = null;
         $this->logger  = null;
         self::$context = null;

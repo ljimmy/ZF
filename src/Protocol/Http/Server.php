@@ -3,14 +3,14 @@
 namespace SF\Protocol\Http;
 
 
-use SF\Context\CoroutineContext;
-use SF\Context\RequestContext;
-use SF\Contracts\Protocol\Receiver;
-use SF\Contracts\Protocol\Replier;
-use SF\Events\EventTypes;
-use SF\Http\Exceptions\HttpException;
 use SF\Http\Router;
+use SF\Event\EventTypes;
+use SF\Coroutine\Coroutine;
+use SF\Context\RequestContext;
 use SF\Protocol\AbstractServer;
+use SF\Contracts\Protocol\Replier;
+use SF\Contracts\Protocol\Receiver;
+use SF\Http\Exceptions\HttpException;
 
 class Server extends AbstractServer
 {
@@ -18,8 +18,7 @@ class Server extends AbstractServer
 
     public function handle(Receiver $receiver, Replier $replier): string
     {
-        $requestContent = new RequestContext($receiver->unpack(), new Response(), /* 开启协程 */
-            new CoroutineContext());
+        $requestContent = new RequestContext($receiver->unpack(), new Response(), /* 开启协程 */ Coroutine::getuid());
 
         try {
             $requestContent->enter();

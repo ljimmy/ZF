@@ -8,48 +8,36 @@ use SF\Coroutine\Coroutine;
 class CoroutineContext implements Context
 {
 
-    /**
-     * 顶层协程ID
-     * @var CoroutineContext[]
-     */
-    private static $list = [];
+    protected $id;
 
     /**
      *
-     * @var int
+     * @var array
      */
-    private $id;
+    protected static $stack = [];
 
-    public function __construct(int $top = Coroutine::ID)
+    public function __construct(int $previous = Coroutine::ID)
     {
-        $this->id = Coroutine::getuid();
+        $this->id = $previous;
+    }
 
-        self::$list[$this->id] = $top;
+    public static function getStackTopId(): int
+    {
+        return self::$stack[Coroutine::getuid()] ?? null;
     }
 
     public function enter()
     {
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public static function getTop(int $id = null)
-    {
-        if ($id === null) {
-            $id = Coroutine::getuid();
+        if ($this->id === Coroutine::ID) {
+            $this->id = Coroutine::getuid();
         }
 
-        return self::$list[$id] ?? $id;
-
+        self::$stack[Coroutine::getuid()] = $this->id;
     }
 
     public function exitContext()
     {
-        unset(self::$list[$this->id]);
-        $this->id = null;
+        unset(self::$stack[Coroutine::getuid()]);
     }
 
 }

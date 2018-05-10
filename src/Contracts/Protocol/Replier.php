@@ -2,8 +2,8 @@
 
 namespace SF\Contracts\Protocol;
 
-
 interface Replier
 {
-    public function pack(): string;
+
+    public function pack($data): string;
 }

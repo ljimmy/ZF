@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: xfb_user
- * Date: 2018/4/4
- * Time: 下午5:41
- */
 
 namespace SF\Protocol\Rpc\Exceptions;
 
@@ -53,6 +47,11 @@ class AcceptException extends RpcException
     {
         $this->status = $status;
         parent::__construct($message, $code, $previous);
+    }
+
+    public function toString()
+    {
+        return 'Accepted: Error number :' . $this->status;
     }
 
 }

@@ -13,12 +13,14 @@ class RequestContext implements Context
      *
      * @var array
      */
-    private static $map;
+    private static $map = [];
+
     /**
      *
      * @var int
      */
     public $id;
+
     /**
      *
      * @var Request
@@ -31,27 +33,16 @@ class RequestContext implements Context
      */
     private $response;
 
-    /**
-     * @var CoroutineContext
-     */
-    private $coroutineContext;
-
-    public function __construct(Request $request, Response $response, CoroutineContext $coroutineContext)
+    public function __construct(Request $request, Response $response, int $id)
     {
-        $this->id               = $coroutineContext->getId();
-        $this->request          = $request;
-        $this->response         = $response;
-        $this->coroutineContext = $coroutineContext;
+        $this->id       = $id;
+        $this->request  = $request;
+        $this->response = $response;
     }
 
     public static function get(int $id)
     {
         return self::$map[$id] ?? null;
-    }
-
-    public function enter()
-    {
-        self::$map[$this->id] = $this;
     }
 
     public function getRequest(): Request
@@ -64,16 +55,18 @@ class RequestContext implements Context
         return $this->response;
     }
 
+    public function enter()
+    {
+        self::$map[$this->id] = $this;
+    }
+
     public function exitContext()
     {
-        $this->coroutineContext->exitContext();
-
-        $this->request          = null;
-        $this->response         = null;
-        $this->id               = null;
-        $this->coroutineContext = null;
-
         unset(self::$map[$this->id]);
+
+        $this->id       = null;
+        $this->request  = null;
+        $this->response = null;
     }
 
 }

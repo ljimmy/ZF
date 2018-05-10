@@ -2,9 +2,8 @@
 
 namespace SF\Contracts\Protocol;
 
-
 interface Receiver
 {
-    public function unpack(): Message;
 
+    public function unpack(): Message;
 }

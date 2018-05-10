@@ -20,7 +20,16 @@ trait ContextTrait
      */
     public function getRequestContext()
     {
-        return RequestContext::get(CoroutineContext::getTop());
+        return RequestContext::get(CoroutineContext::getStackTopId());
+    }
+
+    /**
+     *
+     * @return ConnectContext
+     */
+    public function getConnectContext()
+    {
+        return ConnectContext::get(CoroutineContext::getStackTopId());
     }
 
 }

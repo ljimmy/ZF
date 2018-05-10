@@ -20,7 +20,12 @@ class Replier implements ReplierInterface
         $this->swooleHttpResponse = $swooleHttpResponse;
     }
 
-    public function pack(Response $response = null): string
+    /**
+     *
+     * @param Response $response
+     * @return string
+     */
+    public function pack($response): string
     {
         if ($response === null) {
             $this->swooleHttpResponse->end();

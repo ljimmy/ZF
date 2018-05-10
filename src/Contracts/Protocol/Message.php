@@ -2,9 +2,9 @@
 
 namespace SF\Contracts\Protocol;
 
-
 interface Message
 {
+
     public function getPackageHeaders(): array;
 
     public function getPackageHeader(string $name);

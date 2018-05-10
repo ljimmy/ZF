@@ -39,4 +39,8 @@ class AuthException extends DeniedException
         parent::__construct($message, $code, $previous);
     }
 
+    public function toString()
+    {
+        return 'Denied: Authenticator fail.[status:' . $this->status . ']';
+    }
 }

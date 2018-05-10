@@ -2,12 +2,11 @@
 
 namespace SF\Protocol;
 
-
 use SF\Contracts\IoC\Object;
 use SF\Contracts\Protocol\Dispatcher as DispatcherInterface;
 use SF\Contracts\Protocol\Router;
 use SF\Contracts\Protocol\Server;
-use SF\Events\EventManager;
+use SF\Event\EventManager;
 use SF\IoC\Container;
 
 abstract class AbstractServer implements Server, Object
@@ -48,11 +47,10 @@ abstract class AbstractServer implements Server, Object
         $this->eventManager = $this->container->get(EventManager::class);
         $this->router       = $this->container->get($this->router);
 
-        $this->dispatcher   = $this->container->make($this->dispatcher);
+        $this->dispatcher = $this->container->make($this->dispatcher);
 
-        $this->middleware   = new Middleware((array)$this->middleware);
+        $this->middleware = new Middleware((array) $this->middleware);
     }
-
 
     public function getDispatcher(): DispatcherInterface
     {
@@ -68,6 +66,5 @@ abstract class AbstractServer implements Server, Object
     {
         return $this->middleware;
     }
-
 
 }

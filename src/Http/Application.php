@@ -2,7 +2,7 @@
 
 namespace SF\Http;
 
-use SF\Application\Application as BaseServer;
+use SF\Server\Application as BaseServer;
 use Swoole\Http\Server;
 
 class Application extends BaseServer
