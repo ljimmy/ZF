@@ -25,7 +25,7 @@ class Response extends Message implements ResponseInterface
         100 => 'Continue',
         101 => 'Switching AbstractProtocol',
         102 => 'Processing',
-        118 => 'Connection timed out',
+        118 => 'PooledConnection timed out',
         200 => 'OK',
         201 => 'Created',
         202 => 'Accepted',

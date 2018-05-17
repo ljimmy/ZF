@@ -3,8 +3,8 @@
 namespace SF\Pool;
 
 use SF\Context\ContextTrait;
-use SF\Databases\ConnectorInterface;
-use SF\Databases\DatabaseServiceProvider;
+use SF\Database\ConnectorInterface;
+use SF\Database\DatabaseServiceProvider;
 
 class DatabaseConnectPool extends AbstractPool
 {

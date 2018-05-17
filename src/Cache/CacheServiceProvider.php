@@ -2,8 +2,9 @@
 
 namespace SF\Cache;
 
-use SF\Contracts\IoC\Object;
 use SF\IoC\Container;
+use SF\Contracts\Store;
+use SF\Contracts\IoC\Object;
 
 class CacheServiceProvider implements Object
 {
@@ -31,7 +32,7 @@ class CacheServiceProvider implements Object
         $this->container->setDefinition((array) $this->driver, self::CACHE_DRIVER);
     }
 
-    public function getCache(): CacheInterface
+    public function getCache(): Store
     {
         return $this->container->get(self::CACHE_DRIVER);
     }
