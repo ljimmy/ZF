@@ -2,6 +2,7 @@
 
 namespace SF\Database;
 
+use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Contracts\Database\Connection;
 use SF\Exceptions\UserException;
 
@@ -42,7 +43,7 @@ abstract class Model implements \ArrayAccess
         return Table::get(static::tableName());
     }
 
-    public static function execute(string $name, array $params = [], Connection $connection = null):ResultSet
+    public static function execute(string $name, array $params = [], Connection $connection = null): ResultSet
     {
         if ($connection === null) {
             $connection = self::getConnection();
@@ -51,19 +52,30 @@ abstract class Model implements \ArrayAccess
         return $connection->prepare(static::getTable()->getSql($name))->execute($connection, $params);
     }
 
+    public static function getStatement(Connection $connection, string $sql): StatementInterface
+    {
+        return $connection->prepare($sql);
+    }
+
+
     public static function query(string $sql, Connection $connection = null)
     {
         if ($connection === null) {
             $connection = self::getConnection();
         }
 
-        return $connection->query($sql);
+        try {
+            return $connection->query($sql);
+        } catch (\Exception $exception) {
+            throw $exception;
+        } finally {
+            $connection->close();
+        }
     }
-
 
     /**
      * @param ResultSet $resultSet
-     * @return array|null|Model[]
+     * @return Records
      */
     public static function popular(ResultSet $resultSet)
     {
@@ -71,12 +83,12 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
-     *
-     * @return \SF\Database\Transaction
+     * @param Connection|null $connection
+     * @return Transaction
      */
-    public static function beginTransaction()
+    public static function beginTransaction(Connection $connection = null)
     {
-        return new Transaction();
+        return new Transaction($connection);
     }
 
     public function offsetExists($attribute)

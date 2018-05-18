@@ -3,11 +3,11 @@
 namespace SF\Context;
 
 use Psr\Log\LoggerInterface;
+use SF\Cache\CacheManager;
 use SF\Log\LoggerFactory;
 use SF\Server\Application;
-use SF\Cache\CacheInterface;
-use SF\Cache\CacheServiceProvider;
 use SF\Contracts\Context\Context;
+use SF\Contracts\Cache\Repository;
 
 class ApplicationContext implements Context
 {
@@ -48,18 +48,18 @@ class ApplicationContext implements Context
     }
 
     /**
-     *
-     * @return CacheInterface
+     * @param string|null $name
+     * @return Repository
      */
-    public function getCache(): CacheInterface
+    public function getCache(string $name = null): Repository
     {
         if ($this->cache === null) {
-            $this->cache = $this->getContainer()->get(CacheServiceProvider::class)->getCache();
+            $this->cache = CacheManager::getDriver($name === null ? CacheManager::getDefaultDriverName() : $name);
         }
         return $this->cache;
     }
 
-    public function setCache(CacheInterface $cache)
+    public function setCache(Repository $cache)
     {
         $this->cache = $cache;
 

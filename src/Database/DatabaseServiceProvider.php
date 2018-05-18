@@ -3,9 +3,6 @@
 namespace SF\Database;
 
 use SF\Contracts\IoC\Object;
-use SF\IoC\Container;
-use SF\Contracts\Database\Connection as ConnectionInterface;
-use SF\Exceptions\UserException;
 
 class DatabaseServiceProvider implements Object
 {
@@ -17,59 +14,34 @@ class DatabaseServiceProvider implements Object
     public $drivers = [];
 
     /**
-     *
      * @var array
      */
-    public $config;
+    public $tables = [];
 
-    /**
-     * @var array
-     */
-    public $tables;
-
-    /**
-     *
-     * @var bool
-     */
-    public $enableConnectionPooling = true;
-
-    /**
-     * @var Container
-     */
-    private $container;
-
-    /**
-     * @var DatabaseManager
-     */
-    private $databaseManager;
-
-    public function __construct(Container $container)
-    {
-        $this->container = $container;
-    }
 
     public function init()
     {
-        if ($this->tables) {
-            foreach ((array)$this->tables as $table => $config) {
-                Table::add($table, $config['columns'] ?? [], $config['sql'] ?? []);
-            }
+        $this->registerTable($this->tables);
+        $this->registerDriver($this->drivers);
+    }
+
+    protected function registerTable(array $tables)
+    {
+        foreach ($tables as $name => $table) {
+            Table::add(
+                $name,
+                $table['columns'] ?? [],
+                $table['sql'] ?? []
+            );
         }
-
-        if ($this->drivers) {
-            $this->registerDriver((array)$this->drivers);
-        }
-
-        $this->registerConnectionServices($this->enableConnectionPooling);
-
 
     }
 
 
-    protected function registerConnectionServices(array $drivers)
+    protected function registerDriver(array $drivers)
     {
         foreach ($drivers as $name => $driver) {
-            DriverManager::registerDriver(DriverFactory::getDriver(new DriverPropertyInfo(
+            DriverManager::registerDriver($name, DriverFactory::getDriver(new DriverPropertyInfo(
                 $driver['dsn'] ?? '',
                 $driver['username'] ?? null,
                 $driver['password'] ?? null,
@@ -79,15 +51,11 @@ class DatabaseServiceProvider implements Object
         }
     }
 
-    public function getDatabaseManager(): DatabaseManager
-    {
-        return $this->databaseManager;
-    }
-
 
     public function __destruct()
     {
         Table::destroy();
+        DriverManager::clearDriver();
     }
 
 }

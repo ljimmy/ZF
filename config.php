@@ -6,29 +6,29 @@ return [
         'port' => 9000,
         'ssl' => false,
         'type' => SWOOLE_SOCK_TCP,
-        'setting'     => [
+        'setting' => [
             //设置程序进入后台作为守护进程运行
-            'daemonize'                => 0,
+            'daemonize' => 0,
             //指定Reactor线程数
-            'reactor_num'              => 8,
+            'reactor_num' => 8,
             // 指定启动的worker进程数
-            'worker_num'               => 1,
+            'worker_num' => 1,
             //服务器开启的task进程数
-            'task_worker_num'          => 2,
+            'task_worker_num' => 2,
             //backlog队列长度
-            'backlog'                  => 128,
+            'backlog' => 128,
             // swoole server数据包分发策略
-            'dispatch_mode'            => 1,
+            'dispatch_mode' => 1,
             //swoole server设置端口重用
-            'enable_reuse_port'        => 1,
+            'enable_reuse_port' => 1,
             //设置心跳检测间隔
             'heartbeat_check_interval' => 60,
             //
-            'user'                     => 'xfb_user',
+            'user' => 'xfb_user',
             //用户组
-            'group'                    => 'staff',
+            'group' => 'staff',
             //日志
-            'log_file'                 => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
+            'log_file' => __DIR__ . DIRECTORY_SEPARATOR . 'run.log',
         ],
         'events' => [
             \SF\Event\Server\BufferEmpty::class,
@@ -69,46 +69,48 @@ return [
             ]
         ]
     ],
-    'components'  => [
+    'components' => [
         'eventManager' => [
-            'class'  => \SF\Event\EventManager::class,
+            'class' => \SF\Event\EventManager::class,
             'events' => [
             ],
         ],
-        'database'     => [
-            'class'     => SF\Databases\DatabaseServiceProvider::class,
-            'connector' => [
-                'class'    => SF\Databases\Mysql\Connector::class,
-                'host'     => '127.0.0.1',
-                'port'     => 3306,
-                'username' => 'root',
-                'password' => '123456',
-                'database' => 'demo',
-                'timeout'  => 60,
-                'charset'  => 'utf8'
+        'database' => [
+            'class' => SF\Database\DatabaseServiceProvider::class,
+            'drivers' => [
+                'default' => [
+                    'dsn' => 'mysql:host=127.0.0.1;port=3306;database=demo;charset=utf8',
+                    'username' => 'root',
+                    'password' => '123456',
+                    'options' => [
+                        'timeout' => 60
+                    ]
+                ]
+
             ],
-            'pool'      => [
-                'class'          => SF\Pool\DatabaseConnectPool::class,
-                'maxConnections' => 30
-            ],
-            'tables'    => include_once('config/tables.php')
+            'tables' => include_once('config/tables.php')
         ],
-        'cache'        => [
-            'class'  => \SF\Cache\CacheServiceProvider::class,
-            'driver' => [
-                'class'          => SF\Redis\RedisCache::class,
-                'host'           => '127.0.0.1',
-                'port'           => 6379,
-                'maxConnections' => 30
+        'cache' => [
+            'class' => \SF\Cache\CacheServiceProvider::class,
+            'drivers' => [
+                'default' => [
+                    'class' => \SF\Cache\Redis::class,
+                    'host' => '127.0.0.1',
+                    'port' => 6379,
+                ]
             ]
         ],
-        'protocol'     => [
-            'class'     => \SF\Protocol\ProtocolServiceProvider::class,
+        'protocol' => [
+            'class' => \SF\Protocol\ProtocolServiceProvider::class,
             'protocols' => [
                 'http' => [
                     'class' => \SF\Protocol\Http\Protocol::class,
                     'server' => [
                         'class' => \SF\Protocol\Http\Server::class,
+                        'router' => [
+                            'class' => \SF\Http\Router::class,
+                            'rules' => include_once('config/routes.php'),
+                        ],
                         'middleware' => [],
                     ]
                 ],
@@ -120,10 +122,6 @@ return [
                     ]
                 ]
             ],
-        ],
-        'router'       => [
-            'class' => \SF\Http\Router::class,
-            'rules' => include_once('config/routes.php'),
         ]
     ]
 ];

@@ -2,8 +2,9 @@
 
 namespace SF\Redis;
 
-use SF\Cache\CacheInterface;
 use SF\Pool\RedisConnectPool;
+use SF\Support\PHP;
+use Swoole\Coroutine\Redis;
 
 /**
  * The redis connection class is used to establish a connection to a [redis](http://redis.io/) server.
@@ -67,7 +68,7 @@ use SF\Pool\RedisConnectPool;
  * @method mixed del(...$keys) Delete a key. <https://redis.io/commands/del>
  * @method mixed discard() Discard all commands issued after MULTI. <https://redis.io/commands/discard>
  * @method mixed dump($key) Return a serialized version of the value stored at the specified key.. <https://redis.io/commands/dump>
- * @method mixed echo($message) Echo the given string. <https://redis.io/commands/echo>
+ * @method mixed echo ($message) Echo the given string. <https://redis.io/commands/echo>
  * @method mixed eval($script, $numkeys, array $keys, array $args) Execute a Lua script server side. <https://redis.io/commands/eval>
  * @method mixed evalsha($sha1, $numkeys, array $keys, array $args) Execute a Lua script server side. <https://redis.io/commands/evalsha>
  * @method mixed exec() Execute all commands issued after MULTI. <https://redis.io/commands/exec>
@@ -82,7 +83,7 @@ use SF\Pool\RedisConnectPool;
  * @method mixed geodist($key, $member1, $member2, $unit = null) Returns the distance between two members of a geospatial index. <https://redis.io/commands/geodist>
  * @method mixed georadius($key, $longitude, $latitude, $radius, $metric, ...$options) Query a sorted set representing a geospatial index to fetch members matching a given maximum distance from a point. <https://redis.io/commands/georadius>
  * @method mixed georadiusbymember($key, $member, $radius, $metric, ...$options) Query a sorted set representing a geospatial index to fetch members matching a given maximum distance from a member. <https://redis.io/commands/georadiusbymember>
-// * @method mixed get($key) Get the value of a key. <https://redis.io/commands/get>
+ * // * @method mixed get($key) Get the value of a key. <https://redis.io/commands/get>
  * @method mixed getbit($key, $offset) Returns the bit value at offset in the string value stored at key. <https://redis.io/commands/getbit>
  * @method mixed getrange($key, $start, $end) Get a substring of the string stored at a key. <https://redis.io/commands/getrange>
  * @method mixed getset($key, $value) Set the string value of a key and return its old value. <https://redis.io/commands/getset>
@@ -160,7 +161,7 @@ use SF\Pool\RedisConnectPool;
  * @method mixed sdiff(...$keys) Subtract multiple sets. <https://redis.io/commands/sdiff>
  * @method mixed sdiffstore($destination, ...$keys) Subtract multiple sets and store the resulting set in a key. <https://redis.io/commands/sdiffstore>
  * @method mixed select($index) Change the selected database for the current connection. <https://redis.io/commands/select>
-// * @method mixed set($key, $value, ...$options) Set the string value of a key. <https://redis.io/commands/set>
+ * // * @method mixed set($key, $value, ...$options) Set the string value of a key. <https://redis.io/commands/set>
  * @method mixed setbit($key, $offset, $value) Sets or clears the bit at offset in the string value stored at key. <https://redis.io/commands/setbit>
  * @method mixed setex($key, $seconds, $value) Set the value and expiration of a key. <https://redis.io/commands/setex>
  * @method mixed setnx($key, $value) Set the value of a key, only if the key does not exist. <https://redis.io/commands/setnx>
@@ -218,246 +219,16 @@ use SF\Pool\RedisConnectPool;
  * @method mixed zscan($key, $cursor, $MATCH = null, $pattern = null, $COUNT = null, $count = null) Incrementally iterate sorted sets elements and associated scores. <https://redis.io/commands/zscan>
  *
  */
-class RedisCache implements CacheInterface
+class Client extends Redis
 {
-
-    /**
-     *
-     * @var string
-     */
-    public $host;
-
-    /**
-     *
-     * @var int
-     */
-    public $port;
-
-    /**
-     *
-     * @var int
-     */
-    public $timeout;
-
-    /**
-     *
-     * @var string
-     */
-    public $auth;
-
-    /**
-     *
-     * @var int
-     */
-    public $database = 0;
-
-    /**
-     *
-     * @var bool
-     */
-    public $defer = false;
-
-    /**
-     *
-     * @var bool
-     */
-    public $serialize = false;
-
-    /**
-     * 长连接
-     * @var bool
-     */
-    public $persistent = true;
-
-    public $maxConnections;
-
-    /**
-     *
-     * @var RedisConnectPool
-     */
-    private $pool;
-
-    public function init()
-    {
-        $this->pool = new RedisConnectPool($this, $this->maxConnections);
-    }
-
-    public function getConnector(): Connector
-    {
-        $redis = new Connector(['timeout' => (int) $this->timeout]);
-        $redis->connect($this->host, $this->port, $this->serialize);
-        if ($this->auth) {
-            $redis->auth($this->auth);
-        }
-        if ($this->database) {
-            $redis->select($this->database);
-        }
-        $redis->setDefer($this->defer);
-
-        return $redis;
-    }
 
     public function call(string $method, array $params = [])
     {
-        $connector = $this->pool === null ? $this->getConnector() : $this->pool->get();
-        $result    = $connector->{$method}(...$params);
-        if ($this->pool !== null) {
-            $this->pool->release($connector);
-        }
-        return $result;
+        return PHP::call([$this, $method], $params);
     }
 
     public function __call($name, $arguments)
     {
         return $this->call($name, $arguments);
-    }
-
-    /**
-     * Fetches a value from the cache.
-     *
-     * @param string $key     The unique key of this item in the cache.
-     * @param mixed  $default Default value to return if the key does not exist.
-     *
-     * @return mixed The value of the item from the cache, or $default in case of cache miss.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function get($key, $default = null)
-    {
-        $value = $this->call('get', [$key]);
-        return $value === false || $value === null ? $default : $value;
-    }
-
-    /**
-     * Persists data in the cache, uniquely referenced by a key with an optional expiration TTL time.
-     *
-     * @param string                $key   The key of the item to store.
-     * @param mixed                 $value The value of the item to store, must be serializable.
-     * @param null|int|DateInterval $ttl   Optional. The TTL value of this item. If no value is sent and
-     *                                     the driver supports TTL then the library may set a default value
-     *                                     for it or let the driver take care of that.
-     *
-     * @return bool True on success and false on failure.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function set($key, $value, $ttl = null)
-    {
-        $ttl = (int) $ttl;
-        $params = [$key, $value];
-        if ($ttl > 0) {
-            $params[] = $ttl;
-        }
-        return $this->call('set', $params);
-    }
-
-    /**
-     * Delete an item from the cache by its unique key.
-     *
-     * @param string $key The unique cache key of the item to delete.
-     *
-     * @return bool True if the item was successfully removed. False if there was an error.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function delete($key)
-    {
-        return $this->del($key);
-    }
-
-    /**
-     * Wipes clean the entire cache's keys.
-     *
-     * @return bool True on success and false on failure.
-     */
-    public function clear()
-    {
-        return $this->flushdb();
-    }
-
-    /**
-     * Obtains multiple cache items by their unique keys.
-     *
-     * @param iterable $keys    A list of keys that can obtained in a single operation.
-     * @param mixed    $default Default value to return for keys that do not exist.
-     *
-     * @return iterable A list of key => value pairs. Cache keys that do not exist or are stale will have $default as value.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if $keys is neither an array nor a Traversable,
-     *   or if any of the $keys are not a legal value.
-     */
-    public function getMultiple($keys, $default = null)
-    {
-        $result = $this->mget($keys);
-
-        return $result === false ? $default : $result;
-    }
-
-    /**
-     * Persists a set of key => value pairs in the cache, with an optional TTL.
-     *
-     * @param iterable              $values A list of key => value pairs for a multiple-set operation.
-     * @param null|int|DateInterval $ttl    Optional. The TTL value of this item. If no value is sent and
-     *                                      the driver supports TTL then the library may set a default value
-     *                                      for it or let the driver take care of that.
-     *
-     * @return bool True on success and false on failure.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if $values is neither an array nor a Traversable,
-     *   or if any of the $values are not a legal value.
-     */
-    public function setMultiple($values, $ttl = null)
-    {
-        $ttl = (int) $ttl;
-        if ($ttl > 0) {
-            $this->multi();
-            foreach ($values as $key => $value) {
-                $this->set($key, $value, $ttl);
-            }
-            return $this->exec();
-        } else {
-            return $this->mset($values);
-        }
-    }
-
-    /**
-     * Deletes multiple cache items in a single operation.
-     *
-     * @param iterable $keys A list of string-based keys to be deleted.
-     *
-     * @return bool True if the items were successfully removed. False if there was an error.
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if $keys is neither an array nor a Traversable,
-     *   or if any of the $keys are not a legal value.
-     */
-    public function deleteMultiple($keys)
-    {
-        return $this->del($keys);
-    }
-
-    /**
-     * Determines whether an item is present in the cache.
-     *
-     * NOTE: It is recommended that has() is only to be used for cache warming type purposes
-     * and not to be used within your live applications operations for get/set, as this method
-     * is subject to a race condition where your has() will return true and immediately after,
-     * another script can remove it making the state of your app out of date.
-     *
-     * @param string $key The cache item key.
-     *
-     * @return bool
-     *
-     * @throws \Psr\SimpleCache\InvalidArgumentException
-     *   MUST be thrown if the $key string is not a legal value.
-     */
-    public function has($key)
-    {
-        return $this->exists($key);
     }
 }

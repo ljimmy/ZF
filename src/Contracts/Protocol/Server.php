@@ -10,6 +10,4 @@ interface Server
     public function getDispatcher(): Dispatcher;
 
     public function getRouter(): Router;
-
-    public function getMiddleware(): \SF\Protocol\Middleware;
 }

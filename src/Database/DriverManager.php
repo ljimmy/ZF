@@ -7,6 +7,8 @@ use SF\Exceptions\NullPointerException;
 
 class DriverManager
 {
+    const DEFAULT_NAME = 'default';
+
     private static $drivers = [];
 
     public static function getDrivers()
@@ -24,8 +26,8 @@ class DriverManager
 
     public static function getDefaultDriverName()
     {
-        if (isset(self::$drivers['default'])) {
-            return 'default';
+        if (isset(self::$drivers[self::DEFAULT_NAME])) {
+            return self::DEFAULT_NAME;
         } else {
             return key(self::$drivers);
         }
@@ -40,5 +42,10 @@ class DriverManager
     public static function deregisterDriver(string $name): void
     {
         unset(self::$drivers[$name]);
+    }
+
+    public static function clearDriver()
+    {
+        self::$drivers = [];
     }
 }

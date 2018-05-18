@@ -29,6 +29,11 @@ class Transaction
         return $statement->execute($this->connection, $params, false);
     }
 
+    public function query(string $sql)
+    {
+        return $this->connection->query($sql);
+    }
+
 
     public function commit()
     {

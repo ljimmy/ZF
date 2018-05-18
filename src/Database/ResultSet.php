@@ -2,20 +2,22 @@
 
 namespace SF\Database;
 
-class ResultSet implements \IteratorAggregate, \Countable
+use SF\Contracts\Database\ResultSet as ResultSetInterface;
+
+class ResultSet implements \IteratorAggregate, \Countable, ResultSetInterface
 {
 
     /**
      *
      * @var int
      */
-    public $affectedRows;
+    public $affectedRows = 0;
 
     /**
      *
      * @var int
      */
-    public $insertId;
+    public $insertId = 0;
 
     /**
      *
@@ -23,15 +25,36 @@ class ResultSet implements \IteratorAggregate, \Countable
      */
     private $rows = [];
 
-    public function setResult(array $rows = [])
+    public function __construct(array $rows = [])
     {
         $this->rows = $rows;
     }
 
-    public function getResult()
+    public function first()
+    {
+        return reset($this->rows);
+    }
+
+    public function get(string $column): array
+    {
+        return array_column($this->rows, $column);
+    }
+
+    public function getLastInsertId(): int
+    {
+        return $this->insertId;
+    }
+
+    public function getAffectedRows(): int
+    {
+        return $this->affectedRows;
+    }
+
+    public function getResult(): array
     {
         return $this->rows;
     }
+
 
     public function getIterator()
     {

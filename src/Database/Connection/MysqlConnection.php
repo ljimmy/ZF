@@ -51,7 +51,7 @@ class MysqlConnection implements ConnectionInterface
 
     public function close(): void
     {
-        return $this->mysql->close();
+        $this->mysql->close();
     }
 
     public function isClosed(): bool
@@ -80,7 +80,7 @@ class MysqlConnection implements ConnectionInterface
             $this->connect();
         }
 
-        if ($this->mysql->prepare === false) {
+        if ($this->mysql->prepare($sql) === false) {
             throw new SqlException($this->mysql->error, $this->mysql->errno);
         }
         return new Statement($sql);

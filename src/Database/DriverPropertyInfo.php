@@ -75,7 +75,7 @@ class DriverPropertyInfo
 
         $this->driver = $driver;
 
-        foreach (explode(';', substr($dsn, strlen($driver))) as $element) {
+        foreach (explode(';', substr($dsn, strlen($driver) + 1)) as $element) {
             list($name, $value) = explode('=', $element);
             switch ($name) {
                 case 'host':
@@ -84,7 +84,7 @@ class DriverPropertyInfo
                 case 'port':
                     $this->port = $value;
                     break;
-                case 'dbname':
+                case 'database':
                     $this->database = $value;
                     break;
                 case 'charset':

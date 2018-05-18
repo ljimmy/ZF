@@ -3,15 +3,12 @@
 namespace SF\Cache;
 
 use SF\IoC\Container;
-use SF\Contracts\Store;
 use SF\Contracts\IoC\Object;
 
 class CacheServiceProvider implements Object
 {
 
-    const CACHE_DRIVER = 'cache_driver';
-
-    public $driver;
+    public $drivers;
 
     /**
      *
@@ -26,15 +23,15 @@ class CacheServiceProvider implements Object
 
     public function init()
     {
-        if ($this->driver === null) {
-            throw new CacheException('the driver of cache is not exist!');
-        }
-        $this->container->setDefinition((array) $this->driver, self::CACHE_DRIVER);
+        $this->registerCacheServices($this->drivers);
     }
 
-    public function getCache(): Store
+    public function registerCacheServices(array $drivers)
     {
-        return $this->container->get(self::CACHE_DRIVER);
+        foreach ($drivers as $name => $driver) {
+            CacheManager::registerDriver($name, $this->container->make($driver));
+        }
     }
+
 
 }

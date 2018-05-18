@@ -18,11 +18,6 @@ abstract class AbstractServer implements Server, Object
     public $router;
 
     /**
-     * @var DispatcherInterface
-     */
-    public $dispatcher = Dispatcher::class;
-
-    /**
      * @var Middleware
      */
     public $middleware = [];
@@ -37,6 +32,11 @@ abstract class AbstractServer implements Server, Object
      */
     protected $eventManager;
 
+    /**
+     * @var DispatcherInterface
+     */
+    protected $dispatcher = Dispatcher::class;
+
     public function __construct(Container $container)
     {
         $this->container = $container;
@@ -45,11 +45,9 @@ abstract class AbstractServer implements Server, Object
     public function init()
     {
         $this->eventManager = $this->container->get(EventManager::class);
-        $this->router       = $this->container->get($this->router);
+        $this->router = $this->container->make($this->router);
 
-        $this->dispatcher = $this->container->make($this->dispatcher);
-
-        $this->middleware = new Middleware((array) $this->middleware);
+        $this->dispatcher = new Dispatcher(new Middleware((array)$this->middleware));
     }
 
     public function getDispatcher(): DispatcherInterface

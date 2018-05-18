@@ -9,11 +9,6 @@ use SF\IoC\Exceptions\ContainerException;
 class Container implements ContainerInterface
 {
     /**
-     *
-     * @var array
-     */
-    private $alias = [];
-    /**
      * @var array
      */
     private $definitions = [];
@@ -27,33 +22,22 @@ class Container implements ContainerInterface
         $this->singleton[self::class] = $this;
     }
 
-    public function getAlias(): array
-    {
-        return $this->alias;
-    }
-
     public function has($id)
     {
-        if (isset($this->alias[$id])) {
-            $id = $this->alias[$id];
-        }
         return isset($this->singleton[$id]);
     }
 
     public function setDefinitions(array $definitions)
     {
 
-        foreach ($definitions as $alias => $definition) {
-            if (!is_array($definition)) {
-                $definition = [$definition];
-            }
-            $this->setDefinition($definition, $alias);
+        foreach ($definitions as $definition) {
+            $this->setDefinition($definition);
         }
 
         return $this;
     }
 
-    public function setDefinition($definition, string $alias = null)
+    public function setDefinition($definition)
     {
         if (is_string($definition)) {
             $definition = [
@@ -72,26 +56,19 @@ class Container implements ContainerInterface
         $class                     = $definition['class'];
         $this->definitions[$class] = $definition;
 
-        if ($alias) {
-            $this->alias[$alias] = $class;
-        }
+        $this->make($definition);
 
         return $this;
     }
 
-    public function set($class, $object, string $alia = null)
+    public function set($class, $object)
     {
         $this->singleton[$class] = $object;
-        if ($alia) {
-            $this->alias[$alia] = $class;
-        }
         return $this;
     }
 
-    public function get($id, array $params = [])
+    public function get($class, array $params = [])
     {
-        $class = $this->alias[$id] ?? $id;
-
         if (isset($this->singleton[$class])) {
             return $this->singleton[$class];
         } else {
@@ -154,7 +131,7 @@ class Container implements ContainerInterface
             $instance = $this->injectProperty($reflection->newInstanceArgs($dependencies), $definition);
         }
 
-        if (isset($this->definitions[$class])) {
+        if (isset($this->definitions[$class]) && !isset($this->singleton[$class])) {
             $this->singleton[$class] = $instance;
         }
 
@@ -181,7 +158,6 @@ class Container implements ContainerInterface
 
     public function clear()
     {
-        $this->alias       = [];
         $this->definitions = [];
         $this->singleton   = [];
     }
