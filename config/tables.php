@@ -1,12 +1,12 @@
 <?php
 
-use SF\Databases\Types;
+use SF\Database\Types;
 
 return [
     'user' => [
 
         /**
-         * @see \SF\Databases\Column
+         * @see \SF\Database\Column
          */
         'columns' => [
             [

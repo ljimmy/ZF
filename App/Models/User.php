@@ -1,7 +1,7 @@
 <?php
 namespace App\Models;
 
-use SF\Databases\Model;
+use SF\Database\Model;
 
 class User extends  Model
 {
