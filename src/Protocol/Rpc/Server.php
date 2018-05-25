@@ -6,7 +6,7 @@ use SF\Http\Router;
 use SF\Contracts\Protocol\Receiver;
 use SF\Contracts\Protocol\Replier;
 use SF\Protocol\AbstractServer;
-use SF\Protocol\Rpc\Exceptions\RpcException;
+use SF\Exceptions\Protocol\Rpc\RpcException;
 
 class Server extends AbstractServer
 {

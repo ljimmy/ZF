@@ -1,6 +1,6 @@
 <?php
 
-namespace SF\Protocol\Rpc\Exceptions;
+namespace SF\Exceptions\Protocol\Rpc;
 
 use SF\Exceptions\UserException;
 

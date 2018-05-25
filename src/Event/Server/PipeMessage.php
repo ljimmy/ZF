@@ -16,7 +16,6 @@ class PipeMessage extends AbstractServerEvent
         return function (Server $server, int $src_worker_id, $message) {
 
         };
-
     }
 
 }

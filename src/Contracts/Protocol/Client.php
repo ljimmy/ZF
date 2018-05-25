@@ -5,5 +5,5 @@ namespace SF\Contracts\Protocol;
 
 interface Client
 {
-    public function call();
+    public function call(string $method, $data);
 }

@@ -13,7 +13,7 @@ class Close extends AbstractServerEvent
 
     public function getCallback(): \Closure
     {
-        return function(Server $server, $fd, $reactorId){
+        return function (Server $server, $fd, $reactorId) {
 
         };
     }

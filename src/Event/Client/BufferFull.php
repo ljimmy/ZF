@@ -1,10 +1,10 @@
 <?php
 
-namespace SF\Event\Server;
+namespace SF\Event\Client;
 
-use Swoole\Server;
+use Swoole\Client;
 
-class BufferFull extends AbstractServerEvent
+class BufferFull extends AbstractClientEvent
 {
     public function getName(): string
     {
@@ -13,7 +13,7 @@ class BufferFull extends AbstractServerEvent
 
     public function getCallback(): \Closure
     {
-        return function (Server $server, $fd) {
+        return function (Client $client) {
 
         };
     }

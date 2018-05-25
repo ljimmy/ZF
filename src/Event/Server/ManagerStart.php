@@ -15,7 +15,6 @@ class ManagerStart extends AbstractServerEvent
     {
         return function (Server $server) {
             setProcessTitle('SF Manager Process');
-
         };
     }
 

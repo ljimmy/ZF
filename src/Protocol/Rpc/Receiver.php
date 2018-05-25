@@ -4,9 +4,9 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Message as MessageInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
-use SF\Protocol\Rpc\Exceptions\DeniedException;
-use SF\Protocol\Rpc\Exceptions\Denied\MissingParameter;
-use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
+use SF\Exceptions\Protocol\Rpc\DeniedException;
+use SF\Exceptions\Protocol\Rpc\Denied\MissingParameter;
+use SF\Exceptions\Protocol\Rpc\Denied\RpcMisMatchException;
 
 class Receiver implements ReceiverInterface
 {

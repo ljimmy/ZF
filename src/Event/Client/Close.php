@@ -4,11 +4,11 @@ namespace SF\Event\Client;
 
 use Swoole\Client;
 
-class Connect extends AbstractClientEvent
+class Close extends AbstractClientEvent
 {
     public function getName(): string
     {
-        return 'Connect';
+        return 'Close';
     }
 
     public function getCallback(): \Closure
@@ -17,6 +17,5 @@ class Connect extends AbstractClientEvent
 
         };
     }
-
 
 }

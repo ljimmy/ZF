@@ -13,9 +13,10 @@ class ManagerStop extends AbstractServerEvent
 
     public function getCallback(): \Closure
     {
-        return function (Server $server){
+        return function (Server $server) {
 
         };
     }
 
 }
+
