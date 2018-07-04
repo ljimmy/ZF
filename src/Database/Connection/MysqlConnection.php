@@ -13,6 +13,7 @@ use SF\Contracts\Database\ResultSet as ResultSetInterface;
 
 class MysqlConnection implements ConnectionInterface
 {
+
     private $mysql;
 
     /**

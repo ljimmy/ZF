@@ -2,9 +2,9 @@
 
 namespace SF\Contracts\Protocol;
 
-
 interface Authenticator
 {
+
     /**
      * @param Message $message
      * @return mixed

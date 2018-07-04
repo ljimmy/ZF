@@ -6,6 +6,7 @@ use SF\Contracts\Database\Connection;
 
 class Transaction
 {
+
     use ConnectionTrait;
 
     protected $connection;

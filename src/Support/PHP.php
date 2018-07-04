@@ -19,7 +19,7 @@ class PHP
 
     public static function isCli()
     {
-        return PHP_SAPI === 'cli';;
+        return PHP_SAPI === 'cli';
     }
 
     public static function getBasePath()

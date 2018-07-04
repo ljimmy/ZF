@@ -6,6 +6,7 @@ use Psr\Http\Message\StreamInterface;
 
 class Stream implements StreamInterface
 {
+
     /**
      *
      * @var string

@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class PipeMessage extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'PipeMessage';

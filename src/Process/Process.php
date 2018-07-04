@@ -5,4 +5,5 @@ use Swoole\Process as SwooleProcess;
 
 class Process extends  SwooleProcess
 {
+
 }

@@ -8,6 +8,7 @@ use Swoole\WebSocket\Server;
 
 class Open extends AbstractServerEvent
 {
+    
     public function getName(): string
     {
         return 'Open';

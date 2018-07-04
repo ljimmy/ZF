@@ -2,9 +2,11 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Mobile implements ValidatorInterface
+class Mobile implements Validator
 {
+
     public $pattern = '/^1\d{10}$/';
 
     public function validate($value)

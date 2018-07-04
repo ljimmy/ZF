@@ -3,6 +3,7 @@
 namespace SF\Log;
 
 use Psr\Log\LoggerInterface;
+use SF\Exceptions\Log\LogException;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Formatter\FormatterInterface;
 use Monolog\Handler\FormattableHandlerInterface;
@@ -10,8 +11,8 @@ use Monolog\Handler\ProcessableHandlerInterface;
 
 class LoggerFactory
 {
-    public $logger;
 
+    public $logger;
 
     public function getLogger(): LoggerInterface
     {

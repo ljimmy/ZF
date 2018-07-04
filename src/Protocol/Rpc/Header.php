@@ -2,7 +2,6 @@
 
 namespace SF\Protocol\Rpc;
 
-
 use SF\Support\Collection;
 
 /**
@@ -18,6 +17,7 @@ use SF\Support\Collection;
  */
 class Header extends Collection
 {
+
     const HEADER_LENGTH = 24;//bytes
 
     const DELIMITER = "\r\n\r\n";

@@ -8,6 +8,7 @@ use Swoole\Server;
 
 class WorkerStart extends AbstractServerEvent
 {
+
     protected $container;
 
     public function __construct(Container $container)

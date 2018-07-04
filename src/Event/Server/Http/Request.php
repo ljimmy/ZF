@@ -11,6 +11,7 @@ use SF\Protocol\ProtocolServiceProvider;
 
 class Request extends AbstractServerEvent
 {
+
     /**
      * @var ProtocolServiceProvider
      */

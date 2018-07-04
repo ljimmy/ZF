@@ -2,9 +2,9 @@
 
 namespace SF\Contracts\Packer;
 
-
 interface Packer
 {
+
     /**
      * @param $data
      * @return mixed

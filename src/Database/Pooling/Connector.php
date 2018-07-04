@@ -7,6 +7,7 @@ use SF\Contracts\Database\Driver;
 
 class Connector implements ConnectorInterface
 {
+
     protected $driver;
 
     public function __construct(Driver $driver)

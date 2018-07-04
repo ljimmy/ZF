@@ -8,6 +8,7 @@ use SF\Exceptions\UserException;
 
 abstract class Model implements \ArrayAccess
 {
+
     use ConnectionTrait;
 
     protected $attributes = [];

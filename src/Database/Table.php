@@ -2,9 +2,9 @@
 
 namespace SF\Database;
 
-
 class Table
 {
+
     private static $tables = [];
 
     private $tableName;

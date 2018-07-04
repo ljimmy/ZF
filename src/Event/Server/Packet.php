@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class Packet extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'Packet';

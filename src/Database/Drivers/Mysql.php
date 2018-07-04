@@ -7,6 +7,7 @@ use SF\Database\Connection\MysqlConnection;
 
 class Mysql extends  AbstractDriver
 {
+
     const NAME = 'mysql';
 
     public function createConnection(): ConnectionInterface

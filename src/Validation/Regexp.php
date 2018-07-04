@@ -2,9 +2,11 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Regexp implements ValidatorInterface
+class Regexp implements Validator
 {
+
     public $pattern;
 
     public function validate($value)

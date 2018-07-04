@@ -2,7 +2,6 @@
 
 namespace SF\Database\Pooling;
 
-
 use SF\Contracts\Database\Connection as ConnectionInterface;
 use SF\Contracts\Database\ResultSet;
 use SF\Contracts\Database\Statement;
@@ -10,6 +9,7 @@ use SF\Pool\PooledConnection;
 
 class Connection implements ConnectionInterface
 {
+
     protected $pooledConnection;
 
     public function __construct(PooledConnection $pooledConnection)

@@ -11,6 +11,7 @@ use SF\Protocol\AbstractProtocol;
 
 class Protocol extends AbstractProtocol
 {
+
     const NAME = 'rpc';
 
     /**

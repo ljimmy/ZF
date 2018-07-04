@@ -10,6 +10,7 @@ use SF\IoC\Container;
 
 abstract class AbstractProtocol implements ProtocolInterface, Object
 {
+
     const NAME = 'HTTP';
 
     /**

@@ -23,6 +23,7 @@ if (!function_exists('setProcessTitle')) {
 
 
 if (!function_exists('save_pid')) {
+
     function save_pid($master_pid, $manager_pid)
     {
         swoole_async_writefile(\SF\Console\Command::getSelf()->getPidFile(), $master_pid.','.$manager_pid);
@@ -30,6 +31,7 @@ if (!function_exists('save_pid')) {
 }
 
 if (!function_exists('get_pid')) {
+
     function get_pid(callable $callback, string $file = '.pid')
     {
         swoole_async_readfile(\SF\Console\Command::getSelf()->getPidFile(), function($filename, $content) use ($callback){

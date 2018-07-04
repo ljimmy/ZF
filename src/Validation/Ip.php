@@ -2,13 +2,13 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Ip implements ValidatorInterface
+class Ip implements Validator
 {
     public $ipv4 = false;
 
     public $ipv6 = false;
-
 
     public function validate($value)
     {
@@ -26,4 +26,6 @@ class Ip implements ValidatorInterface
         }
         return true;
     }
+
+
 }

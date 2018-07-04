@@ -2,9 +2,9 @@
 
 namespace SF\Routing;
 
-
 class RouteGroup
 {
+
     /**
      *
      * @var Route[]

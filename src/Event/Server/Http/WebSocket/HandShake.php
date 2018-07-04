@@ -8,6 +8,7 @@ use Swoole\Http\Response;
 
 class HandShake extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'Handshake';

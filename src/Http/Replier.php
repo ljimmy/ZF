@@ -6,7 +6,6 @@ use SF\Contracts\Protocol\Replier as ReplierInterface;
 use SF\Contracts\Protocol\Http\Response;
 use Swoole\Http\Response as swooleHttpResponse;
 
-
 class Replier implements ReplierInterface
 {
 

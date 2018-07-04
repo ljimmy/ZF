@@ -11,6 +11,7 @@ use SF\Pool\ConnectionPool;
 
 abstract class AbstractDriver implements Driver
 {
+
     /**
      * @var DriverPropertyInfo
      */

@@ -6,16 +6,22 @@ use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
-
     const HTTP  = 'http';
+
     const HTTPS = 'https';
 
     private $scheme;
+
     private $host;
+
     private $port;
+
     private $userInfo;
+
     private $path     = '';
+
     private $query    = '';
+
     private $fragment = '';
 
     public function __construct($uri = '')

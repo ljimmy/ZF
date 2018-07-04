@@ -1,12 +1,12 @@
 <?php
-namespace SF\Http\Exceptions;
+namespace SF\Exceptions\Http;
 
 use SF\Exceptions\UserException;
 
 class HttpException extends UserException
 {
-    public $statusCode;
 
+    public $statusCode;
 
     public function __construct(int $status, string $message = "", int $code = 0, \Throwable $previous = null)
     {

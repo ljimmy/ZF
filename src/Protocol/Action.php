@@ -8,6 +8,7 @@ use SF\Support\PHP;
 
 class Action implements ActionInterface
 {
+
     /**
      *
      * @var array

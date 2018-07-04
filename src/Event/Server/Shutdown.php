@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class Shutdown extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'Shutdown';

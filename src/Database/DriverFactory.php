@@ -2,13 +2,13 @@
 
 namespace SF\Database;
 
-
 use SF\Contracts\Database\Driver;
 use SF\Database\Drivers\Mysql;
 use SF\Exceptions\NotSupportedException;
 
 class DriverFactory
 {
+
     public static function getDriver(DriverPropertyInfo $info): Driver
     {
         switch ($info->driver) {

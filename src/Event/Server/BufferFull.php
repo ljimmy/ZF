@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class BufferFull extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'BufferFull';

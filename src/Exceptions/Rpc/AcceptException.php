@@ -1,12 +1,12 @@
 <?php
 
-namespace SF\Protocol\Rpc\Exceptions;
-
+namespace SF\Exceptions\Rpc;
 
 use Throwable;
 
 class AcceptException extends RpcException
 {
+
     /**
      * RPC 成功执行
      */

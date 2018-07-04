@@ -4,9 +4,9 @@ namespace SF\Protocol;
 
 use SF\Contracts\Protocol\Stream as StreamInterface;
 
-
 class Stream implements StreamInterface
 {
+
     /**
      * @var string
      */

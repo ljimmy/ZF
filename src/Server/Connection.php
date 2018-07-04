@@ -4,6 +4,7 @@ namespace SF\Server;
 
 class Connection
 {
+
     /**
      *
      * @var \Swoole\Server

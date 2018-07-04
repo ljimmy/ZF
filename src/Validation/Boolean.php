@@ -1,16 +1,12 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: xfb_user
- * Date: 2018/1/26
- * Time: 下午7:06
- */
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Boolean implements ValidatorInterface
+class Boolean implements Validator
 {
+
     public $strict = false;
 
     public $trueValue = true;

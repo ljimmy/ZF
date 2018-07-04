@@ -10,11 +10,17 @@ class Application
 {
 
     protected $host;
+
     protected $port;
+
     protected $type;
+
     protected $events    = [];
+
     protected $setting   = [];
+
     protected $multiport = [];
+
     protected $container;
 
     /**

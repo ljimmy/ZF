@@ -2,9 +2,11 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Integer implements ValidatorInterface
+class Integer implements Validator
 {
+
     public $min;
 
     public $max;

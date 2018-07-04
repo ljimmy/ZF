@@ -2,7 +2,6 @@
 
 namespace SF\Contracts\Protocol\Http;
 
-
 use Psr\Http\Message\ResponseInterface;
 use SF\Contracts\Protocol\Message;
 

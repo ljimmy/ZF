@@ -1,10 +1,10 @@
 <?php
 
-namespace SF\Protocol\Rpc\Exceptions;
-
+namespace SF\Exceptions\Rpc;
 
 class DeniedException extends RpcException
 {
+
     public function toString()
     {
         return 'Denied: Invalid message';

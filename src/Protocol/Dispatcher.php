@@ -8,6 +8,7 @@ use SF\Contracts\Protocol\Router;
 
 class Dispatcher implements DispatcherInterface
 {
+
     /**
      * @var Middleware
      */

@@ -54,6 +54,7 @@ use SF\Contracts\Protocol\Message as MessageInterface;
 
 class Message implements MessageInterface
 {
+
     /**
      * @var Header
      */

@@ -8,6 +8,7 @@ use SF\Contracts\Protocol\Middleware as MiddlewareInterface;
 
 class Middleware
 {
+
     private $list = [];
 
     public function __construct(array $middlewares = [])

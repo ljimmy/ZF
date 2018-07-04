@@ -4,7 +4,7 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Authenticator as AuthenticatorInterface;
 use SF\Contracts\Protocol\Message;
-use SF\Protocol\Rpc\Exceptions\Denied\AuthException;
+use SF\Exceptions\Rpc\Denied\AuthException;
 
 class Authenticator implements AuthenticatorInterface
 {

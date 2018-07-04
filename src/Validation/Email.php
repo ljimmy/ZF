@@ -2,10 +2,10 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
-class Email implements ValidatorInterface
+class Email implements Validator
 {
-
 
     public function validate($value)
     {

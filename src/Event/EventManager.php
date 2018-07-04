@@ -6,9 +6,9 @@ use SF\Contracts\Event\User as UserEvent;
 use SF\Contracts\IoC\Object;
 use SF\IoC\Container;
 
-
 class EventManager implements Object
 {
+
     public $events = [];
 
     /**

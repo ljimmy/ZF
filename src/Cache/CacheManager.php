@@ -6,6 +6,7 @@ use SF\Contracts\Cache\Repository as RepositoryInterface;
 
 class CacheManager
 {
+
     const DEFAULT_NAME = 'default';
 
     private static $drivers = [];

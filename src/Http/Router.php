@@ -2,20 +2,19 @@
 
 namespace SF\Http;
 
-
 use SF\Contracts\IoC\Object;
 use SF\Contracts\Protocol\Action;
 use SF\Contracts\Protocol\Message;
 use SF\Contracts\Protocol\Router as RouterInterface;
 use SF\Exceptions\UserException;
-use SF\Http\Exceptions\MethodNotAllowedHttpException;
-use SF\Http\Exceptions\NotFoundHttpException;
+use SF\Exceptions\Http\NotFoundHttpException;
+use SF\Exceptions\Http\MethodNotAllowedHttpException;
 use SF\Protocol\Http\Request;
 use SF\Routing\RouteTable;
 
-
 class Router implements RouterInterface, Object
 {
+
     /**
      *
      * ```php

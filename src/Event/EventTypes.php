@@ -2,9 +2,9 @@
 
 namespace SF\Event;
 
-
 class EventTypes
 {
+
     /**
      * server
      */

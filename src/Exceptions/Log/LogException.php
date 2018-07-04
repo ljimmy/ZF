@@ -1,6 +1,6 @@
 <?php
 
-namespace SF\Log;
+namespace SF\Exceptions\Log;
 
 use SF\Exceptions\UserException;
 

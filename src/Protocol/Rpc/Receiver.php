@@ -4,9 +4,9 @@ namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Message as MessageInterface;
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
-use SF\Protocol\Rpc\Exceptions\DeniedException;
-use SF\Protocol\Rpc\Exceptions\Denied\MissingParameter;
-use SF\Protocol\Rpc\Exceptions\Denied\RpcMisMatchException;
+use SF\Exceptions\Rpc\DeniedException;
+use SF\Exceptions\Rpc\Denied\MissingParameterException;
+use SF\Exceptions\Rpc\Denied\RpcMisMatchException;
 
 class Receiver implements ReceiverInterface
 {
@@ -92,7 +92,7 @@ class Receiver implements ReceiverInterface
         $version = $this->message->getPackageHeader('version');
 
         if ($this->message->getPackageHeader('id') == '') {
-            throw new MissingParameter('id');
+            throw new MissingParameterException('id');
         }
 
         if (($this->protocol->high && $version > $this->protocol->high) || ($this->protocol->low && $version < $this->protocol->low)) {

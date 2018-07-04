@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class Connect extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'Connect';

@@ -3,10 +3,11 @@
 namespace SF\Http;
 
 use SF\Context\ContextTrait;
-use SF\Http\Exceptions\NotFoundHttpException;
+use SF\Exceptions\Http\NotFoundHttpException;
 
 abstract class Controller
 {
+
     protected $id;
 
     use ContextTrait;

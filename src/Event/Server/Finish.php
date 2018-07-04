@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class Finish extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'Finish';

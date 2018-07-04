@@ -7,7 +7,6 @@ use SF\Support\Str;
 use SF\Support\Json;
 use SF\Contracts\Protocol\Http\Response as ResponseInterface;
 
-
 class Response extends Message implements ResponseInterface
 {
 

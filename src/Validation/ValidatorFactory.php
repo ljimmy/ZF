@@ -2,11 +2,10 @@
 
 namespace SF\Validation;
 
+use SF\Contracts\Validation\Validator;
 
 class ValidatorFactory
 {
-    const BOOLEAN = 'boolean';
-    const EMAIL   = 'email';
 
     const Validator = [
         'boolean' => Boolean::class,
@@ -18,7 +17,7 @@ class ValidatorFactory
         'url'     => Url::class,
     ];
 
-    public static function create(string $type, array $rules): ValidatorInterface
+    public static function create(string $type, array $rules): Validator
     {
         $validator = self::Validator[$type] ?? null;
 
@@ -34,4 +33,6 @@ class ValidatorFactory
 
         return $validator;
     }
+
+
 }

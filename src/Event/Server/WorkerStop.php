@@ -7,6 +7,7 @@ use SF\Context\ApplicationContext;
 
 class WorkerStop extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'WorkerStop';

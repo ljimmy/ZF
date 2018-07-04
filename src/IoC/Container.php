@@ -4,14 +4,16 @@ namespace SF\IoC;
 
 use Psr\Container\ContainerInterface;
 use SF\Contracts\IoC\Object;
-use SF\IoC\Exceptions\ContainerException;
+use SF\Exceptions\IoC\ContainerException;
 
 class Container implements ContainerInterface
 {
+
     /**
      * @var array
      */
     private $definitions = [];
+
     /**
      * @var array
      */

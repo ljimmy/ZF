@@ -1,8 +1,8 @@
 <?php
 
-namespace SF\Protocol\Rpc\Exceptions\Denied;
+namespace SF\Exceptions\Rpc\Denied;
 
-use SF\Protocol\Rpc\Exceptions\DeniedException;
+use SF\Exceptions\Rpc\DeniedException;
 use Throwable;
 
 class RpcMisMatchException extends DeniedException

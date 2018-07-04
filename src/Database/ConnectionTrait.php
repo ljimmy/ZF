@@ -7,6 +7,7 @@ use SF\Contracts\Database\Driver;
 
 trait ConnectionTrait
 {
+
     public static function getConnection(string $name = null): Connection
     {
         return self::getDriver($name)->connect();

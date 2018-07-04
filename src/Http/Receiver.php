@@ -2,7 +2,6 @@
 
 namespace SF\Http;
 
-
 use SF\Contracts\Protocol\Receiver as ReceiverInterface;
 use SF\Contracts\Protocol\Message;
 use SF\Protocol\Http\Request;
@@ -10,6 +9,7 @@ use Swoole\Http\Request as SwooleHttpRequest;
 
 class Receiver implements ReceiverInterface
 {
+
     /**
      * @var SwooleHttpRequest
      */

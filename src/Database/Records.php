@@ -2,7 +2,6 @@
 
 namespace SF\Database;
 
-
 class Records  implements \IteratorAggregate, \Countable
 {
 

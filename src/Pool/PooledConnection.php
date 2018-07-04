@@ -2,11 +2,11 @@
 
 namespace SF\Pool;
 
-
 use SF\Support\PHP;
 
 class PooledConnection
 {
+
     private $connection;
 
     private $pool;

@@ -7,6 +7,7 @@ use SF\Contracts\Protocol\Middleware;
 
 class Route
 {
+
     /**
      * 请求方法
      * @var array

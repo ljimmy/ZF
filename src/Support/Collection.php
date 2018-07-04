@@ -2,12 +2,12 @@
 
 namespace SF\Support;
 
-
 use SF\Contracts\Support\Arrayable;
 use SF\Contracts\Support\Jsonable;
 
 class Collection implements \ArrayAccess, \Countable, \JsonSerializable, Arrayable, Jsonable
 {
+
     protected $items = [];
 
     public function __construct(array $items)

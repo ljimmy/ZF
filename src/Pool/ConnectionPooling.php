@@ -8,6 +8,7 @@ use SF\Exceptions\Pool\PoolException;
 
 class ConnectionPool
 {
+
     /**
      * 每个进程最大连接数
      * @var int

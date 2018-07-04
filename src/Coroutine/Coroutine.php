@@ -6,6 +6,6 @@ use Swoole\Coroutine as SwooleCoroutine;
 
 class Coroutine extends SwooleCoroutine
 {
-    const ID = -1;
 
+    const ID = -1;
 }

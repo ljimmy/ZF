@@ -7,6 +7,7 @@ use SF\Exceptions\NullPointerException;
 
 class DriverManager
 {
+
     const DEFAULT_NAME = 'default';
 
     private static $drivers = [];

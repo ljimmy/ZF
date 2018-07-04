@@ -6,6 +6,7 @@ use SF\Exceptions\Databases\SqlException;
 
 class DriverPropertyInfo
 {
+
     /**
      * @var string
      */

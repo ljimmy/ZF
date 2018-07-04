@@ -7,6 +7,7 @@ use Swoole\Http\Server;
 
 class Application extends BaseServer
 {
+
     protected function createServer()
     {
         return new Server(

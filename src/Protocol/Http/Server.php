@@ -2,7 +2,6 @@
 
 namespace SF\Protocol\Http;
 
-
 use SF\Http\Router;
 use SF\Event\EventTypes;
 use SF\Coroutine\Coroutine;
@@ -10,10 +9,11 @@ use SF\Context\RequestContext;
 use SF\Protocol\AbstractServer;
 use SF\Contracts\Protocol\Replier;
 use SF\Contracts\Protocol\Receiver;
-use SF\Http\Exceptions\HttpException;
+use SF\Exceptions\Http\HttpException;
 
 class Server extends AbstractServer
 {
+
     public $router = Router::class;
 
     public function handle(Receiver $receiver, Replier $replier): string

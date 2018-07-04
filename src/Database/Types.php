@@ -2,9 +2,9 @@
 
 namespace SF\Database;
 
-
 class Types
 {
+
     const TINYINT            = 'tinyint';
     const SMALLINT           = 'smallint';
     const MEDIUMINT          = 'mediumint';

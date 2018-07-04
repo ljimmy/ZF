@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class ManagerStart extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'ManagerStart';

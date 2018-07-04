@@ -7,6 +7,7 @@ use SF\Support\Json as JsonSupport;
 
 class Json implements Packer
 {
+
     public function pack($data)
     {
         return JsonSupport::enCode($data);

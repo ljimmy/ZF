@@ -1,6 +1,6 @@
 <?php
 
-namespace SF\Http\Exceptions;
+namespace SF\Exceptions\Http;
 
 class MethodNotAllowedHttpException extends HttpException
 {

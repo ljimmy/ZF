@@ -6,6 +6,7 @@ use Swoole\Server;
 
 class WorkerError extends AbstractServerEvent
 {
+
     public function getName(): string
     {
         return 'WorkerError';
