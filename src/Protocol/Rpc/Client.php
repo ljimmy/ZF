@@ -3,6 +3,7 @@
 namespace SF\Protocol\Rpc;
 
 use SF\Contracts\Protocol\Client as ClientInterface;
+use SF\Contracts\Protocol\Message as MessageInterface;
 
 class Client implements ClientInterface
 {
@@ -10,9 +11,10 @@ class Client implements ClientInterface
 
     public $port;
 
-    public function call($method = null)
+    public function call(string $destination, MessageInterface $message = null)
     {
 
     }
+
 
 }

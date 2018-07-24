@@ -2,10 +2,10 @@
 
 namespace SF\Database\Connection;
 
+use SF\Coroutine\MySQL;
 use SF\Database\ResultSet;
 use SF\Database\Statement;
 use SF\Exceptions\Databases\SqlException;
-use Swoole\Coroutine\Mysql;
 use SF\Database\DriverPropertyInfo;
 use SF\Contracts\Database\Connection as ConnectionInterface;
 use SF\Contracts\Database\Statement as StatementInterface;
@@ -25,7 +25,7 @@ class MysqlConnection implements ConnectionInterface
     public function __construct(DriverPropertyInfo $info)
     {
         $this->info = $info;
-        $this->mysql = new Mysql();
+        $this->mysql = new MySQL();
     }
 
     protected function connect()

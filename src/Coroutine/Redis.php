@@ -2,7 +2,9 @@
 
 namespace SF\Coroutine;
 
-class Redis extends \Swoole\Coroutine\Redis
+use Swoole\Coroutine\Redis as SwooleCoroutineRedis;
+
+class Redis extends SwooleCoroutineRedis
 {
 
 }
