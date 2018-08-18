@@ -33,6 +33,8 @@ class RequestContext implements Context
      */
     private $response;
 
+    protected $property = [];
+
     public function __construct(Request $request, Response $response, int $id)
     {
         $this->id       = $id;
@@ -55,6 +57,17 @@ class RequestContext implements Context
         return $this->response;
     }
 
+    public function setProperty(string $name, $value)
+    {
+        $this->property[$name] = $value;
+    }
+
+    public function getProperty(string $name)
+    {
+        return $this->property[$name] ?? null;
+    }
+
+
     public function enter()
     {
         self::$map[$this->id] = $this;
@@ -67,6 +80,7 @@ class RequestContext implements Context
         $this->id       = null;
         $this->request  = null;
         $this->response = null;
+        $this->property = [];
     }
 
 }

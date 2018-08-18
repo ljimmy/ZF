@@ -4,14 +4,20 @@ namespace SF\Database;
 
 use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Contracts\Database\Connection;
+use SF\Contracts\Support\Jsonable;
 use SF\Exceptions\UserException;
 
-abstract class Model implements \ArrayAccess
+abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable
 {
 
     use ConnectionTrait;
 
     protected $attributes = [];
+
+    public function __construct(array $attributes = [])
+    {
+        $this->attributes = $attributes;
+    }
 
     abstract public static function tableName(): string;
 
@@ -21,7 +27,9 @@ abstract class Model implements \ArrayAccess
         $getter = 'get' . $name;
         if (isset($this->attributes[$name])) {
             return $this->attributes[$name];
-        } elseif (method_exists($this, $getter)) {
+        } else if (static::getTable()->hasColumn($name)) {
+            return null;
+        } else if (method_exists($this, $getter)) {
             return $this->$getter();
         }
         throw new UserException('Getting unknown property: ' . get_class($this) . '::' . $name);
@@ -32,16 +40,44 @@ abstract class Model implements \ArrayAccess
         $setter = 'set' . $name;
         if (isset($this->attributes[$name])) {
             $this->attributes[$name] = $value;
-        } elseif (method_exists($this, $setter)) {
+        } else if (static::getTable()->hasColumn($name)) {
+            $this->attributes[$name] = $value;
+        } else if (method_exists($this, $setter)) {
             return $this->$setter($value);
+        } else {
+            throw new UserException('Setting unknown property: ' . get_class($this) . '::' . $name);
         }
-        throw new UserException('Setting unknown property: ' . get_class($this) . '::' . $name);
     }
 
+
+    public function offsetExists($attribute)
+    {
+        return isset($this->attributes[$attribute]);
+    }
+
+    public function offsetGet($attribute)
+    {
+        return $this->attributes[$attribute] ?? null;
+    }
+
+    public function offsetSet($attribute, $value)
+    {
+        $this->attributes[$attribute] = $value;
+    }
+
+    public function offsetUnset($attribute)
+    {
+        unset($this->attributes[$attribute]);
+    }
 
     public static function getTable(): Table
     {
         return Table::get(static::tableName());
+    }
+
+    public static function getSql(string $name)
+    {
+        return self::getTable()->getSql($name);
     }
 
     public static function execute(string $name, array $params = [], Connection $connection = null): ResultSet
@@ -50,7 +86,7 @@ abstract class Model implements \ArrayAccess
             $connection = self::getConnection();
         }
 
-        return $connection->prepare(static::getTable()->getSql($name))->execute($connection, $params);
+        return $connection->prepare(self::getSql($name))->execute($params);
     }
 
     public static function getStatement(Connection $connection, string $sql): StatementInterface
@@ -75,6 +111,17 @@ abstract class Model implements \ArrayAccess
     }
 
     /**
+     * @param string $name
+     * @param array $params
+     * @param Connection|null $connection
+     * @return Records
+     */
+    public static function executeAndPopular(string $name, array $params = [], Connection $connection = null)
+    {
+        return self::popular(self::execute($name, $params, $connection));
+    }
+
+    /**
      * @param ResultSet $resultSet
      * @return Records
      */
@@ -83,33 +130,29 @@ abstract class Model implements \ArrayAccess
         return new Records(static::class, $resultSet->getResult());
     }
 
-    /**
-     * @param Connection|null $connection
-     * @return Transaction
-     */
-    public static function beginTransaction(Connection $connection = null)
+    public static function beginTransaction()
     {
-        return new Transaction($connection);
+        return new Transaction();
     }
 
-    public function offsetExists($attribute)
+    public function fields()
     {
-        return isset($this->attributes[$attribute]);
+        return [];
     }
 
-    public function offsetGet($attribute)
+    public function toJson($options = 0)
     {
-        return $this->attributes[$attribute] ?? null;
+        $fields = $this->fields();
+        if (empty($fields)) {
+            return $this->attributes;
+        } else {
+            return array_intersect_key($this->attributes, array_flip($fields));
+        }
     }
 
-    public function offsetSet($attribute, $value)
+    public function jsonSerialize()
     {
-        $this->attributes[$attribute] = $value;
-    }
-
-    public function offsetUnset($attribute)
-    {
-        unset($this->attributes[$attribute]);
+        return $this->toJson();
     }
 
 

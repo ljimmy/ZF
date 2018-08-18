@@ -31,7 +31,7 @@ class Middleware
 
     public function process(Message $message, Action $action)
     {
-        $stack = array_reduce(array_merge($this->list, array_values($action->getMiddleware())),
+        $stack = array_reduce(array_reverse(array_merge($this->list, array_values($action->getMiddleware()))),
             function ($stack, MiddlewareInterface $middleware) {
                 return function ($message) use ($middleware, $stack) {
                     return $middleware->handle($message, $stack);

@@ -38,7 +38,7 @@ class Replier implements ReplierInterface
                 $this->swooleHttpResponse->header($key, implode(';', $value));
             }
 
-            $this->swooleHttpResponse->gzip($response->gzip);
+            $response->gzip && $this->swooleHttpResponse->gzip($response->gzip);
             $statusCode = $response->getStatusCode();
             $this->swooleHttpResponse->status($statusCode);
 

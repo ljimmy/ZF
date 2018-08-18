@@ -29,7 +29,7 @@ class EventManager implements Object
     public function init()
     {
         foreach ($this->events as $event) {
-            $this->on($this->container->get($event));
+            $this->on($this->container->make($event));
         }
     }
 

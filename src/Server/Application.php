@@ -3,6 +3,8 @@
 namespace SF\Server;
 
 use SF\Contracts\Event\Server as ServerEventInterface;
+use SF\Event\EventManager;
+use SF\Event\EventTypes;
 use SF\IoC\Container;
 use Swoole\Server;
 
@@ -23,6 +25,8 @@ class Application
 
     protected $container;
 
+    protected $components;
+
     /**
      * @var Server
      */
@@ -38,15 +42,20 @@ class Application
     {
         self::$app = $this;
 
+
         $this->host      = $config['host'] ?? '127.0.0.1';
         $this->port      = $config['port'] ?? 0;
         $this->type      = $config['type'] ?? SWOOLE_SOCK_TCP;
         $this->events    = $config['events'] ?? [];
         $this->setting   = $config['setting'] ?? [];
         $this->multiport = $config['multiport'] ?? [];
-
         $this->container = new Container();
         $this->joinContainer();
+    }
+
+    public function setComponentsConfig(string $file = '')
+    {
+        $this->components = $file ? realpath($file) : '';
     }
 
     /**
@@ -58,9 +67,12 @@ class Application
         return self::$app;
     }
 
-    public function registerComponents(array $components = [])
+    public function registerComponents()
     {
-        $this->container->setDefinitions($components);
+        if ($this->components) {
+            $components = include($this->components);
+            $this->container->setDefinitions($components);
+        }
     }
 
     public function getServer()
@@ -88,6 +100,7 @@ class Application
 
         $this->bindMultiport();
 
+        $this->container->get(EventManager::class)->trigger(EventTypes::SERVER_INIT);
         $this->server->start();
     }
 
@@ -120,9 +133,16 @@ class Application
 
     public function reload()
     {
-        $this->container->clear();
         $this->server->reload();
+    }
+
+    public function reloadProcess()
+    {
+        $this->container->clear();
         $this->joinContainer();
+
+
+        $this->registerComponents();
     }
 
     protected function joinContainer()

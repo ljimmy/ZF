@@ -38,10 +38,6 @@ class Start extends AbstractServerEvent
             setProcessTitle('SF Master Process');
 
             $container->get(EventManager::class)->trigger(EventTypes::SERVER_START);
-
-            Process::signal(SIGUSR1, function () use ($container) {
-                $container->get(EventManager::class)->trigger(EventTypes::SERVER_RELOAD);
-            });
         };
     }
 

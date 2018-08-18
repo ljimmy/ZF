@@ -11,29 +11,36 @@ class Transaction
 
     protected $connection;
 
-    public function __construct(Connection $connection = null)
+    public function __construct()
     {
-        if ($connection === null) {
-            $this->connection = self::getConnection();
-        } else {
-            $this->connection = $connection;
-        }
+        $this->begin();
     }
 
     /**
-     * @param Statement $statement
+     * @param string $sql
      * @param array $params
      * @return ResultSet
      */
-    public function execute(Statement $statement, array $params = []): ResultSet
+    public function execute(string $sql, array $params = []): ResultSet
     {
-        return $statement->execute($this->connection, $params, false);
+        $statement = $this->connection->prepare($sql);
+        return $statement->execute($params);
     }
 
     public function query(string $sql)
     {
         return $this->connection->query($sql);
     }
+
+    public function begin()
+    {
+        if ($this->connection === null) {
+            $this->connection = self::getConnection();
+        }
+
+        $this->connection->begin();
+    }
+
 
 
     public function commit()
@@ -43,7 +50,7 @@ class Transaction
         } catch (\Exception $exception) {
             throw $exception;
         } finally {
-            $this->connection->close();
+            $this->close();
         }
     }
 
@@ -54,8 +61,14 @@ class Transaction
         } catch (\Exception $exception) {
             throw $exception;
         } finally {
-            $this->connection->close();
+            $this->close();
         }
+    }
+
+    protected function close()
+    {
+        $this->connection->close();
+        $this->connection = null;
     }
 
 }

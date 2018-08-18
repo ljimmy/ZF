@@ -35,6 +35,16 @@ class Records  implements \IteratorAggregate, \Countable
 
     }
 
+    public function get()
+    {
+        if (empty($this->models)) {
+            return null;
+        } else {
+            return current($this->models);
+        }
+    }
+
+
     public function getIterator()
     {
         return new \ArrayIterator($this->models);

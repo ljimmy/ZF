@@ -84,18 +84,17 @@ class Router implements RouterInterface, Object
             throw new UserException('Message must instanceof Request');
         }
 
-        $path = $message->getServer('path_info');
-        if ($path[-1] !== '/') {
-            $path .= '/';
+        $path = rtrim($message->getServer('path_info'), '/');
+//        if ($path[-1] !== '/') {
+//            $path .= '/';
+//        }
+        if ($path == '') {
+            $path = '/';
         }
         $action = $this->routeTable->find(rawurldecode($path), new \SF\Protocol\Action());
 
         if (!$action->isSetHandler()) {
             throw new NotFoundHttpException();
-        }
-
-        if ($action->getMethods() !== null && !in_array($message->getMethod(), $action->getMethods())) {
-            throw new MethodNotAllowedHttpException();
         }
 
         return $action;

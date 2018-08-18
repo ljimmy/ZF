@@ -11,7 +11,7 @@ class Command
 
     const SERVER = [
         'http' => \SF\Http\Application::class,
-        'webSocket' => \SF\WebSocket\Application::class
+        'web_socket' => \SF\WebSocket\Application::class
     ];
 
     const DEFAULT_SERVER = Application::class;
@@ -70,7 +70,7 @@ class Command
         if (empty($c)) {
             return [];
         }
-        $config = include_once ($c);
+        $config = include($c);
 
         return $config;
     }
@@ -88,16 +88,17 @@ class Command
 
     public function start()
     {
-        $server = self::SERVER[$this->opt->get('s', '')] ?? self::DEFAULT_SERVER;
+        $serverName = $this->opt->get('s', '')?:getenv('service');
+
+        $server = self::SERVER[$serverName] ?? self::DEFAULT_SERVER;
 
         if ($server === null) {
             $this->writeln('Unsupported Service');
         } else {
             $this->writeln('Starting...');
 
-            $config = $this->getConfig();
-            $application = (new $server($config['application'] ?? []));
-            $application->registerComponents($config['components']);
+            $application = (new $server($this->getConfig()));
+            $application->setComponentsConfig(getenv('components'));
             $application->start();
             $this->writeln('Server has stopped');
         }

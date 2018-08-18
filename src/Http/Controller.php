@@ -14,7 +14,6 @@ abstract class Controller
 
     public static function handle(string $action, array $params = [])
     {
-
         try {
             $method = new \ReflectionMethod(static::class, $action);
         } catch (\ReflectionException $e) {
@@ -40,6 +39,13 @@ abstract class Controller
             }
         }
 
-        return $controller->{$action}(...$params);
+        return $controller->run($params);
     }
+
+
+    protected function run(array $params)
+    {
+        return $this->{$this->id}(...$params);
+    }
+
 }

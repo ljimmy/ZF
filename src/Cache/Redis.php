@@ -3,6 +3,7 @@
 namespace SF\Cache;
 
 use SF\Contracts\Cache\Repository as RepositoryInterface;
+use SF\Exceptions\Cache\CacheException;
 use SF\Redis\Client;
 
 class Redis implements RepositoryInterface
@@ -107,7 +108,9 @@ class Redis implements RepositoryInterface
     {
         if ($this->client === null) {
             $this->client = new Client(['timeout' => (int)$this->timeout]);
-            $this->client->connect($this->host, $this->port, $this->serialize);
+            if ($this->client->connect($this->host, $this->port, $this->serialize) === false) {
+                throw new CacheException('connect failed.');
+            }
             if ($this->auth) {
                 $this->client->auth($this->auth);
             }

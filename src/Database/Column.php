@@ -2,7 +2,7 @@
 
 namespace SF\Database;
 
-use SF\Exceptions\Databases\SqlException;
+use SF\Exceptions\Database\SqlException;
 
 class Column
 {

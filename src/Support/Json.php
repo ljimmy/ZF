@@ -2,6 +2,8 @@
 
 namespace SF\Support;
 
+use SF\Contracts\Support\Jsonable;
+
 class Json
 {
 
@@ -14,16 +16,20 @@ class Json
      */
     public static function enCode($data,int $options = JSON_UNESCAPED_UNICODE, int $depth = 512)
     {
+        if ($data instanceof Jsonable) {
+            $data = $data->toJson();
+        }
         return json_encode($data, $options, $depth);
     }
 
 
     /**
-     *
-    /**
      * 解析json数据
-     * @param string $data
-     * @return array
+     * @param $data
+     * @param bool $assoc
+     * @param int $depth
+     * @param int $options
+     * @return mixed
      */
     public static function deCode($data, $assoc = false, $depth = 512, $options = 0)
     {

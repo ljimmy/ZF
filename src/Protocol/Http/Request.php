@@ -13,16 +13,6 @@ class Request extends Message implements RequestInterface
 {
 
     /**
-     * @var array
-     */
-    public $get = [];
-
-    /**
-     * @var array
-     */
-    public $post = [];
-
-    /**
      * @var string
      */
     public $rawContent = '';
@@ -55,17 +45,24 @@ class Request extends Message implements RequestInterface
      *
      * @var array
      */
-    private $queryParams = [];
+    private $queryParams;
     /**
      *
      * @var array
      */
-    private $bodyParams = [];
+    private $bodyParams;
     /**
      *
      * @var UploadedFile[]
      */
     private $files = [];
+
+    public function __construct(array $queryParams = null, array $bodyParams = null)
+    {
+        $this->queryParams = $queryParams;
+        $this->bodyParams = $bodyParams;
+    }
+
 
     public function setHeaders(array $headers)
     {
@@ -340,7 +337,7 @@ class Request extends Message implements RequestInterface
             }
         }
 
-        return $this->getBodyParams();
+        return $this->bodyParams;
     }
 
     /**

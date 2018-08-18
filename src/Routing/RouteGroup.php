@@ -2,6 +2,8 @@
 
 namespace SF\Routing;
 
+use SF\Contracts\Protocol\Action;
+
 class RouteGroup
 {
 

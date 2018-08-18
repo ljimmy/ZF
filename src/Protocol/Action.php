@@ -8,13 +8,6 @@ use SF\Support\PHP;
 
 class Action implements ActionInterface
 {
-
-    /**
-     *
-     * @var array
-     */
-    private $methods;
-
     /**
      *
      * @var \Closure
@@ -33,15 +26,6 @@ class Action implements ActionInterface
      */
     private $middleware = [];
 
-    public function getMethods()
-    {
-        return $this->methods;
-    }
-
-    public function setMethods($methods)
-    {
-        $this->methods = $methods;
-    }
 
     public function setHandler(\Closure $handler = null)
     {
@@ -74,7 +58,6 @@ class Action implements ActionInterface
         if ($this->handler === null) {
             return null;
         }
-
         return PHP::call($this->handler, $this->params);
     }
 

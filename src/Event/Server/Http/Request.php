@@ -12,14 +12,11 @@ use SF\Protocol\ProtocolServiceProvider;
 class Request extends AbstractServerEvent
 {
 
-    /**
-     * @var ProtocolServiceProvider
-     */
-    private $provider;
+    public $container;
 
     public function __construct(Container $container)
     {
-        $this->provider = $container->get(ProtocolServiceProvider::class);
+        $this->container = $container;
     }
 
     public function getName(): string
@@ -29,16 +26,18 @@ class Request extends AbstractServerEvent
 
     public function getCallback(): \Closure
     {
-        $provider = $this->provider;
         return
             /**
              * @param \Swoole\Http\Request $request
              * @param \Swoole\Http\Response $response
              */
-            function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) use ($provider) {
-                $provider->getProtocol(Protocol::NAME)->getServer()->handle(
-                    new Receiver($request),
-                    new Replier($response)
+            function (\Swoole\Http\Request $request, \Swoole\Http\Response $response) {
+                $this->container->get(ProtocolServiceProvider::class)
+                    ->getProtocol(Protocol::NAME)
+                    ->getServer()
+                    ->handle(
+                        new Receiver($request),
+                        new Replier($response)
                 );
             };
     }

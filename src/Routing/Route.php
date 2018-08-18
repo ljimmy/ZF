@@ -9,12 +9,6 @@ class Route
 {
 
     /**
-     * 请求方法
-     * @var array
-     */
-    public $methods;
-
-    /**
      * 样式
      * @var string
      */
@@ -56,13 +50,6 @@ class Route
         return $this;
     }
 
-    public function setMethods(array $methods = null)
-    {
-        $this->methods = $methods;
-
-        return $this;
-    }
-
     public function setHandler(\Closure $handler = null)
     {
         $this->handler = $handler;
@@ -94,13 +81,16 @@ class Route
             $path = substr($path, strlen($matches[0]));
             unset($matches[0]);
         } else {
-            if (strpos($this->pattern, $path) !== 0) {
+            if (strpos($path, $this->pattern) !== 0) {
                 return false;
             }
             $path = substr($path, strlen($this->pattern));
+            if ($path && $path[0] !== '/') {
+                return false;
+            }
+
         }
 
-        $action->setMethods($this->methods);
         $action->setHandler($this->handler);
         $action->addParams($matches);
         

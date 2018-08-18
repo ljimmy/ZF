@@ -2,7 +2,7 @@
 
 namespace SF\Database;
 
-use SF\Exceptions\Databases\SqlException;
+use SF\Exceptions\Database\ConnectException;
 
 class DriverPropertyInfo
 {
@@ -71,7 +71,7 @@ class DriverPropertyInfo
         $driver = strstr($dsn, ':', true);
 
         if ($driver === false) {
-            throw new SqlException('invalid data source name');
+            throw new ConnectException('invalid data source name');
         }
 
         $this->driver = $driver;

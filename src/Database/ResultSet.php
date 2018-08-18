@@ -25,14 +25,33 @@ class ResultSet implements \IteratorAggregate, \Countable, ResultSetInterface
      */
     private $rows = [];
 
-    public function __construct(array $rows = [])
+    public function __construct(array $rows = null)
     {
-        $this->rows = $rows;
+        $this->rows = $rows === null ? [] : $rows;
     }
 
     public function first()
     {
+        if (empty($this->rows)) {
+            return null;
+        }
+
         return reset($this->rows);
+    }
+
+    public function field(string $name = null)
+    {
+        $one = current($this->rows);
+
+        if (empty($one)) {
+            return null;
+        }
+
+        if (!is_array($one)) {
+            return $one;
+        }
+
+        return $name === null ? current($one) : $one[$name];
     }
 
     public function get(string $column): array

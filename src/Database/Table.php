@@ -2,6 +2,8 @@
 
 namespace SF\Database;
 
+use SF\Exceptions\Database\SqlException;
+
 class Table
 {
 
@@ -39,6 +41,11 @@ class Table
     public function getColumns()
     {
         return $this->columns;
+    }
+
+    public function hasColumn(string $name)
+    {
+        return isset($this->columns[$name]);
     }
 
     public function getColumn(string $name): Column

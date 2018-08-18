@@ -22,7 +22,7 @@ class Receiver implements ReceiverInterface
 
     public function unpack(): Message
     {
-        $request = new Request();
+        $request = new Request($this->request->get, $this->request->post);
 
         $request->setServer((array)$this->request->server)
             ->setHeaders((array)$this->request->header)

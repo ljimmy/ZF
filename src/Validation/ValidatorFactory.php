@@ -15,6 +15,7 @@ class ValidatorFactory
         'ip'      => Ip::class,
         'regexp'  => Regexp::class,
         'url'     => Url::class,
+        'mobile'  => Mobile::class
     ];
 
     public static function create(string $type, array $rules): Validator

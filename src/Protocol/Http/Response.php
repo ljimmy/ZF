@@ -14,7 +14,7 @@ class Response extends Message implements ResponseInterface
      *
      * @var int
      */
-    public $gzip = 1;
+    public $gzip = 0;
 
     /**
      *
@@ -107,6 +107,11 @@ class Response extends Message implements ResponseInterface
      * @var string
      */
     private $reasonPhrase = '';
+
+    public function __construct(bool $gzip = true)
+    {
+        $this->gzip = $gzip;
+    }
 
     /**
      * Gets the response status code.

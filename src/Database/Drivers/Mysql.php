@@ -2,8 +2,8 @@
 
 namespace SF\Database\Drivers;
 
+use SF\Database\Connection\Swoole\MysqlConnection;
 use SF\Contracts\Database\Connection as ConnectionInterface;
-use SF\Database\Connection\MysqlConnection;
 
 class Mysql extends  AbstractDriver
 {

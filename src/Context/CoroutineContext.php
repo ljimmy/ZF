@@ -23,7 +23,8 @@ class CoroutineContext implements Context
 
     public static function getStackTopId(): int
     {
-        return self::$stack[Coroutine::getuid()] ?? null;
+        $id = Coroutine::getuid();
+        return self::$stack[$id] ?? $id;
     }
 
     public function enter()

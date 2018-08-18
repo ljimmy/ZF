@@ -5,10 +5,6 @@ namespace SF\Contracts\Protocol;
 interface Action
 {
 
-    public function setMethods($methods);
-
-    public function getMethods();
-
     public function setHandler(\Closure $handler = null);
 
     public function isSetHandler(): bool;

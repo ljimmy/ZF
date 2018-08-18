@@ -10,6 +10,11 @@ class Application extends Http
 
     protected function createServer()
     {
-        return new Server($this->host, $this->port, $this->mode, $this->ssl ? $this->sockType | SWOOLE_SSL : $this->sockType);
+        return new Server(
+            $this->host,
+            $this->port,
+            SWOOLE_PROCESS,
+            $this->type
+        );
     }
 }

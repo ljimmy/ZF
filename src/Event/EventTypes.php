@@ -8,6 +8,9 @@ class EventTypes
     /**
      * server
      */
+
+    const SERVER_INIT = 'server_init'; //server init
+
     const SERVER_START = 'server_start'; //server has started
 
     const SERVER_STOP = 'server_stop'; // server has stopped

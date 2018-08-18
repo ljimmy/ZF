@@ -1,15 +1,13 @@
 <?php
 
-namespace SF\Database\Connection;
+namespace SF\Database\Connection\Swoole;
 
 use SF\Coroutine\MySQL;
-use SF\Database\ResultSet;
-use SF\Database\Statement;
-use SF\Exceptions\Databases\SqlException;
+use SF\Exceptions\Database\SqlException;
+use SF\Exceptions\Database\ConnectException;
 use SF\Database\DriverPropertyInfo;
 use SF\Contracts\Database\Connection as ConnectionInterface;
 use SF\Contracts\Database\Statement as StatementInterface;
-use SF\Contracts\Database\ResultSet as ResultSetInterface;
 
 class MysqlConnection implements ConnectionInterface
 {
@@ -37,7 +35,8 @@ class MysqlConnection implements ConnectionInterface
                 'user' => $this->info->username,
                 'password' => $this->info->password,
                 'database' => $this->info->database,
-                'charset' => $this->info->charset
+                'charset' => $this->info->charset,
+                'fetch_mode' => true
             ];
 
         $result = $this->mysql->connect(
@@ -80,36 +79,38 @@ class MysqlConnection implements ConnectionInterface
         if ($this->isClosed()) {
             $this->connect();
         }
-
-        if ($this->mysql->prepare($sql) === false) {
+        $statement = $this->mysql->prepare($sql);
+        if ($statement === false) {
             throw new SqlException($this->mysql->error, $this->mysql->errno);
         }
-        return new Statement($sql);
-    }
-
-    public function execute(StatementInterface $statement): ResultSetInterface
-    {
-        $resultSet = new ResultSet((array)$this->mysql->execute($statement->getParams()));
-
-        $resultSet->affectedRows = $this->mysql->affected_rows;
-        $resultSet->insertId = $this->mysql->insert_id;
-
-        return $resultSet;
+        return new Statement($statement, $sql);
     }
 
     public function begin(): bool
     {
-        return $this->query('START TRANSACTION') !== false;
+        if ($this->isClosed()) {
+            $this->connect();
+        }
+        return $this->mysql->begin() !== false;
+//        return $this->query('START TRANSACTION') !== false;
     }
 
     public function commit(): bool
     {
-        return $this->query('COMMIT') !== false;
+        if ($this->isClosed()) {
+            $this->connect();
+        }
+        return $this->mysql->commit() !== false;
+//        return $this->query('COMMIT') !== false;
     }
 
     public function rollback(): bool
     {
-        return $this->query('ROLLBACK') !== false;
+        if ($this->isClosed()) {
+            $this->connect();
+        }
+        return $this->mysql->rollback() !== false;
+//        return $this->query('ROLLBACK') !== false;
     }
 
 }

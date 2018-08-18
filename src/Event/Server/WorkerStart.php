@@ -4,6 +4,7 @@ namespace SF\Event\Server;
 
 use SF\Context\ApplicationContext;
 use SF\IoC\Container;
+use SF\Server\Application;
 use Swoole\Server;
 
 class WorkerStart extends AbstractServerEvent
@@ -25,12 +26,15 @@ class WorkerStart extends AbstractServerEvent
     {
         $container = $this->container;
         return function (Server $server, int $worker_id) use ($container) {
+
             if ($server->taskworker) {
                 $title = 'SF Task Process';
             } else {
                 $title = 'SF Worker Process';
             }
             setProcessTitle($title);
+            $container->get(Application::class)->reloadProcess();
+
             (new ApplicationContext())->enter();
         };
     }

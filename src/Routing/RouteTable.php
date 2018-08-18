@@ -25,13 +25,11 @@ class RouteTable
      * $rule =
      *     [
      *         'pattern' => '/a/b',
-     *         'methods' => ['GET'],
      *         'handler' => function(){}
      *     ];
      * $rule =
      *     [
      *         'pattern' => '/\/a\/b\/(\d+)\/c\/(\w+)',
-     *         'methods' => ['GET'],
      *         'regex' => true,
      *         'middleware' => [],
      *         'handler' => function($param_1, $param_2){}
@@ -39,7 +37,6 @@ class RouteTable
      * $rule =
      *     [
      *         'pattern' => '/\/a/b\/(\d+)',
-     *         'methods' => [],//禁止访问
      *         'regex' => true,
      *         'middleware' => [],
      *         'handler' => function($param_1){},
@@ -47,13 +44,11 @@ class RouteTable
      *         [
      *             [
      *                 'pattern' => '/c/d',
-     *                 'methods' => ['GET'],
      *                 'middleware' => [],
      *                 'handler' => function($param_1){}
      *             ],
      *             [
      *                 'pattern' => '/\/c\/(\d)\/d',
-     *                 'methods' => ['GET'],
      *                 'handler' => function($param_1, $param_2){}
      *             ]
      *         ],
@@ -63,12 +58,7 @@ class RouteTable
      */
     public function add(array $rule)
     {
-        $route = $this->createRoute($rule);
-        if (isset($rule['group'])) {
-            $route->setGroup($this->createRouteGroup((array)$rule['group']));
-        }
-
-        $this->map[] = $route;
+        $this->map[] = $this->createRoute($rule);
 
         return $this;
     }
@@ -79,11 +69,16 @@ class RouteTable
      */
     private function createRoute(array $rule): Route
     {
-        return (new Route($rule['pattern'] ?? ''))
+        $route = (new Route($rule['pattern'] ?? ''))
             ->setIsRegex(isset($rule['regex']) && $rule['regex'] ? true : false)
-            ->setMethods($rule['methods'] ?? null)
             ->setHandler($rule['handler'] ?? null)
             ->setMiddleware($rule['middleware'] ?? []);
+
+        if (isset($rule['group'])) {
+            $route->setGroup($this->createRouteGroup((array)$rule['group']));
+        }
+
+        return $route;
     }
 
     private function createRouteGroup(array $group): RouteGroup

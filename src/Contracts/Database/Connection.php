@@ -39,12 +39,6 @@ interface Connection
     public function prepare(string $sql): Statement;
 
     /**
-     * @param Statement $statement
-     * @return ResultSet
-     */
-    public function execute(Statement $statement): ResultSet;
-
-    /**
      * @param string $sql
      * @return mixed
      */

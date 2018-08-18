@@ -1,6 +1,6 @@
 <?php
 
-namespace SF\Exceptions\Databases;
+namespace SF\Exceptions\Database;
 
 use SF\Exceptions\UserException;
 
