@@ -26,12 +26,13 @@ abstract class AbstractDriver implements Driver
     {
         $this->info = $propertyInfo;
 
-        null === $this->info->maxConnections ||
-        ($this->pool = new ConnectionPool(new Connector($this), $this->info->maxConnections));
+        if ($this->info->maxConnections) {
+            $this->pool = new ConnectionPool(new Connector($this), $this->info->maxConnections);
+        }
 
     }
 
-    final public function connect(): ConnectionInterface
+    public function connect(): ConnectionInterface
     {
         if ($this->pool === null) {
             return $this->createConnection();

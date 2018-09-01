@@ -2,12 +2,15 @@
 
 namespace SF\Protocol;
 
+use SF\Context\ContextTrait;
 use SF\Contracts\Protocol\Action as ActionInterface;
 use SF\Contracts\Protocol\Middleware as MiddlewareInterface;
 use SF\Support\PHP;
 
 class Action implements ActionInterface
 {
+    use ContextTrait;
+
     /**
      *
      * @var \Closure
@@ -58,7 +61,39 @@ class Action implements ActionInterface
         if ($this->handler === null) {
             return null;
         }
+
+        if ($this->handler instanceof \Closure) {
+            $this->getClosureParameters();
+        }
+
         return PHP::call($this->handler, $this->params);
+    }
+
+    protected function getClosureParameters()
+    {
+        try {
+            $func = new \ReflectionFunction($this->handler);
+        } catch (\ReflectionException $e) {
+            return;
+        }
+
+        $container = $this->getApplicationContext()->getContainer();
+        $paramsNum = count($this->params);
+        foreach ($func->getParameters() as $index => $parameter) {
+            if ($index < $paramsNum) {
+                //跳过参数
+                continue;
+            }
+            if ($parameter->isDefaultValueAvailable()) {
+                $this->params[] = $parameter->getDefaultValue();
+            } else {
+                $c = $parameter->getClass();
+                $this->params[] = $c === null ? null : $container->get($c->getName());
+            }
+        }
+
+        return;
+
     }
 
 

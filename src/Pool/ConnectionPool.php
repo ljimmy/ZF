@@ -47,6 +47,7 @@ class ConnectionPool
     public function __construct(Connector $connector, int $maximum)
     {
         $this->connector = $connector;
+        $this->maximum = $maximum;
         $this->idling = new \SplQueue();
         $this->waiting = new \SplQueue();
     }
@@ -59,11 +60,11 @@ class ConnectionPool
             $this->connected--;
         }
 
-        if ($this->maximum && $this->connections->count() >= $this->maximum) {
+        if ($this->maximum && $this->idling->count() >= $this->maximum) {
             throw new PoolException('connections is exceed the maximum value[' . $this->maximum . ']');
         }
 
-        $this->connections->enqueue($connection);
+        $this->idling->enqueue($connection);
 
 
         if ($this->enableCoroutine && !$this->waiting->isEmpty()) {
@@ -88,12 +89,12 @@ class ConnectionPool
             }
         }
 
-        if ($this->connections->isEmpty()) {
-            $this->connections->enqueue($this->connector->connect());
+        if ($this->idling->isEmpty()) {
+            $this->idling->enqueue($this->connector->connect());
         }
 
-        $connection = $this->connections->dequeue();
+        $connection = $this->idling->dequeue();
         $this->connected++;
-        return new PooledConnection($this, $connection);
+        return new PooledConnection($connection, $this);
     }
 }

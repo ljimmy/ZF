@@ -21,6 +21,113 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable
 
     abstract public static function tableName(): string;
 
+    public static function getTable(): Table
+    {
+        return Table::get(static::tableName());
+    }
+
+    public static function getSql(string $name)
+    {
+        return self::getTable()->getSql($name);
+    }
+
+
+    /**
+     * 开启事务
+     * @return Transaction
+     */
+    public static function beginTransaction()
+    {
+        return new Transaction();
+    }
+
+    /**
+     * @param string $name
+     * @param array $params
+     * @param Connection|null $connection
+     * @return Records
+     */
+    public static function executeAndPopular(string $name, array $params = [], Connection $connection = null)
+    {
+        return self::popular(self::execute($name, $params, $connection));
+    }
+
+    /**
+     * @param ResultSet $resultSet
+     * @return Records
+     */
+    public static function popular(ResultSet $resultSet)
+    {
+        return new Records(static::class, $resultSet->getResult());
+    }
+
+    /**
+     * @param string $name
+     * @param array $params
+     * @param Connection|null $connection
+     * @return ResultSet
+     */
+    public static function execute(string $name, array $params = [], Connection $connection = null): ResultSet
+    {
+        return self::getStatementByName($name, $params, $connection)->execute($params);
+    }
+
+    public static function getStatementByName(string $name, array $params = [], Connection $connection = null)
+    {
+        if ($connection === null) {
+            $connection = self::getConnection();
+        }
+        $sql = self::getSql($name);
+
+        if ($sql instanceof \Closure) {
+            $sql = $sql($params);
+        }
+
+        return self::getStatement($connection, $sql);
+
+    }
+
+
+    public static function getStatement(Connection $connection, string $sql): StatementInterface
+    {
+        return $connection->prepare($sql);
+    }
+
+
+    public static function query(string $sql, Connection $connection = null)
+    {
+        if ($connection === null) {
+            $connection = self::getConnection();
+        }
+
+        try {
+            return $connection->query($sql);
+        } catch (\Exception $exception) {
+            throw $exception;
+        } finally {
+            $connection->close();
+        }
+    }
+
+    public function fields()
+    {
+        return [];
+    }
+
+    public function toJson($options = 0)
+    {
+        $fields = $this->fields();
+        if (empty($fields)) {
+            return $this->attributes;
+        } else {
+            return array_intersect_key($this->attributes, array_flip($fields));
+        }
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toJson();
+    }
 
     public function __get($name)
     {
@@ -69,91 +176,4 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable
     {
         unset($this->attributes[$attribute]);
     }
-
-    public static function getTable(): Table
-    {
-        return Table::get(static::tableName());
-    }
-
-    public static function getSql(string $name)
-    {
-        return self::getTable()->getSql($name);
-    }
-
-    public static function execute(string $name, array $params = [], Connection $connection = null): ResultSet
-    {
-        if ($connection === null) {
-            $connection = self::getConnection();
-        }
-
-        return $connection->prepare(self::getSql($name))->execute($params);
-    }
-
-    public static function getStatement(Connection $connection, string $sql): StatementInterface
-    {
-        return $connection->prepare($sql);
-    }
-
-
-    public static function query(string $sql, Connection $connection = null)
-    {
-        if ($connection === null) {
-            $connection = self::getConnection();
-        }
-
-        try {
-            return $connection->query($sql);
-        } catch (\Exception $exception) {
-            throw $exception;
-        } finally {
-            $connection->close();
-        }
-    }
-
-    /**
-     * @param string $name
-     * @param array $params
-     * @param Connection|null $connection
-     * @return Records
-     */
-    public static function executeAndPopular(string $name, array $params = [], Connection $connection = null)
-    {
-        return self::popular(self::execute($name, $params, $connection));
-    }
-
-    /**
-     * @param ResultSet $resultSet
-     * @return Records
-     */
-    public static function popular(ResultSet $resultSet)
-    {
-        return new Records(static::class, $resultSet->getResult());
-    }
-
-    public static function beginTransaction()
-    {
-        return new Transaction();
-    }
-
-    public function fields()
-    {
-        return [];
-    }
-
-    public function toJson($options = 0)
-    {
-        $fields = $this->fields();
-        if (empty($fields)) {
-            return $this->attributes;
-        } else {
-            return array_intersect_key($this->attributes, array_flip($fields));
-        }
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toJson();
-    }
-
-
 }

@@ -9,7 +9,7 @@ trait ContextTrait
      *
      * @return ApplicationContext
      */
-    protected function getApplicationContext()
+    public function getApplicationContext()
     {
         return ApplicationContext::getContext();
     }
@@ -18,7 +18,7 @@ trait ContextTrait
      *
      * @return RequestContext
      */
-    protected function getRequestContext()
+    public function getRequestContext()
     {
         return RequestContext::get(CoroutineContext::getStackTopId());
     }
@@ -27,7 +27,7 @@ trait ContextTrait
      *
      * @return ConnectContext
      */
-    protected function getConnectContext()
+    public function getConnectContext()
     {
         return ConnectContext::get(CoroutineContext::getStackTopId());
     }

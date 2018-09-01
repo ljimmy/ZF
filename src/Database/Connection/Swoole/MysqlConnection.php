@@ -83,7 +83,7 @@ class MysqlConnection implements ConnectionInterface
         if ($statement === false) {
             throw new SqlException($this->mysql->error, $this->mysql->errno);
         }
-        return new Statement($statement, $sql);
+        return new Statement($statement, $sql, $this);
     }
 
     public function begin(): bool

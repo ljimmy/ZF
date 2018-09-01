@@ -6,6 +6,7 @@ use SF\Contracts\Context\Context;
 
 class Contextor
 {
+    use ContextTrait;
 
     /**
      *

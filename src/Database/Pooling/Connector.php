@@ -17,7 +17,7 @@ class Connector implements ConnectorInterface
 
     public function connect()
     {
-        return $this->driver->connect();
+        return $this->driver->createConnection();
     }
 
 }

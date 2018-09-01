@@ -14,7 +14,7 @@ class Statement implements StatementInterface
 
     /**
      *
-     * @var array
+     * @var string
      */
     private $sql = '';
 
@@ -29,11 +29,16 @@ class Statement implements StatementInterface
      */
     private $statement;
 
+    /**
+     * @var
+     */
+    private $myql;
 
-    public function __construct(SwooleStatement $statement, string $sql)
+    public function __construct(SwooleStatement $statement, string $sql, $m = '')
     {
         $this->statement = $statement;
         $this->sql        = $sql;
+        $this->m = $m;
     }
 
     public function getRawSql(): string
@@ -52,7 +57,6 @@ class Statement implements StatementInterface
     public function execute(array $params = []): ResultSetInterface
     {
         $this->params = $params;
-
         if ($this->statement->execute($params, $this->timeout) === false) {
             throw new SqlException($this->statement->error, $this->statement->errno);
         }
@@ -61,7 +65,6 @@ class Statement implements StatementInterface
 
         $resultSet->affectedRows = $this->statement->affected_rows;
         $resultSet->insertId = $this->statement->insert_id;
-
         return $resultSet;
     }
 }

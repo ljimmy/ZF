@@ -2,6 +2,8 @@
 
 namespace SF\Database;
 
+use SF\Contracts\Database\Statement;
+
 class Records  implements \IteratorAggregate, \Countable
 {
 
@@ -43,6 +45,49 @@ class Records  implements \IteratorAggregate, \Countable
             return current($this->models);
         }
     }
+
+    /**
+     * 附加关联数据
+     * @param string $field 当前表的字段名
+     * @param string $foreign 关联表的字段名
+     * @param Statement $statement
+     * @return $this
+     */
+    public function relation(string $field, string $foreign, Relation $relation)
+    {
+        $values = [];
+        $modelList = [];
+
+        foreach ($this->models as $model) {
+            $val = $model->offsetGet($field);
+
+            if ($val === null) {
+                continue;
+            }
+
+            if (isset($modelList[$val])) {
+                $modelList[$val][] = $model;
+            } else {
+                $values[] = $val;
+                $modelList[$val] = [$model];
+            }
+        }
+        foreach ($relation->getStatement($values)->execute($values)->getResult() as $item) {
+            if (!isset($modelList[$item[$foreign]])) {
+                continue;
+            }
+
+            foreach ($modelList[$item[$foreign]] as $model) {
+                if ($model->offsetGet($field) == $item[$foreign]) {
+                    $model->offsetSet($field, $item);
+                }
+            }
+        }
+
+
+        return $this;
+    }
+
 
 
     public function getIterator()
