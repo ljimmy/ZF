@@ -4,7 +4,7 @@ namespace SF\Database\Pooling;
 
 use SF\Contracts\Database\Connection as ConnectionInterface;
 use SF\Contracts\Database\ResultSet;
-use SF\Contracts\Database\Statement;
+use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Pool\PooledConnection;
 
 class Connection implements ConnectionInterface
@@ -33,12 +33,12 @@ class Connection implements ConnectionInterface
         return $this->pooledConnection->rollback();
     }
 
-    public function prepare(string $sql): Statement
+    public function prepare(string $sql): StatementInterface
     {
-        return $this->pooledConnection->prepare($sql);
+        return new Statement($this, $this->pooledConnection->prepare($sql));
     }
 
-    public function execute(Statement $statement): ResultSet
+    public function execute(StatementInterface $statement): ResultSet
     {
         return $this->pooledConnection->execute($statement);
     }

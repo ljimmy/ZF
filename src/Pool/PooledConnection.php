@@ -2,6 +2,7 @@
 
 namespace SF\Pool;
 
+use SF\Context\ContextTrait;
 use SF\Support\PHP;
 
 class PooledConnection

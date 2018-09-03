@@ -50,7 +50,7 @@ class Records  implements \IteratorAggregate, \Countable
      * 附加关联数据
      * @param string $field 当前表的字段名
      * @param string $foreign 关联表的字段名
-     * @param Statement $statement
+     * @param Relation $relation
      * @return $this
      */
     public function relation(string $field, string $foreign, Relation $relation)
@@ -83,7 +83,6 @@ class Records  implements \IteratorAggregate, \Countable
                 }
             }
         }
-
 
         return $this;
     }

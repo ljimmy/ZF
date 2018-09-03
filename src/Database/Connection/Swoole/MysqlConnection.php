@@ -11,7 +11,6 @@ use SF\Contracts\Database\Statement as StatementInterface;
 
 class MysqlConnection implements ConnectionInterface
 {
-
     private $mysql;
 
     /**
@@ -35,8 +34,7 @@ class MysqlConnection implements ConnectionInterface
                 'user' => $this->info->username,
                 'password' => $this->info->password,
                 'database' => $this->info->database,
-                'charset' => $this->info->charset,
-                'fetch_mode' => true
+                'charset' => $this->info->charset
             ];
 
         $result = $this->mysql->connect(

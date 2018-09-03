@@ -10,6 +10,7 @@ use SF\Database\ResultSet;
 
 class Statement implements StatementInterface
 {
+
     public $timeout = -1;
 
     /**
@@ -34,11 +35,11 @@ class Statement implements StatementInterface
      */
     private $myql;
 
-    public function __construct(SwooleStatement $statement, string $sql, $m = '')
+    public function __construct(SwooleStatement $statement, string $sql, $myql = '')
     {
         $this->statement = $statement;
         $this->sql        = $sql;
-        $this->m = $m;
+        $this->myql = $myql;
     }
 
     public function getRawSql(): string
@@ -57,11 +58,12 @@ class Statement implements StatementInterface
     public function execute(array $params = []): ResultSetInterface
     {
         $this->params = $params;
-        if ($this->statement->execute($params, $this->timeout) === false) {
+        $result = $this->statement->execute($params, $this->timeout);
+        if ( $result === false) {
             throw new SqlException($this->statement->error, $this->statement->errno);
         }
 
-        $resultSet = new ResultSet($this->statement->fetchAll());
+        $resultSet = new ResultSet($result);
 
         $resultSet->affectedRows = $this->statement->affected_rows;
         $resultSet->insertId = $this->statement->insert_id;
