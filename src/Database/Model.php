@@ -4,10 +4,12 @@ namespace SF\Database;
 
 use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Contracts\Database\Connection;
+use SF\Contracts\Support\Arrayable;
 use SF\Contracts\Support\Jsonable;
 use SF\Exceptions\UserException;
+use SF\Support\Json;
 
-abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable
+abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable,Arrayable
 {
 
     use ConnectionTrait;
@@ -116,17 +118,22 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable
 
     public function toJson($options = 0)
     {
+        return Json::enCode($this->toArray(), $options);
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
+    {
         $fields = $this->fields();
         if (empty($fields)) {
             return $this->attributes;
         } else {
             return array_intersect_key($this->attributes, array_flip($fields));
         }
-    }
-
-    public function jsonSerialize()
-    {
-        return $this->toJson();
     }
 
     public function __get($name)

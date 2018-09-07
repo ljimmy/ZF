@@ -91,7 +91,7 @@ class Router implements RouterInterface, Object
         if ($path == '') {
             $path = '/';
         }
-        $action = $this->routeTable->find(rawurldecode($path), new \SF\Protocol\Action());
+        $action = $this->routeTable->find(rawurldecode($path), new \SF\Protocol\Action($message->getMethod()));
 
         if (!$action->isSetHandler()) {
             throw new NotFoundHttpException();

@@ -4,6 +4,7 @@ namespace SF\Contracts\Protocol;
 
 interface Action
 {
+    public function getMethod();
 
     public function setHandler(\Closure $handler = null);
 

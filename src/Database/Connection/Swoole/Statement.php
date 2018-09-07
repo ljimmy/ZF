@@ -63,6 +63,10 @@ class Statement implements StatementInterface
             throw new SqlException($this->statement->error, $this->statement->errno);
         }
 
+        if (!is_array($result)) {
+            $result = [];
+        }
+
         $resultSet = new ResultSet($result);
 
         $resultSet->affectedRows = $this->statement->affected_rows;

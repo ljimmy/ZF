@@ -4,6 +4,7 @@ namespace SF\Routing;
 
 use SF\Contracts\Protocol\Action;
 use SF\Contracts\Protocol\Middleware;
+use SF\Exceptions\Http\MethodNotAllowedHttpException;
 
 class Route
 {
@@ -27,6 +28,11 @@ class Route
     public $handler;
 
     /**
+     * @var array
+     */
+    public $methods;
+
+    /**
      *
      * @var RouteGroup
      */
@@ -46,6 +52,13 @@ class Route
     public function setIsRegex(bool $regex = false)
     {
         $this->regex = $regex;
+
+        return $this;
+    }
+
+    public function setMethods(array $methods = [])
+    {
+        $this->methods = $methods;
 
         return $this;
     }
@@ -88,7 +101,6 @@ class Route
             if ($path && $path[0] !== '/') {
                 return false;
             }
-
         }
 
         $action->setHandler($this->handler);
@@ -99,9 +111,21 @@ class Route
         }
 
         if ($this->group === null || $path === '') {
+            if (array_key_exists($action->getMethod(), $this->methods)) {
+                $action->setHandler($this->getMethodHandler($action->getMethod()));
+            }
             return true;
         } else {
             return $this->group->match($path, $action);
         }
+    }
+
+    private function getMethodHandler(string $method)
+    {
+        if ($this->methods[$method] === false) {
+            throw new MethodNotAllowedHttpException();
+        }
+
+        return $this->methods[$method];
     }
 }

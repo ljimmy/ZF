@@ -6,6 +6,7 @@ use Psr\Http\Message\StreamInterface;
 use Psr\Http\Message\UriInterface;
 use SF\Contracts\Protocol\Http\Request as RequestInterface;
 use SF\Http\Cookie;
+use SF\Http\Stream;
 use SF\Http\UploadedFile;
 use SF\Support\Json;
 

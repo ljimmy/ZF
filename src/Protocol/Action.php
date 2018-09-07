@@ -11,6 +11,8 @@ class Action implements ActionInterface
 {
     use ContextTrait;
 
+    protected $method;
+
     /**
      *
      * @var \Closure
@@ -28,6 +30,11 @@ class Action implements ActionInterface
      * @var MiddlewareInterface[]
      */
     private $middleware = [];
+
+    public function __construct(string $method)
+    {
+        $this->method = $method;
+    }
 
 
     public function setHandler(\Closure $handler = null)
@@ -54,6 +61,11 @@ class Action implements ActionInterface
     public function getMiddleware(): array
     {
         return $this->middleware;
+    }
+
+    public function getMethod()
+    {
+        return $this->method;
     }
 
     public function run()

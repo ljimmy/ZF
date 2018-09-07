@@ -2,9 +2,10 @@
 
 namespace SF\Database;
 
-use SF\Contracts\Database\Statement;
 
-class Records  implements \IteratorAggregate, \Countable
+use SF\Contracts\Support\Arrayable;
+
+class Records  implements \IteratorAggregate, \Countable,Arrayable
 {
 
     /**
@@ -72,6 +73,11 @@ class Records  implements \IteratorAggregate, \Countable
                 $modelList[$val] = [$model];
             }
         }
+
+        if (empty($values)) {
+            return $this;
+        }
+
         foreach ($relation->getStatement($values)->execute($values)->getResult() as $item) {
             if (!isset($modelList[$item[$foreign]])) {
                 continue;
@@ -87,6 +93,12 @@ class Records  implements \IteratorAggregate, \Countable
         return $this;
     }
 
+    public function toArray(): array
+    {
+        return array_map(function ($model) {
+            return $model;
+        }, $this->models);
+    }
 
 
     public function getIterator()

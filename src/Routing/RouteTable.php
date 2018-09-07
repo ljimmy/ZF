@@ -25,6 +25,11 @@ class RouteTable
      * $rule =
      *     [
      *         'pattern' => '/a/b',
+     *         'methods' => [
+     *             'GET' => function(){},
+     *             'POST' => function(){},
+     *             'DELETE' => null
+     *         ]
      *         'handler' => function(){}
      *     ];
      * $rule =
@@ -71,6 +76,7 @@ class RouteTable
     {
         $route = (new Route($rule['pattern'] ?? ''))
             ->setIsRegex(isset($rule['regex']) && $rule['regex'] ? true : false)
+            ->setMethods($rule['methods'] ?? [])
             ->setHandler($rule['handler'] ?? null)
             ->setMiddleware($rule['middleware'] ?? []);
 
