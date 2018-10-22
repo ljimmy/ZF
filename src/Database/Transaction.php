@@ -2,7 +2,7 @@
 
 namespace SF\Database;
 
-use SF\Contracts\Database\Connection;
+use SF\Context\Database\TransactionContext;
 
 class Transaction
 {
@@ -11,8 +11,11 @@ class Transaction
 
     protected $connection;
 
+    protected $context;
+
     public function __construct()
     {
+        $this->context = new TransactionContext($this);
         $this->begin();
     }
 
@@ -37,8 +40,8 @@ class Transaction
         if ($this->connection === null) {
             $this->connection = self::getConnection();
         }
-
         $this->connection->begin();
+        $this->context->enter();
     }
 
 
@@ -67,8 +70,10 @@ class Transaction
 
     protected function close()
     {
+        $this->context->exitContext();
         $this->connection->close();
         $this->connection = null;
+        $this->context = null;
     }
 
 }

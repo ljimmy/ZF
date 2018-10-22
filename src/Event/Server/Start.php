@@ -4,7 +4,6 @@ namespace SF\Event\Server;
 
 use Swoole\Server;
 use SF\IoC\Container;
-use SF\Process\Process;
 use SF\Event\EventTypes;
 use SF\Event\EventManager;
 use SF\Event\User\ServerReload;

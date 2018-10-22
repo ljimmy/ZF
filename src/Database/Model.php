@@ -2,6 +2,7 @@
 
 namespace SF\Database;
 
+use SF\Context\Database\TransactionContext;
 use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Contracts\Database\Connection;
 use SF\Contracts\Support\Arrayable;
@@ -71,7 +72,12 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable,Arraya
      */
     public static function execute(string $name, array $params = [], Connection $connection = null): ResultSet
     {
-        return self::getStatementByName($name, $params, $connection)->execute($params);
+        $transaction = TransactionContext::getTransaction();
+        if ($transaction === null) {
+            return self::getStatementByName($name, $params, $connection)->execute($params);
+        } else {
+            return $transaction->execute(self::buildSql($name, $params), $params);
+        }
     }
 
     public static function getStatementByName(string $name, array $params = [], Connection $connection = null)
@@ -79,14 +85,19 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable,Arraya
         if ($connection === null) {
             $connection = self::getConnection();
         }
+
+        return self::getStatement($connection, self::buildSql($name, $params));
+    }
+
+    public static function buildSql(string $name, array $params = [])
+    {
         $sql = self::getSql($name);
 
         if ($sql instanceof \Closure) {
             $sql = $sql($params);
         }
 
-        return self::getStatement($connection, $sql);
-
+        return $sql;
     }
 
 

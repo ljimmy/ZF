@@ -92,6 +92,7 @@ class Application
     public function start()
     {
         $this->server = $this->createServer();
+        $this->registerComponents();
 
         $this->server->set($this->setting);
         array_map(function ($event) {

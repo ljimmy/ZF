@@ -470,6 +470,10 @@ class Request extends Message implements RequestInterface
         return $this->files;
     }
 
+    /**
+     * @param string $name
+     * @return null|UploadedFile
+     */
     public function getFile(string $name)
     {
         return $this->files[$name] ?? null;

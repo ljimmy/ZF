@@ -83,6 +83,11 @@ class ApplicationContext implements Context
         return Application::getApp()->getContainer();
     }
 
+    public function getApp()
+    {
+        return Application::getApp();
+    }
+
     public function exitContext()
     {
         $this->cache   = null;

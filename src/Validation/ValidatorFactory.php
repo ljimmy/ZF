@@ -18,7 +18,7 @@ class ValidatorFactory
         'mobile'  => Mobile::class
     ];
 
-    public static function create(string $type, array $rules): Validator
+    public static function create(string $type, array $rules = []): Validator
     {
         $validator = self::Validator[$type] ?? null;
 

@@ -54,7 +54,7 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
      * @param Relation $relation
      * @return $this
      */
-    public function relation(string $field, string $foreign, Relation $relation)
+    public function relation(string $field, string $foreign, Relation $relation, string $alias = null)
     {
         $values = [];
         $modelList = [];
@@ -73,7 +73,6 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
                 $modelList[$val] = [$model];
             }
         }
-
         if (empty($values)) {
             return $this;
         }
@@ -85,7 +84,11 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
 
             foreach ($modelList[$item[$foreign]] as $model) {
                 if ($model->offsetGet($field) == $item[$foreign]) {
-                    $model->offsetSet($field, $item);
+                    if ($alias) {
+                        $model->offsetSet($alias, $item);
+                    } else {
+                        $model->offsetSet($field, $item);
+                    }
                 }
             }
         }
@@ -96,7 +99,7 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
     public function toArray(): array
     {
         return array_map(function ($model) {
-            return $model;
+            return $model->toArray();
         }, $this->models);
     }
 

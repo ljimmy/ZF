@@ -45,11 +45,6 @@ class Redis implements RepositoryInterface
      */
     public $serialize = false;
 
-    /**
-     * @var Client
-     */
-    protected $client;
-
 
     public function get($key, $default = null)
     {
@@ -106,20 +101,21 @@ class Redis implements RepositoryInterface
 
     public function getDriver()
     {
-        if ($this->client === null) {
-            $this->client = new Client(['timeout' => (int)$this->timeout]);
-            if ($this->client->connect($this->host, $this->port, $this->serialize) === false) {
+//        if ($this->client === null) {
+        $client = new Client(['timeout' => (int)$this->timeout]);
+            if ($client->connect($this->host, $this->port, $this->serialize) === false) {
                 throw new CacheException('connect failed.');
             }
             if ($this->auth) {
-                $this->client->auth($this->auth);
+                $client->auth($this->auth);
             }
             if ($this->database) {
-                $this->client->select($this->database);
+                $client->select($this->database);
             }
-        }
+//        }
+        return $client;
 
-        return $this->client;
+//        return $this->client;
     }
 
 

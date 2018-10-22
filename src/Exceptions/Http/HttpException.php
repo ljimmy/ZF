@@ -2,6 +2,7 @@
 namespace SF\Exceptions\Http;
 
 use SF\Exceptions\UserException;
+use SF\Protocol\Http\Response;
 
 class HttpException extends UserException
 {
@@ -18,5 +19,10 @@ class HttpException extends UserException
     public function getError()
     {
         return $this->getMessage() ?: $this->getName();
+    }
+
+    public function getName()
+    {
+        return '';
     }
 }
