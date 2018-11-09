@@ -127,6 +127,11 @@ abstract class Model implements \ArrayAccess, Jsonable, \JsonSerializable,Arraya
         return [];
     }
 
+    public function getAttributes()
+    {
+        return $this->attributes;
+    }
+
     public function toJson($options = 0)
     {
         return Json::enCode($this->toArray(), $options);

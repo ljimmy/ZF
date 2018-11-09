@@ -23,6 +23,7 @@ class MysqlConnection implements ConnectionInterface
     {
         $this->info = $info;
         $this->mysql = new MySQL();
+        $this->mysql->setDefer(false);
     }
 
     protected function connect()
@@ -78,6 +79,7 @@ class MysqlConnection implements ConnectionInterface
             $this->connect();
         }
         $statement = $this->mysql->prepare($sql);
+
         if ($statement === false) {
             throw new SqlException($this->mysql->error, $this->mysql->errno);
         }

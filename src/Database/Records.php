@@ -52,9 +52,11 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
      * @param string $field 当前表的字段名
      * @param string $foreign 关联表的字段名
      * @param Relation $relation
+     * @param string|null $alias 别名
+     * @param bool $multiple 是否多个
      * @return $this
      */
-    public function relation(string $field, string $foreign, Relation $relation, string $alias = null)
+    public function relation(string $field, string $foreign, Relation $relation, string $alias = null, bool $multiple = false)
     {
         $values = [];
         $modelList = [];
@@ -81,13 +83,23 @@ class Records  implements \IteratorAggregate, \Countable,Arrayable
             if (!isset($modelList[$item[$foreign]])) {
                 continue;
             }
-
             foreach ($modelList[$item[$foreign]] as $model) {
                 if ($model->offsetGet($field) == $item[$foreign]) {
-                    if ($alias) {
-                        $model->offsetSet($alias, $item);
+                    if (!$alias) {
+                        $alias = $field;
+                    }
+
+                    if ($multiple) {
+                        $v = $model->offsetGet($alias);
+                        if ($v === null) {
+                            $v = [$item];
+                        } else {
+                            $v[] = $item;
+                        }
+                        $model->offsetSet($alias, $v);
+
                     } else {
-                        $model->offsetSet($field, $item);
+                        $model->offsetSet($alias, $item);
                     }
                 }
             }

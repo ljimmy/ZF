@@ -62,8 +62,8 @@ class DriverPropertyInfo
     {
         $this->username = $username;
         $this->password = $password;
-        $this->options = $options;
         $this->maxConnections = $maxConnections;
+        $this->options = $options;
         $this->parseDsn($dsn);
     }
 

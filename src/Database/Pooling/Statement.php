@@ -27,5 +27,11 @@ class Statement implements StatementInterface
         return $this->statement->execute($params);
     }
 
+    public function __destruct()
+    {
+        $this->statement = null;
+        $this->connection = null;
+    }
+
 
 }

@@ -77,10 +77,11 @@ class Command
 
     public function getPidFile()
     {
-        $file = $this->opt->get('pidfile');
+        $file = $this->opt->get('pidFile');
 
         if ($file === null) {
-            return PHP::getBasePath(). DIRECTORY_SEPARATOR . '.pid';
+            $pidFile = getenv('pidFile');
+            return $pidFile ? $pidFile : PHP::getBasePath(). DIRECTORY_SEPARATOR . '.pid';
         } else {
             return $file;
         }
@@ -136,6 +137,15 @@ class Command
             $this->writeln('Stopped');
         }
 
+    }
+
+    /**
+     * 返回命令行参数
+     * @return ParseCommand
+     */
+    public function getOpt()
+    {
+        return $this->opt;
     }
 
     public function writeln(string $message)

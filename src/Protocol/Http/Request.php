@@ -93,6 +93,12 @@ class Request extends Message implements RequestInterface
         return $this->protocolVersion;
     }
 
+
+    public function getHeader($name): array
+    {
+        return parent::getHeader(str_replace(' ', '-', ucwords(str_replace('-', ' ', $name))));
+    }
+
     public function getServer($name)
     {
         return $this->server[strtolower($name)] ?? null;
@@ -395,6 +401,50 @@ class Request extends Message implements RequestInterface
     public function getIp()
     {
         $ip = '';
+        do {
+            if ($ip = $this->getServer('x-forwarded-for')) {
+                break;
+            }
+
+            if ($ip = $this->getServer('http_x_forwarded_for')) {
+                break;
+            }
+
+            if ($ip = $this->getServer('http_forwarded')) {
+                break;
+            }
+
+            if ($ip = $this->getServer('http_forwarded_for')) {
+                break;
+            }
+
+        } while(0);
+
+        if ($ip) {
+            $ip = explode(',', $ip);
+            $ip = trim($ip[0]);
+            return $ip;
+        }
+
+        do {
+            if ($ip = $this->getServer('http_client_ip')) {
+                break;
+            }
+
+            if ($ip = $this->getServer('x-real-ip')) {
+                break;
+            }
+
+            if ($ip = $this->getServer('remote_addr')) {
+                break;
+            }
+
+        } while(0);
+
+        if ($ip) {
+            return $ip;
+        }
+
         if ($this->hasHeader('x-forwarded-for')) {
             $ip = $this->getHeaderLine('x-forwarded-for');
         } else {

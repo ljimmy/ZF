@@ -33,13 +33,13 @@ class Statement implements StatementInterface
     /**
      * @var
      */
-    private $myql;
+    private $mysql;
 
-    public function __construct(SwooleStatement $statement, string $sql, $myql = '')
+    public function __construct(SwooleStatement $statement, string $sql, $mysql = '')
     {
         $this->statement = $statement;
         $this->sql        = $sql;
-        $this->myql = $myql;
+        $this->mysql = $mysql;
     }
 
     public function getRawSql(): string
@@ -72,5 +72,11 @@ class Statement implements StatementInterface
         $resultSet->affectedRows = $this->statement->affected_rows;
         $resultSet->insertId = $this->statement->insert_id;
         return $resultSet;
+    }
+
+    public function __destruct()
+    {
+        $this->statement = null;
+        $this->mysql = null;
     }
 }

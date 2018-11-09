@@ -3,7 +3,6 @@
 namespace SF\Database\Pooling;
 
 use SF\Contracts\Database\Connection as ConnectionInterface;
-use SF\Contracts\Database\ResultSet;
 use SF\Contracts\Database\Statement as StatementInterface;
 use SF\Pool\PooledConnection;
 
@@ -36,11 +35,6 @@ class Connection implements ConnectionInterface
     public function prepare(string $sql): StatementInterface
     {
         return new Statement($this, $this->pooledConnection->prepare($sql));
-    }
-
-    public function execute(StatementInterface $statement): ResultSet
-    {
-        return $this->pooledConnection->execute($statement);
     }
 
     public function query(string $sql)
