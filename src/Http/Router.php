@@ -2,7 +2,7 @@
 
 namespace SF\Http;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\Contracts\Protocol\Action;
 use SF\Contracts\Protocol\Message;
 use SF\Contracts\Protocol\Router as RouterInterface;
@@ -12,7 +12,7 @@ use SF\Exceptions\Http\MethodNotAllowedHttpException;
 use SF\Protocol\Http\Request;
 use SF\Routing\RouteTable;
 
-class Router implements RouterInterface, Object
+class Router implements RouterInterface, Instance
 {
 
     /**

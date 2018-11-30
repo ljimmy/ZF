@@ -2,12 +2,12 @@
 
 namespace SF\Protocol;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\Contracts\Protocol\Protocol as ProtocolInterface;
 use SF\Exceptions\UserException;
 use SF\IoC\Container;
 
-class ProtocolServiceProvider implements Object
+class ProtocolServiceProvider implements Instance
 {
 
     /**

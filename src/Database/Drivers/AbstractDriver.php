@@ -27,7 +27,7 @@ abstract class AbstractDriver implements Driver
         $this->info = $propertyInfo;
 
         if ($this->info->maxConnections) {
-            $this->pool = new ConnectionPool(new Connector($this), $this->info->maxConnections);
+            $this->pool = new ConnectionPool(new Connector($this), $this->info->minConnections, $this->info->maxConnections);
         }
 
     }

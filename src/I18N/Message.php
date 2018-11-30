@@ -2,9 +2,9 @@
 
 namespace SF\I18N;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 
-class Message implements Object
+class Message implements Instance
 {
     public $messages = [];
 

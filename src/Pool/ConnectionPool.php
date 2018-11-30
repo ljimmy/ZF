@@ -9,17 +9,13 @@ use SF\Exceptions\Pool\PoolException;
 class ConnectionPool
 {
 
+    public $minimum = 0;
+
     /**
      * 每个进程最大连接数
      * @var int
      */
     public $maximum = 0;
-
-    /**
-     * 启用协程
-     * @var bool
-     */
-    public $enableCoroutine = true;
 
     /**
      * 连接生成器
@@ -44,9 +40,10 @@ class ConnectionPool
      */
     private $connected = 0;
 
-    public function __construct(Connector $connector, int $maximum)
+    public function __construct(Connector $connector, int $minimum, int $maximum)
     {
         $this->connector = $connector;
+        $this->minimum = $minimum;
         $this->maximum = $maximum;
         $this->idling = new \SplQueue();
         $this->waiting = new \SplQueue();
@@ -64,11 +61,13 @@ class ConnectionPool
             throw new PoolException('connections is exceed the maximum value[' . $this->maximum . ']');
         }
 
-        $this->idling->enqueue($connection);
-
-
-        if ($this->enableCoroutine && !$this->waiting->isEmpty()) {
+        if (!$this->waiting->isEmpty()) {
+            $this->idling->enqueue($connection);
             Coroutine::resume($this->waiting->dequeue());
+        } else if ($this->minimum && $this->idling->count() > $this->minimum) {
+            unset($connection);
+        } else {
+            $this->idling->enqueue($connection);
         }
     }
 
@@ -79,14 +78,10 @@ class ConnectionPool
      */
     public function getConnection(): PooledConnection
     {
-        if ($this->maximum > 0 && $this->connected >= $this->maximum) {
-            if ($this->enableCoroutine) {
-                $id = Coroutine::getuid();
-                $this->waiting->enqueue($id);
-                Coroutine::suspend($id);
-            } else {
-                throw new PoolException('PooledConnection Pool has reached the maximum number of connections');
-            }
+        if ($this->maximum && $this->connected >= $this->maximum) {
+            $id = Coroutine::getuid();
+            $this->waiting->enqueue($id);
+            Coroutine::suspend($id);
         }
 
         if ($this->idling->isEmpty()) {

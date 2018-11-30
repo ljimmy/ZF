@@ -55,13 +55,19 @@ class DriverPropertyInfo
     /**
      * @var int
      */
+    public $minConnections = 0;
+
+    /**
+     * @var int
+     */
     public $maxConnections = 0;
 
 
-    public function __construct(string $dsn, string $username = null, string $password = null, int $maxConnections = 0, array $options = [])
+    public function __construct(string $dsn, string $username = null, string $password = null, int $minConnections = 0, int $maxConnections = 0, array $options = [])
     {
         $this->username = $username;
         $this->password = $password;
+        $this->minConnections = $minConnections;
         $this->maxConnections = $maxConnections;
         $this->options = $options;
         $this->parseDsn($dsn);

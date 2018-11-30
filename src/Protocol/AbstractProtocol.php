@@ -2,13 +2,13 @@
 
 namespace SF\Protocol;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\Contracts\Protocol\Client;
 use SF\Contracts\Protocol\Protocol as ProtocolInterface;
 use SF\Contracts\Protocol\Server;
 use SF\IoC\Container;
 
-abstract class AbstractProtocol implements ProtocolInterface, Object
+abstract class AbstractProtocol implements ProtocolInterface, Instance
 {
 
     const NAME = 'HTTP';

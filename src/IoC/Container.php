@@ -3,7 +3,7 @@
 namespace SF\IoC;
 
 use Psr\Container\ContainerInterface;
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\Exceptions\IoC\ContainerException;
 
 class Container implements ContainerInterface
@@ -137,7 +137,7 @@ class Container implements ContainerInterface
             $this->singleton[$class] = $instance;
         }
 
-        if ($instance instanceof Object) {
+        if ($instance instanceof Instance) {
             $instance->init();
         }
 
@@ -146,7 +146,7 @@ class Container implements ContainerInterface
 
     /**
      *
-     * @param object $object 对象
+     * @param Instance $object 对象
      * @param array $properties 属性
      * @return object
      */

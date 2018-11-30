@@ -2,7 +2,7 @@
 
 namespace SF\Contracts\IoC;
 
-interface Object
+interface Instance
 {
 
     public function init();

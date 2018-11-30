@@ -3,9 +3,9 @@
 namespace SF\Cache;
 
 use SF\IoC\Container;
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 
-class CacheServiceProvider implements Object
+class CacheServiceProvider implements Instance
 {
 
     public $drivers;

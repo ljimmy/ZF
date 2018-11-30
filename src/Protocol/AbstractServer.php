@@ -2,14 +2,14 @@
 
 namespace SF\Protocol;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\Contracts\Protocol\Dispatcher as DispatcherInterface;
 use SF\Contracts\Protocol\Router;
 use SF\Contracts\Protocol\Server;
 use SF\Event\EventManager;
 use SF\IoC\Container;
 
-abstract class AbstractServer implements Server, Object
+abstract class AbstractServer implements Server, Instance
 {
 
     /**

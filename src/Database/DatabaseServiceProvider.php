@@ -2,9 +2,9 @@
 
 namespace SF\Database;
 
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 
-class DatabaseServiceProvider implements Object
+class DatabaseServiceProvider implements Instance
 {
 
     /**
@@ -45,7 +45,8 @@ class DatabaseServiceProvider implements Object
                 $driver['dsn'] ?? '',
                 $driver['username'] ?? null,
                 $driver['password'] ?? null,
-                $driver['max_connections'] ?? null,
+                $driver['min_connections'] ?? 0,
+                $driver['max_connections'] ?? 0,
                 $driver['options'] ?? []
             )));
         }

@@ -3,10 +3,10 @@
 namespace SF\Event;
 
 use SF\Contracts\Event\User as UserEvent;
-use SF\Contracts\IoC\Object;
+use SF\Contracts\IoC\Instance;
 use SF\IoC\Container;
 
-class EventManager implements Object
+class EventManager implements Instance
 {
 
     public $events = [];
